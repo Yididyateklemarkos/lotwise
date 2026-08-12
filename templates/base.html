@@ -112,9 +112,11 @@
         {% if current_user.is_admin %}<a href="{{ url_for('admin_dashboard') }}" class="nav-link">Admin</a>{% endif %}
         <a href="{{ url_for('logout') }}" class="btn btn-sm">Log out</a>
       {% else %}
+        <a href="{{ url_for('about') }}" class="nav-link">About</a>
         <a href="{{ url_for('pricing') }}" class="nav-link">Pricing</a>
+        <a href="{{ url_for('faq') }}" class="nav-link">FAQ</a>
         <a href="{{ url_for('login') }}" class="btn btn-sm">Log in</a>
-        <a href="{{ url_for('signup') }}" class="btn btn-solid btn-sm">Sign up</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-solid btn-sm">Get started</a>
       {% endif %}
     </nav>
   </div>

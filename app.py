@@ -11,7 +11,7 @@ from flask_login import (LoginManager, login_user, logout_user, login_required,
 from werkzeug.utils import secure_filename
 
 from models import (db, User, VerificationDocument, Listing, SourcingRequest,
-                     Inquiry, Connection, Message, TIER_LISTING_LIMITS,
+                     Inquiry, Connection, Message, TrackRecordEntry, TIER_LISTING_LIMITS,
                      TIER_PRICE_USD, BUYER_TIER_PRICE_USD)
 import billing
 
@@ -62,6 +62,7 @@ def admin_required(view_func):
 
 
 def verified_required(view_func):
+    """Requires the account to be approved (but not necessarily paid yet)."""
     from functools import wraps
 
     @wraps(view_func)
@@ -69,8 +70,26 @@ def verified_required(view_func):
         if not current_user.is_authenticated:
             return redirect(url_for("login"))
         if not current_user.is_verified():
-            flash("Your account is still pending verification.", "warning")
+            flash("Your application is still under review.", "warning")
             return redirect(url_for("dashboard"))
+        return view_func(*args, **kwargs)
+    return wrapper
+
+
+def member_required(view_func):
+    """Requires approved AND an active paid plan — full marketplace access."""
+    from functools import wraps
+
+    @wraps(view_func)
+    def wrapper(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return redirect(url_for("login"))
+        if not current_user.is_verified():
+            flash("Your application is still under review.", "warning")
+            return redirect(url_for("dashboard"))
+        if not current_user.is_active_member():
+            flash("Choose a plan to activate full marketplace access.", "info")
+            return redirect(url_for("billing_upgrade"))
         return view_func(*args, **kwargs)
     return wrapper
 
@@ -84,10 +103,31 @@ def home():
         "deals_closed": 2140,
         "active_suppliers": 860,
         "active_buyers": 1300,
+        "volume_usd": "150M+",
     }
-    sample_listings = Listing.query.filter_by(is_active=True).order_by(
+    if current_user.is_authenticated and current_user.is_active_member():
+        # Logged-in, active members get the marketplace view, not the pitch.
+        trending_listings = Listing.query.filter_by(is_active=True, is_sold=False).order_by(
+            Listing.is_urgent.desc(), Listing.created_at.desc()).limit(9).all()
+        trending_requests = SourcingRequest.query.filter_by(is_active=True).order_by(
+            SourcingRequest.is_urgent.desc(), SourcingRequest.created_at.desc()).limit(9).all()
+        return render_template("public/home_member.html", stats=stats,
+                                trending_listings=trending_listings,
+                                trending_requests=trending_requests)
+
+    sample_listings = Listing.query.filter_by(is_active=True, is_sold=False).order_by(
         Listing.created_at.desc()).limit(3).all()
     return render_template("public/home.html", stats=stats, listings=sample_listings)
+
+
+@app.route("/about")
+def about():
+    return render_template("public/about.html")
+
+
+@app.route("/faq")
+def faq():
+    return render_template("public/faq.html")
 
 
 @app.route("/pricing")
@@ -118,9 +158,15 @@ def signup():
         company_name = request.form.get("company_name", "").strip()
         account_type = request.form.get("account_type")
         country = request.form.get("country", "").strip()
+        contact_method = request.form.get("contact_method", "").strip()
+        contact_value = request.form.get("contact_value", "").strip()
 
         if not email or not password or not company_name or account_type not in ("supplier", "buyer"):
             flash("Please fill in all required fields.", "error")
+            return redirect(url_for("signup"))
+
+        if not contact_method or not contact_value:
+            flash("Please provide a WhatsApp or Telegram number so verified matches can reach you.", "error")
             return redirect(url_for("signup"))
 
         if User.query.filter_by(email=email).first():
@@ -132,6 +178,8 @@ def signup():
             company_name=company_name,
             account_type=account_type,
             country=country,
+            contact_method=contact_method,
+            contact_value=contact_value,
             auth_provider="manual",
         )
         user.set_password(password)
@@ -200,7 +248,7 @@ def verification_upload():
         db.session.add(doc)
         current_user.verification_status = "pending"
         db.session.commit()
-        flash("Document uploaded. We review submissions within 48 hours.", "success")
+        flash("Document uploaded. Our team will review your application shortly.", "success")
         return redirect(url_for("dashboard"))
 
     return render_template("dashboard/verification_upload.html")
@@ -227,7 +275,7 @@ def dashboard():
 
 
 @app.route("/dashboard/listings/new", methods=["GET", "POST"])
-@verified_required
+@member_required
 def new_listing():
     if current_user.account_type != "supplier":
         abort(403)
@@ -254,8 +302,52 @@ def new_listing():
     return render_template("dashboard/new_listing.html", limit=current_user.listing_limit())
 
 
-@app.route("/dashboard/requests/new", methods=["GET", "POST"])
+@app.route("/dashboard/listings/<int:listing_id>/toggle-sold", methods=["POST"])
+@login_required
+def toggle_sold(listing_id):
+    listing = Listing.query.get_or_404(listing_id)
+    if listing.user_id != current_user.id:
+        abort(403)
+    listing.is_sold = not listing.is_sold
+    db.session.commit()
+    flash("Marked as sold." if listing.is_sold else "Marked as available again.", "success")
+    return redirect(url_for("dashboard"))
+
+
+# ---------------------------------------------------------------------------
+# Track record — self-reported past deals with optional proof documents
+# ---------------------------------------------------------------------------
+@app.route("/dashboard/track-record", methods=["GET", "POST"])
 @verified_required
+def track_record():
+    if request.method == "POST":
+        file = request.files.get("proof_file")
+        proof_path = None
+        if file and file.filename and allowed_file(file.filename):
+            filename = secure_filename(f"{current_user.id}_proof_{file.filename}")
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+            proof_path = filename
+
+        entry = TrackRecordEntry(
+            user_id=current_user.id,
+            title=request.form.get("title", "").strip(),
+            counterparty_note=request.form.get("counterparty_note", "").strip(),
+            volume_fcl=request.form.get("volume_fcl", type=int),
+            year=request.form.get("year", type=int),
+            proof_file_path=proof_path,
+        )
+        db.session.add(entry)
+        db.session.commit()
+        flash("Added to your track record.", "success")
+        return redirect(url_for("track_record"))
+
+    entries = TrackRecordEntry.query.filter_by(user_id=current_user.id).order_by(
+        TrackRecordEntry.created_at.desc()).all()
+    return render_template("dashboard/track_record.html", entries=entries)
+
+
+@app.route("/dashboard/requests/new", methods=["GET", "POST"])
+@member_required
 def new_sourcing_request():
     if current_user.account_type != "buyer":
         abort(403)
@@ -282,10 +374,10 @@ def new_sourcing_request():
 # Browse (verified users only — nothing public per platform policy)
 # ---------------------------------------------------------------------------
 @app.route("/browse")
-@verified_required
+@member_required
 def browse():
     if current_user.account_type == "buyer":
-        items = Listing.query.filter_by(is_active=True).order_by(
+        items = Listing.query.filter_by(is_active=True, is_sold=False).order_by(
             Listing.is_urgent.desc(), Listing.created_at.desc()).all()
         return render_template("dashboard/browse_listings.html", items=items)
     else:
@@ -295,7 +387,7 @@ def browse():
 
 
 @app.route("/listing/<int:listing_id>/inquire", methods=["POST"])
-@verified_required
+@member_required
 def inquire(listing_id):
     if current_user.account_type != "buyer":
         abort(403)
@@ -312,22 +404,25 @@ def inquire(listing_id):
     db.session.add(connection)
     db.session.commit()
 
-    flash("Inquiry sent. A connection thread has been opened with the supplier.", "success")
-    return redirect(url_for("dashboard"))
+    flash("Inquiry sent — you now have this supplier's contact info in the connection thread.", "success")
+    return redirect(url_for("connection_thread", connection_id=connection.id))
 
 
 @app.route("/connection/<int:connection_id>")
-@verified_required
+@member_required
 def connection_thread(connection_id):
     conn = Connection.query.get_or_404(connection_id)
     if current_user.id not in (conn.supplier_id, conn.buyer_id):
         abort(403)
     messages = Message.query.filter_by(connection_id=conn.id).order_by(Message.sent_at).all()
-    return render_template("dashboard/connection_thread.html", connection=conn, messages=messages)
+    other_id = conn.buyer_id if current_user.id == conn.supplier_id else conn.supplier_id
+    other_user = User.query.get(other_id)
+    return render_template("dashboard/connection_thread.html", connection=conn, messages=messages,
+                            other_user=other_user)
 
 
 @app.route("/connection/<int:connection_id>/message", methods=["POST"])
-@verified_required
+@member_required
 def send_message(connection_id):
     conn = Connection.query.get_or_404(connection_id)
     if current_user.id not in (conn.supplier_id, conn.buyer_id):
@@ -340,7 +435,7 @@ def send_message(connection_id):
 
 
 @app.route("/connection/<int:connection_id>/report", methods=["POST"])
-@verified_required
+@member_required
 def report_connection(connection_id):
     """Self-reporting loop that feeds the tier grading system."""
     conn = Connection.query.get_or_404(connection_id)

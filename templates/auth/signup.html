@@ -2,8 +2,8 @@
 {% block title %}Sign up — Lotwise{% endblock %}
 {% block content %}
 <div style="max-width:440px; margin:0 auto;">
-  <h1>Create your account</h1>
-  <p class="muted" style="margin-bottom:28px;">Verification takes up to 48 hours after you submit documents.</p>
+  <h1>Join the registry</h1>
+  <p class="muted" style="margin-bottom:28px;">A short application, then you're in.</p>
 
   <form class="stacked" method="POST">
     <label>Company name</label>
@@ -23,6 +23,16 @@
 
     <label>Password</label>
     <input type="password" name="password" required minlength="8">
+
+    <label>WhatsApp or Telegram</label>
+    <div style="display:flex; gap:10px;">
+      <select name="contact_method" required style="flex:0 0 140px;">
+        <option value="whatsapp">WhatsApp</option>
+        <option value="telegram">Telegram</option>
+      </select>
+      <input type="text" name="contact_value" placeholder="Number or @handle" required style="flex:1;">
+    </div>
+    <p class="muted" style="font-size:12px; margin-top:-12px;">Only shared with a match after you've both connected on a listing.</p>
 
     <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Create account</button>
   </form>

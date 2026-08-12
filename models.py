@@ -38,6 +38,8 @@ class User(UserMixin, db.Model):
     country = db.Column(db.String(100))
     contact_name = db.Column(db.String(255))
     phone = db.Column(db.String(50))
+    contact_method = db.Column(db.String(20))  # whatsapp / telegram / phone
+    contact_value = db.Column(db.String(100))  # the number/handle itself
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -63,6 +65,7 @@ class User(UserMixin, db.Model):
     sourcing_requests = db.relationship("SourcingRequest", backref="owner", lazy=True,
                                          foreign_keys="SourcingRequest.user_id")
     documents = db.relationship("VerificationDocument", backref="user", lazy=True)
+    track_record = db.relationship("TrackRecordEntry", backref="user", lazy=True)
 
     def set_password(self, raw_password):
         self.password_hash = generate_password_hash(raw_password)
@@ -81,6 +84,10 @@ class User(UserMixin, db.Model):
 
     def is_verified(self):
         return self.verification_status == "approved"
+
+    def is_active_member(self):
+        """Approved AND paid — full marketplace access."""
+        return self.verification_status == "approved" and self.subscription_status == "active"
 
     def to_public_dict(self):
         """Safe fields only — never expose contact info pre-connection."""
@@ -122,11 +129,29 @@ class Listing(db.Model):
 
     is_urgent = db.Column(db.Boolean, default=False)  # Plus/Premium feature
     is_active = db.Column(db.Boolean, default=True)
+    is_sold = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     inquiries = db.relationship("Inquiry", backref="listing", lazy=True)
+
+
+class TrackRecordEntry(db.Model):
+    """A supplier or buyer's self-reported past deal, shown as proof of
+    performance on their profile. Optional supporting document."""
+    __tablename__ = "track_record_entries"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    title = db.Column(db.String(255), nullable=False)  # e.g. "40 FCL robusta to Hamburg"
+    counterparty_note = db.Column(db.String(255))  # e.g. "EU importer" (no names required)
+    volume_fcl = db.Column(db.Integer)
+    year = db.Column(db.Integer)
+    proof_file_path = db.Column(db.String(500))  # optional: BL, invoice, cert, etc.
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class SourcingRequest(db.Model):

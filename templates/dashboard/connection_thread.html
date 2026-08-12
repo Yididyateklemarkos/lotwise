@@ -2,7 +2,20 @@
 {% block title %}Connection #{{ connection.id }} — Lotwise{% endblock %}
 {% block content %}
 <h1>Connection #{{ connection.id }}</h1>
-<p class="muted" style="margin-bottom:24px;">In-platform messaging — no contact details are shared automatically. Status: <strong>{{ connection.status.replace('_',' ')|capitalize }}</strong></p>
+<p class="muted" style="margin-bottom:16px;">Status: <strong>{{ connection.status.replace('_',' ')|capitalize }}</strong></p>
+
+<div class="card" style="margin-bottom:20px; background:linear-gradient(180deg, rgba(52,199,89,0.08), rgba(52,199,89,0.02));">
+  <div class="card-row">
+    <div>
+      <strong>{{ other_user.company_name }} shared their contact</strong>
+      <p class="muted" style="font-size:13px; margin-top:4px;">Reach out directly to move this forward.</p>
+    </div>
+    <div style="text-align:right;">
+      <div class="pill pill-approved">{{ other_user.contact_method|capitalize }}</div>
+      <div style="font-weight:700; margin-top:6px;">{{ other_user.contact_value }}</div>
+    </div>
+  </div>
+</div>
 
 <div class="card" style="max-height:400px; overflow-y:auto;">
   {% for m in messages %}

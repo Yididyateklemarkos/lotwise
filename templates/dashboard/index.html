@@ -11,6 +11,7 @@
     <a href="{{ url_for('new_sourcing_request') }}">New sourcing request</a>
   {% endif %}
   <a href="{{ url_for('billing_upgrade') }}">Plan &amp; billing</a>
+  <a href="{{ url_for('track_record') }}">Track record</a>
 </div>
 
 <div class="card-row" style="margin-bottom:28px;">
@@ -39,6 +40,12 @@
   <p class="muted" style="margin:8px 0 16px;">Your account needs to be verified before you can list or browse. Submit your business documents to get started.</p>
   <a href="{{ url_for('verification_upload') }}" class="btn btn-solid btn-sm">Submit documents</a>
 </div>
+{% elif not current_user.is_active_member() %}
+<div class="card">
+  <h2>You're verified — activate your plan</h2>
+  <p class="muted" style="margin:8px 0 16px;">You're approved to trade on Lotwise. Choose a plan to unlock listings, browsing, and connections.</p>
+  <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Choose a plan</a>
+</div>
 {% endif %}
 
 <div class="card">
@@ -52,13 +59,24 @@
   </p>
   {% if items %}
   <table>
-    <tr><th>Title</th><th>Category</th><th>Qty (FCL)</th><th>Status</th></tr>
+    <tr><th>Title</th><th>Category</th><th>Qty (FCL)</th><th>Status</th>{% if current_user.account_type == 'supplier' %}<th></th>{% endif %}</tr>
     {% for item in items %}
     <tr>
       <td>{{ item.title }}</td>
       <td>{{ item.category }}</td>
       <td>{{ item.quantity_fcl }}</td>
-      <td>{{ 'Active' if item.is_active else 'Inactive' }}{% if item.is_urgent %} · Urgent{% endif %}</td>
+      <td>
+        {% if current_user.account_type == 'supplier' and item.is_sold %}Sold
+        {% else %}{{ 'Active' if item.is_active else 'Inactive' }}{% if item.is_urgent %} · Urgent{% endif %}
+        {% endif %}
+      </td>
+      {% if current_user.account_type == 'supplier' %}
+      <td>
+        <form method="POST" action="{{ url_for('toggle_sold', listing_id=item.id) }}">
+          <button type="submit" class="btn btn-sm">{{ 'Mark available' if item.is_sold else 'Mark sold' }}</button>
+        </form>
+      </td>
+      {% endif %}
     </tr>
     {% endfor %}
   </table>

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}About — Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:640px;">
+  <h1>A closed registry for people who actually move volume.</h1>
+  <p class="muted" style="font-size:16px; line-height:1.7; margin:24px 0;">
+    Lotwise exists because container-scale trade runs on trust, and trust is expensive to build from a cold inbox. We built a registry where every member — supplier or buyer — has already been checked out, so the conversation can start where it should: with the deal itself.
+  </p>
+  <p class="muted" style="font-size:16px; line-height:1.7; margin-bottom:24px;">
+    We're not a marketplace that takes a cut, and we're not a directory that leaves you guessing who's real. Members list what they're moving or sourcing, get matched with other verified members, and negotiate directly — supplier to buyer, no middleman standing between you and the deal.
+  </p>
+  <p class="muted" style="font-size:16px; line-height:1.7;">
+    Every listing, every closed deal, every returning member adds to a track record that raises the bar for everyone in the registry.
+  </p>
+  <div style="margin-top:40px;">
+    <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Get started</a>
+  </div>
+</div>
+{% endblock %}
