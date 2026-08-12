@@ -577,6 +577,31 @@ def admin_connections():
 # ---------------------------------------------------------------------------
 # CLI helper — create the first admin account
 # ---------------------------------------------------------------------------
+@app.route("/setup-admin")
+def setup_admin():
+    """One-time browser-based admin promotion for hosts without shell access
+    (e.g. Render's free tier). Protected by a secret key set as an env var.
+    Remove the SETUP_ADMIN_KEY env var (or this route) once you've used it."""
+    setup_key = os.environ.get("SETUP_ADMIN_KEY", "")
+    if not setup_key:
+        abort(404)  # disabled unless explicitly configured
+    if request.args.get("key", "") != setup_key:
+        abort(403)
+
+    email = request.args.get("email", "").strip().lower()
+    if not email:
+        return "Add &email=you@example.com to the URL.", 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return f"No account found for {email}. Sign up on the site first, then reload this link.", 404
+
+    user.is_admin = True
+    user.verification_status = "approved"
+    db.session.commit()
+    return f"{email} is now an admin. You can remove SETUP_ADMIN_KEY from your environment variables now."
+
+
 @app.cli.command("create-admin")
 def create_admin():
     email = input("Admin email: ").strip().lower()
