@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Sign up — Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:440px; margin:0 auto;">
+  <h1>Create your account</h1>
+  <p class="muted" style="margin-bottom:28px;">Verification takes up to 48 hours after you submit documents.</p>
+
+  <div style="display:flex; gap:10px; margin-bottom:24px;">
+    <a href="{{ url_for('auth_google') }}" class="btn" style="flex:1; text-align:center;">Continue with Google</a>
+    <a href="{{ url_for('auth_apple') }}" class="btn" style="flex:1; text-align:center;">Continue with Apple</a>
+  </div>
+  <div class="muted" style="text-align:center; margin-bottom:24px;">— or sign up with email —</div>
+
+  <form class="stacked" method="POST">
+    <label>Company name</label>
+    <input type="text" name="company_name" required>
+
+    <label>I am a...</label>
+    <select name="account_type" required>
+      <option value="supplier">Supplier</option>
+      <option value="buyer">Buyer</option>
+    </select>
+
+    <label>Country</label>
+    <input type="text" name="country">
+
+    <label>Email</label>
+    <input type="email" name="email" required>
+
+    <label>Password</label>
+    <input type="password" name="password" required minlength="8">
+
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Create account</button>
+  </form>
+  <p class="muted" style="margin-top:20px; text-align:center;">Already have an account? <a href="{{ url_for('login') }}" style="text-decoration:underline;">Log in</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Connections — Lotwise Admin{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('admin_dashboard') }}">Verification queue</a>
+  <a href="{{ url_for('admin_connections') }}" class="active">Connections</a>
+</div>
+<h1>All connections</h1>
+<table style="margin-top:20px;">
+  <tr><th>ID</th><th>Supplier</th><th>Buyer</th><th>Status</th><th>Reported volume</th><th>Created</th></tr>
+  {% for c in connections %}
+  <tr>
+    <td>#{{ c.id }}</td>
+    <td>{{ c.supplier_id }}</td>
+    <td>{{ c.buyer_id }}</td>
+    <td>{{ c.status.replace('_',' ')|capitalize }}</td>
+    <td>{{ c.reported_volume_fcl or '—' }}</td>
+    <td>{{ c.created_at.strftime('%b %d, %Y') }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6" class="muted">No connections yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

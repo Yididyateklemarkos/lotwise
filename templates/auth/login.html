@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Log in — Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:440px; margin:0 auto;">
+  <h1>Log in</h1>
+  <p class="muted" style="margin-bottom:28px;">Welcome back.</p>
+
+  <div style="display:flex; gap:10px; margin-bottom:24px;">
+    <a href="{{ url_for('auth_google') }}" class="btn" style="flex:1; text-align:center;">Continue with Google</a>
+    <a href="{{ url_for('auth_apple') }}" class="btn" style="flex:1; text-align:center;">Continue with Apple</a>
+  </div>
+  <div class="muted" style="text-align:center; margin-bottom:24px;">— or log in with email —</div>
+
+  <form class="stacked" method="POST">
+    <label>Email</label>
+    <input type="email" name="email" required>
+    <label>Password</label>
+    <input type="password" name="password" required>
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Log in</button>
+  </form>
+  <p class="muted" style="margin-top:20px; text-align:center;">No account yet? <a href="{{ url_for('signup') }}" style="text-decoration:underline;">Sign up</a></p>
+</div>
+{% endblock %}

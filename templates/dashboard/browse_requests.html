@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Browse sourcing requests — Lotwise{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('dashboard') }}">Overview</a>
+  <a href="{{ url_for('browse') }}" class="active">Browse</a>
+  <a href="{{ url_for('new_listing') }}">New listing</a>
+</div>
+<h1>Buyer sourcing requests</h1>
+<p class="muted" style="margin-bottom:24px;">All buyers below are verified.</p>
+
+{% for item in items %}
+<div class="card">
+  <div class="muted" style="margin-bottom:4px;">{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}</div>
+  <h2>{{ item.title }}</h2>
+  <p class="muted" style="margin-top:6px;">{{ item.quantity_fcl }} FCL {% if item.target_price_note %}· {{ item.target_price_note }}{% endif %}</p>
+  {% if item.description %}<p style="margin-top:10px; font-size:14px;">{{ item.description }}</p>{% endif %}
+</div>
+{% else %}
+<p class="muted">No sourcing requests live yet.</p>
+{% endfor %}
+{% endblock %}

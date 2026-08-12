@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Admin — Lotwise{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('admin_dashboard') }}" class="active">Verification queue</a>
+  <a href="{{ url_for('admin_connections') }}">Connections</a>
+</div>
+
+<h1>Admin</h1>
+<div style="display:flex; gap:16px; margin:20px 0 32px;">
+  <div class="card" style="flex:1; margin:0;"><div class="muted" style="font-size:12px;">Pending</div><div style="font-size:28px; font-weight:700;">{{ stats.pending_count }}</div></div>
+  <div class="card" style="flex:1; margin:0;"><div class="muted" style="font-size:12px;">Approved</div><div style="font-size:28px; font-weight:700;">{{ stats.approved_count }}</div></div>
+  <div class="card" style="flex:1; margin:0;"><div class="muted" style="font-size:12px;">Total listings</div><div style="font-size:28px; font-weight:700;">{{ stats.total_listings }}</div></div>
+  <div class="card" style="flex:1; margin:0;"><div class="muted" style="font-size:12px;">Connections made</div><div style="font-size:28px; font-weight:700;">{{ stats.total_connections }}</div></div>
+</div>
+
+<h2 style="margin-bottom:14px;">Pending review</h2>
+{% for user in pending %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <strong>{{ user.company_name }}</strong> <span class="muted">— {{ user.account_type|capitalize }} · {{ user.country or '—' }} · {{ user.email }}</span>
+      <div class="muted" style="margin-top:4px; font-size:13px;">{{ user.documents|length }} document(s) submitted · Applied {{ user.created_at.strftime('%b %d, %Y') }}</div>
+    </div>
+    <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" class="btn btn-sm">Review</a>
+  </div>
+</div>
+{% else %}
+<p class="muted">Nothing pending.</p>
+{% endfor %}
+{% endblock %}

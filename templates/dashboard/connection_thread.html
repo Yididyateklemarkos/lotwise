@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Connection #{{ connection.id }} — Lotwise{% endblock %}
+{% block content %}
+<h1>Connection #{{ connection.id }}</h1>
+<p class="muted" style="margin-bottom:24px;">In-platform messaging — no contact details are shared automatically. Status: <strong>{{ connection.status.replace('_',' ')|capitalize }}</strong></p>
+
+<div class="card" style="max-height:400px; overflow-y:auto;">
+  {% for m in messages %}
+  <div style="margin-bottom:16px;">
+    <div class="muted" style="font-size:12px; margin-bottom:2px;">{{ 'You' if m.sender_id == current_user.id else 'Other party' }} · {{ m.sent_at.strftime('%b %d, %H:%M') }}</div>
+    <div style="font-size:14px;">{{ m.body }}</div>
+  </div>
+  {% else %}
+  <p class="muted">No messages yet — say hello.</p>
+  {% endfor %}
+</div>
+
+<form method="POST" action="{{ url_for('send_message', connection_id=connection.id) }}" style="margin-top:16px; display:flex; gap:10px;">
+  <input type="text" name="body" placeholder="Write a message..." required
+    style="flex:1; padding:11px 14px; border:1px solid var(--line); border-radius:5px; font-family:inherit; font-size:14px;">
+  <button type="submit" class="btn btn-solid">Send</button>
+</form>
+
+<div class="card" style="margin-top:24px;">
+  <h2>Report outcome</h2>
+  <p class="muted" style="margin:6px 0 16px;">This is how tier standing is earned — let us know how this connection went.</p>
+  <form method="POST" action="{{ url_for('report_connection', connection_id=connection.id) }}" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+    <select name="outcome" style="padding:10px 12px; border:1px solid var(--line); border-radius:5px;">
+      <option value="closed">Deal closed</option>
+      <option value="no_deal">No deal reached</option>
+    </select>
+    <input type="number" name="volume_fcl" placeholder="Volume (FCL)" style="padding:10px 12px; border:1px solid var(--line); border-radius:5px; width:160px;">
+    <button type="submit" class="btn btn-sm">Submit report</button>
+  </form>
+</div>
+{% endblock %}

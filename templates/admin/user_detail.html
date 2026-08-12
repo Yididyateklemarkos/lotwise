@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Review {{ user.company_name }} — Lotwise Admin{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin_dashboard') }}" class="muted" style="text-decoration:underline; font-size:13px;">← Back to queue</a>
+<h1 style="margin-top:12px;">{{ user.company_name }}</h1>
+<p class="muted" style="margin-bottom:24px;">{{ user.account_type|capitalize }} · {{ user.country or '—' }} · {{ user.email }} · Applied {{ user.created_at.strftime('%b %d, %Y') }}</p>
+
+<div class="card">
+  <h2>Submitted documents</h2>
+  {% for doc in user.documents %}
+  <div style="display:flex; justify-content:space-between; padding:10px 0; border-top:1px solid var(--line);">
+    <span>{{ doc.doc_type.replace('_',' ')|capitalize }}</span>
+    <a href="{{ url_for('static', filename='uploads/' + doc.file_path) }}" target="_blank" class="btn btn-sm">View file</a>
+  </div>
+  {% else %}
+  <p class="muted">No documents submitted yet.</p>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>Decision</h2>
+  <div style="display:flex; gap:12px; margin-top:16px;">
+    <form method="POST" action="{{ url_for('admin_approve', user_id=user.id) }}">
+      <button type="submit" class="btn btn-solid">Approve</button>
+    </form>
+    <form method="POST" action="{{ url_for('admin_disapprove', user_id=user.id) }}" style="display:flex; gap:8px;">
+      <input type="text" name="note" placeholder="Reason (optional)" style="padding:9px 12px; border:1px solid var(--line); border-radius:5px; font-family:inherit;">
+      <button type="submit" class="btn btn-danger">Disapprove</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

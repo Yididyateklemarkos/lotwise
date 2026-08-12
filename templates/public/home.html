@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Lotwise — Bulk Trade Registry{% endblock %}
+{% block content %}
+<div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center; padding: 40px 0 60px;">
+  <div>
+    <h1 style="font-size:52px;">A verified registry for bulk trade.</h1>
+    <p class="muted" style="max-width:440px; margin:18px 0 32px; font-size:16px;">Lotwise reviews and admits suppliers and buyers of container-scale commodities, then lets them connect directly. No brokers, no commission on your transactions.</p>
+    <div style="display:flex; gap:14px;">
+      <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Register as a supplier</a>
+      <a href="{{ url_for('signup') }}" class="btn" style="padding:13px 26px;">Register as a buyer</a>
+    </div>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden; margin-bottom:0;">
+    <img src="https://images.unsplash.com/photo-1494412651409-8963ce7935a7?w=800&h=680&fit=crop" alt="Bulk cargo at port" style="width:100%; height:340px; object-fit:cover; display:block;">
+    <div style="padding:20px 24px;">
+      <div class="muted" style="font-size:12px;">Registry status</div>
+      <div style="font-weight:700; margin-top:4px;">Applications reviewed within 48 hours</div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:60px;">
+  <div class="card" style="text-align:center;">
+    <div style="font-size:38px; font-weight:800;">{{ stats.deals_closed }}</div>
+    <div class="muted">Transactions reported closed</div>
+  </div>
+  <div class="card" style="text-align:center; animation-delay:0.08s;">
+    <div style="font-size:38px; font-weight:800;">{{ stats.active_suppliers }}+</div>
+    <div class="muted">Verified suppliers</div>
+  </div>
+  <div class="card" style="text-align:center; animation-delay:0.16s;">
+    <div style="font-size:38px; font-weight:800;">{{ stats.active_buyers }}+</div>
+    <div class="muted">Verified buyers</div>
+  </div>
+</div>
+
+<h2 style="margin-bottom:18px;">Categories under registry</h2>
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:60px;">
+  <div class="card" style="padding:0; overflow:hidden;">
+    <img src="https://images.unsplash.com/photo-1518183214770-9cffbec72538?w=300&h=220&fit=crop" alt="Minerals" style="width:100%; height:130px; object-fit:cover;">
+    <div style="padding:14px 16px;"><strong style="font-size:14px;">Minerals</strong></div>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden; animation-delay:0.05s;">
+    <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=300&h=220&fit=crop" alt="Agriculture" style="width:100%; height:130px; object-fit:cover;">
+    <div style="padding:14px 16px;"><strong style="font-size:14px;">Agriculture</strong></div>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden; animation-delay:0.1s;">
+    <img src="https://images.unsplash.com/photo-1581093458791-9d09b9a2cb5c?w=300&h=220&fit=crop" alt="Chemicals" style="width:100%; height:130px; object-fit:cover;">
+    <div style="padding:14px 16px;"><strong style="font-size:14px;">Chemicals</strong></div>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden; animation-delay:0.15s;">
+    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=300&h=220&fit=crop" alt="Construction materials" style="width:100%; height:130px; object-fit:cover;">
+    <div style="padding:14px 16px;"><strong style="font-size:14px;">Construction</strong></div>
+  </div>
+</div>
+
+<h2 style="margin-bottom:18px;">Current listings</h2>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+  {% for listing in listings %}
+  <div class="card" style="filter:blur(3px); user-select:none;">
+    <div class="muted" style="font-size:12px;">{{ listing.category }}</div>
+    <div style="font-weight:600; margin:6px 0;">{{ listing.title }}</div>
+    <div class="muted" style="font-size:13px;">{{ listing.quantity_fcl }} FCL</div>
+  </div>
+  {% else %}
+  <div class="card"><div class="muted">No listings are live yet. Registered suppliers appear here once approved.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}

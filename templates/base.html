@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Lotwise{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0A0A0A; --gray:#68686D; --line: rgba(10,10,10,0.08);
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-border: rgba(255,255,255,0.6);
+    --shadow-soft: 0 8px 30px rgba(0,0,0,0.06);
+    --shadow-lift: 0 20px 60px rgba(0,0,0,0.12);
+    --ease: cubic-bezier(0.16,1,0.3,1);
+    --radius: 20px;
+    --danger:#C0392B; --ok:#1E8449;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #DCEBFF 0%, transparent 55%),
+      radial-gradient(1000px 500px at 100% 0%, #FFE8D6 0%, transparent 50%),
+      radial-gradient(900px 700px at 50% 100%, #E4E9FF 0%, transparent 55%),
+      #F4F5F7;
+    background-attachment: fixed;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
+  .glass { background: var(--glass-bg); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid var(--glass-border); }
+
+  header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.65); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid rgba(10,10,10,0.06); }
+  .header-inner { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; max-width:1080px; margin:0 auto; }
+  .logo { font-size:19px; font-weight:800; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px; text-decoration:none; color:var(--ink); }
+  .logo-mark { width:9px; height:9px; background: linear-gradient(135deg, #0A0A0A, #4A4A4A); border-radius:50%; }
+  nav { display:flex; gap:24px; align-items:center; }
+  nav a.nav-link { color:var(--ink); text-decoration:none; font-size:14px; font-weight:500; opacity:0.75; transition: opacity 0.2s var(--ease); }
+  nav a.nav-link:hover { opacity:1; }
+
+  .btn { font-size:14px; font-weight:600; padding:10px 20px; border: 1px solid rgba(10,10,10,0.12); background: rgba(255,255,255,0.5); backdrop-filter: blur(10px); color:var(--ink); cursor:pointer; text-decoration:none; display:inline-block; border-radius: 100px; transition: all 0.25s var(--ease); font-family: inherit; }
+  .btn:hover { background: rgba(255,255,255,0.85); box-shadow: var(--shadow-soft); transform: translateY(-1px); }
+  .btn-solid { background: linear-gradient(180deg, #1C1C1E, #0A0A0A); color:#fff; border: 1px solid rgba(0,0,0,0.4); box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 14px rgba(0,0,0,0.18); }
+  .btn-solid:hover { transform: translateY(-1px); box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset, 0 8px 24px rgba(0,0,0,0.24); }
+  .btn-sm { padding: 7px 16px; font-size: 13px; }
+  .btn-danger { border-color: rgba(192,57,43,0.4); color: var(--danger); background: rgba(255,255,255,0.5); }
+  .btn-danger:hover { background: rgba(192,57,43,0.08); }
+
+  .pill { display:inline-block; font-size:12px; font-weight:700; padding:5px 12px; border-radius:100px; letter-spacing:0.01em; }
+  .pill-pending { background:rgba(255,196,0,0.16); color:#8A6D00; }
+  .pill-approved { background:rgba(30,132,73,0.14); color:var(--ok); }
+  .pill-disapproved { background:rgba(192,57,43,0.12); color:var(--danger); }
+  .badge-grade { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background: rgba(10,10,10,0.9); color:#fff; font-size:11px; font-weight:800; }
+
+  main { min-height: 60vh; padding: 56px 0 100px; }
+  h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px; }
+  h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  p { line-height: 1.6; }
+  .muted { color: var(--gray); font-size: 14px; }
+
+  .card { background: var(--glass-bg); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 26px; margin-bottom: 16px; box-shadow: var(--shadow-soft); transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease); opacity: 0; transform: translateY(16px); animation: cardIn 0.6s var(--ease) forwards; }
+  .card:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+  .card-row { display:flex; justify-content: space-between; align-items:center; }
+  @keyframes cardIn { to { opacity:1; transform: translateY(0); } }
+
+  form.stacked label { display:block; font-size:13px; font-weight:600; margin: 18px 0 6px; }
+  form.stacked label:first-child { margin-top: 0; }
+  form.stacked input, form.stacked select, form.stacked textarea { width: 100%; padding: 12px 16px; border: 1px solid rgba(10,10,10,0.1); background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); border-radius: 12px; font-family: inherit; font-size: 14px; color: var(--ink); transition: border-color 0.2s var(--ease), background 0.2s var(--ease); }
+  form.stacked input:focus, form.stacked select:focus, form.stacked textarea:focus { outline: none; border-color: rgba(10,10,10,0.35); background: rgba(255,255,255,0.85); }
+  form.stacked textarea { resize: vertical; min-height: 90px; }
+  form.stacked .hint { font-size:12px; color: var(--gray); margin-top: 4px; }
+  form.stacked .checkbox-row { display:flex; align-items:center; gap:8px; margin-top:18px; }
+  form.stacked .checkbox-row input { width:auto; }
+  form.stacked .checkbox-row label { margin:0; font-weight:500; }
+
+  .flash { padding: 13px 18px; border-radius: 14px; font-size: 14px; margin-bottom: 16px; backdrop-filter: blur(10px); }
+  .flash-success { background:rgba(30,132,73,0.12); color:var(--ok); border:1px solid rgba(30,132,73,0.2); }
+  .flash-error { background:rgba(192,57,43,0.1); color:var(--danger); border:1px solid rgba(192,57,43,0.2); }
+  .flash-warning { background:rgba(255,196,0,0.14); color:#8A6D00; border:1px solid rgba(255,196,0,0.25); }
+  .flash-info { background:rgba(10,10,10,0.05); color:var(--gray); border:1px solid rgba(10,10,10,0.08); }
+
+  table { width:100%; border-collapse: collapse; }
+  th, td { text-align:left; padding: 13px 16px; border-bottom:1px solid rgba(10,10,10,0.06); font-size:14px; }
+  th { font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--gray); font-weight:700; }
+
+  .dash-nav { display:flex; gap:6px; margin-bottom: 32px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 100px; padding: 6px; width: fit-content; box-shadow: var(--shadow-soft); }
+  .dash-nav a { font-size:13px; font-weight:600; padding:9px 18px; border-radius:100px; text-decoration:none; color:var(--gray); transition: all 0.25s var(--ease); }
+  .dash-nav a.active { background: linear-gradient(180deg, #1C1C1E, #0A0A0A); color:#fff; }
+  .dash-nav a:not(.active):hover { color: var(--ink); }
+
+  footer { border-top:1px solid rgba(10,10,10,0.06); padding:28px 0; }
+  .footer-inner { display:flex; justify-content:space-between; align-items:center; }
+  .footer-text { font-size:13px; color:var(--gray); }
+
+  @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="{{ url_for('home') }}" class="logo"><span class="logo-mark"></span>Lotwise</a>
+    <nav>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
+        {% if current_user.is_admin %}<a href="{{ url_for('admin_dashboard') }}" class="nav-link">Admin</a>{% endif %}
+        <a href="{{ url_for('logout') }}" class="btn btn-sm">Log out</a>
+      {% else %}
+        <a href="{{ url_for('pricing') }}" class="nav-link">Pricing</a>
+        <a href="{{ url_for('login') }}" class="btn btn-sm">Log in</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-solid btn-sm">Sign up</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-text">© 2026 Lotwise. All rights reserved.</div>
+    <div class="footer-text">
+      <a href="{{ url_for('terms') }}" style="margin-right:16px;">Terms</a>
+      <a href="{{ url_for('privacy') }}">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

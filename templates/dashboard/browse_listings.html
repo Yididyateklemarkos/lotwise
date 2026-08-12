@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Browse listings — Lotwise{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('dashboard') }}">Overview</a>
+  <a href="{{ url_for('browse') }}" class="active">Browse</a>
+  <a href="{{ url_for('new_sourcing_request') }}">New sourcing request</a>
+</div>
+<h1>Verified listings</h1>
+<p class="muted" style="margin-bottom:24px;">All suppliers below are verified. Submit an inquiry to open a connection thread.</p>
+
+{% for item in items %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <div class="muted" style="margin-bottom:4px;">{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}</div>
+      <h2>{{ item.title }}</h2>
+      <p class="muted" style="margin-top:6px;">{{ item.origin_country or "—" }} · {{ item.quantity_fcl }} FCL · {{ item.grade_spec or "" }}</p>
+      {% if item.description %}<p style="margin-top:10px; font-size:14px;">{{ item.description }}</p>{% endif %}
+    </div>
+    <form method="POST" action="{{ url_for('inquire', listing_id=item.id) }}" style="flex-shrink:0; margin-left:20px;">
+      <input type="hidden" name="message" value="Interested in this listing.">
+      <button type="submit" class="btn btn-solid btn-sm">Send inquiry</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<p class="muted">No listings live yet.</p>
+{% endfor %}
+{% endblock %}
