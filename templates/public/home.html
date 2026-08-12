@@ -1,25 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Lotwise — Bulk Trade Registry{% endblock %}
 {% block content %}
-<div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center; padding: 40px 0 60px;">
-  <div>
-    <h1 style="font-size:52px;">A verified registry for bulk trade.</h1>
-    <p class="muted" style="max-width:440px; margin:18px 0 32px; font-size:16px;">Lotwise reviews and admits suppliers and buyers of container-scale commodities, then lets them connect directly. No brokers, no commission on your transactions.</p>
-    <div style="display:flex; gap:14px;">
-      <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Register as a supplier</a>
-      <a href="{{ url_for('signup') }}" class="btn" style="padding:13px 26px;">Register as a buyer</a>
-    </div>
-  </div>
-  <div class="card" style="padding:0; overflow:hidden; margin-bottom:0;">
-    <img src="https://images.unsplash.com/photo-1494412651409-8963ce7935a7?w=800&h=680&fit=crop" alt="Bulk cargo at port" style="width:100%; height:340px; object-fit:cover; display:block;">
-    <div style="padding:20px 24px;">
-      <div class="muted" style="font-size:12px;">Registry status</div>
-      <div style="font-weight:700; margin-top:4px;">Applications reviewed within 48 hours</div>
-    </div>
+
+<div style="padding: 30px 0 20px; max-width:720px;">
+  <div class="pill pill-approved" style="margin-bottom:20px;">Applications reviewed within 48 hours</div>
+  <h1 style="font-size:54px; line-height:1.08;">Where verified suppliers and buyers find each other. Nobody else.</h1>
+  <p class="muted" style="max-width:520px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Lotwise is a closed registry for container-scale bulk trade. Every member is reviewed before they can list, browse, or message. You keep 100% of every deal — Lotwise never takes a commission.</p>
+  <div style="display:flex; gap:14px; flex-wrap:wrap;">
+    <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Register as a supplier</a>
+    <a href="{{ url_for('signup') }}" class="btn" style="padding:14px 28px; font-size:15px;">Register as a buyer</a>
   </div>
 </div>
 
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:60px;">
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:56px 0 60px;">
   <div class="card" style="text-align:center;">
     <div style="font-size:38px; font-weight:800;">{{ stats.deals_closed }}</div>
     <div class="muted">Transactions reported closed</div>
@@ -34,36 +27,80 @@
   </div>
 </div>
 
-<h2 style="margin-bottom:18px;">Categories under registry</h2>
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:60px;">
-  <div class="card" style="padding:0; overflow:hidden;">
-    <img src="https://images.unsplash.com/photo-1518183214770-9cffbec72538?w=300&h=220&fit=crop" alt="Minerals" style="width:100%; height:130px; object-fit:cover;">
-    <div style="padding:14px 16px;"><strong style="font-size:14px;">Minerals</strong></div>
+<h2 style="margin-bottom:6px;">Inside the registry right now</h2>
+<p class="muted" style="margin-bottom:18px;">Full details unlock once you're a verified member.</p>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:60px;">
+  {% if listings and listings|length > 0 %}
+    {% for listing in listings %}
+    <div class="card" style="filter:blur(3px); user-select:none; pointer-events:none;">
+      <div class="muted" style="font-size:12px;">{{ listing.category }}</div>
+      <div style="font-weight:600; margin:6px 0;">{{ listing.title }}</div>
+      <div class="muted" style="font-size:13px;">{{ listing.quantity_fcl }} FCL</div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="card" style="filter:blur(3px); user-select:none; pointer-events:none;">
+      <div class="muted" style="font-size:12px;">Agriculture</div>
+      <div style="font-weight:600; margin:6px 0;">Robusta green coffee, grade 2</div>
+      <div class="muted" style="font-size:13px;">18 FCL / month</div>
+    </div>
+    <div class="card" style="filter:blur(3px); user-select:none; pointer-events:none; animation-delay:0.08s;">
+      <div class="muted" style="font-size:12px;">Construction</div>
+      <div style="font-weight:600; margin:6px 0;">Portland cement, bulk</div>
+      <div class="muted" style="font-size:13px;">40 FCL / month</div>
+    </div>
+    <div class="card" style="filter:blur(3px); user-select:none; pointer-events:none; animation-delay:0.16s;">
+      <div class="muted" style="font-size:12px;">Minerals</div>
+      <div style="font-weight:600; margin:6px 0;">Limestone aggregate</div>
+      <div class="muted" style="font-size:13px;">25 FCL / month</div>
+    </div>
+  {% endif %}
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:60px;">
+  <div class="card">
+    <div class="pill pill-pending" style="margin-bottom:14px;">For suppliers</div>
+    <h2 style="margin-bottom:10px;">Get in front of buyers who are already looking for container volume.</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">List what you're moving, get discovered by verified buyers, and negotiate directly. No commission on anything you close — ever.</p>
   </div>
-  <div class="card" style="padding:0; overflow:hidden; animation-delay:0.05s;">
-    <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=300&h=220&fit=crop" alt="Agriculture" style="width:100%; height:130px; object-fit:cover;">
-    <div style="padding:14px 16px;"><strong style="font-size:14px;">Agriculture</strong></div>
-  </div>
-  <div class="card" style="padding:0; overflow:hidden; animation-delay:0.1s;">
-    <img src="https://images.unsplash.com/photo-1581093458791-9d09b9a2cb5c?w=300&h=220&fit=crop" alt="Chemicals" style="width:100%; height:130px; object-fit:cover;">
-    <div style="padding:14px 16px;"><strong style="font-size:14px;">Chemicals</strong></div>
-  </div>
-  <div class="card" style="padding:0; overflow:hidden; animation-delay:0.15s;">
-    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=300&h=220&fit=crop" alt="Construction materials" style="width:100%; height:130px; object-fit:cover;">
-    <div style="padding:14px 16px;"><strong style="font-size:14px;">Construction</strong></div>
+  <div class="card" style="animation-delay:0.08s;">
+    <div class="pill pill-pending" style="margin-bottom:14px;">For buyers</div>
+    <h2 style="margin-bottom:10px;">Source from suppliers who've already been checked out, so you don't have to.</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Every supplier passes manual verification before they can list. Post a sourcing request or browse directly — you talk to real, vetted counterparties only.</p>
   </div>
 </div>
 
-<h2 style="margin-bottom:18px;">Current listings</h2>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
-  {% for listing in listings %}
-  <div class="card" style="filter:blur(3px); user-select:none;">
-    <div class="muted" style="font-size:12px;">{{ listing.category }}</div>
-    <div style="font-weight:600; margin:6px 0;">{{ listing.title }}</div>
-    <div class="muted" style="font-size:13px;">{{ listing.quantity_fcl }} FCL</div>
+<h2 style="margin-bottom:18px;">How the registry works</h2>
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:60px;">
+  <div class="card">
+    <div class="badge-grade" style="margin-bottom:14px;">1</div>
+    <strong style="font-size:14px;">Apply</strong>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Submit your company details and trade documents.</p>
   </div>
-  {% else %}
-  <div class="card"><div class="muted">No listings are live yet. Registered suppliers appear here once approved.</div></div>
-  {% endfor %}
+  <div class="card" style="animation-delay:0.05s;">
+    <div class="badge-grade" style="margin-bottom:14px;">2</div>
+    <strong style="font-size:14px;">Get verified</strong>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Reviewed by hand, approved or declined within 48 hours.</p>
+  </div>
+  <div class="card" style="animation-delay:0.1s;">
+    <div class="badge-grade" style="margin-bottom:14px;">3</div>
+    <strong style="font-size:14px;">Connect</strong>
+    <p class="muted" style="font-size:13px; margin-top:6px;">List, browse, and message other verified members directly.</p>
+  </div>
+  <div class="card" style="animation-delay:0.15s;">
+    <div class="badge-grade" style="margin-bottom:14px;">4</div>
+    <strong style="font-size:14px;">Close the deal, keep it all</strong>
+    <p class="muted" style="font-size:13px; margin-top:6px;">You negotiate and close off-platform. Zero commission, always.</p>
+  </div>
 </div>
+
+<div class="card" style="text-align:center; padding:44px 32px;">
+  <h2 style="font-size:26px; margin-bottom:10px;">Registry access starts at $39/month.</h2>
+  <p class="muted" style="max-width:480px; margin:0 auto 24px;">No commission, no per-deal fees, no lock-in — cancel any time. Verification is included at every tier.</p>
+  <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+    <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Apply now</a>
+    <a href="{{ url_for('pricing') }}" class="btn" style="padding:13px 26px;">See full pricing</a>
+  </div>
+</div>
+
 {% endblock %}

@@ -21,8 +21,8 @@ TIER_GRADES = ("A", "B", "C")
 CONNECTION_STATUSES = ("open", "reported_closed", "reported_no_deal")
 
 TIER_LISTING_LIMITS = {"standard": 3, "plus": 7, "premium": 999}
-TIER_PRICE_USD = {"standard": 59, "plus": 119, "premium": 189}
-BUYER_TIER_PRICE_USD = {"standard": 69, "plus": 129, "premium": 199}
+TIER_PRICE_USD = {"standard": 39, "plus": 79, "premium": 139}
+BUYER_TIER_PRICE_USD = {"standard": 39, "plus": 79, "premium": 139}
 
 
 class User(UserMixin, db.Model):

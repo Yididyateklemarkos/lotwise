@@ -1,20 +1,52 @@
 {% extends "base.html" %}
 {% block title %}Pricing — Lotwise{% endblock %}
 {% block content %}
-<h1>Simple, tiered pricing</h1>
-<p class="muted" style="margin-bottom:32px;">Billed monthly in USD. No commission on transactions, ever.</p>
+<h1>Simple pricing. Zero commission, ever.</h1>
+<p class="muted" style="margin-bottom:40px; max-width:520px;">Billed monthly in USD, cancel any time. Whatever you close on Lotwise is entirely yours — no cut, no hidden fee, no matter the deal size.</p>
 
-<h2 style="margin-bottom:14px;">For suppliers</h2>
+<h2 style="margin-bottom:6px;">For suppliers</h2>
+<p class="muted" style="margin-bottom:14px; font-size:13px;">Get your inventory in front of verified buyers actively sourcing container volume.</p>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:48px;">
-  <div class="card"><div class="muted">Standard</div><div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.standard }}/mo</div><p class="muted" style="font-size:13px;">Up to 3 listings · Standard placement</p></div>
-  <div class="card" style="border:2px solid var(--ink);"><div class="muted">Plus</div><div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.plus }}/mo</div><p class="muted" style="font-size:13px;">Up to 7 listings · Priority + SEO · Urgent flag</p></div>
-  <div class="card"><div class="muted">Premium</div><div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.premium }}/mo</div><p class="muted" style="font-size:13px;">10+ listings · Top placement</p></div>
+  <div class="card">
+    <div class="muted">Standard</div>
+    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.standard }}/mo</div>
+    <p class="muted" style="font-size:13px;">Up to 3 listings · Standard placement</p>
+  </div>
+  <div class="card" style="border:2px solid var(--ink);">
+    <div class="muted">Plus</div>
+    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.plus }}/mo</div>
+    <p class="muted" style="font-size:13px;">Up to 7 listings · Priority + SEO placement · Urgent flag</p>
+  </div>
+  <div class="card">
+    <div class="muted">Premium</div>
+    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.premium }}/mo</div>
+    <p class="muted" style="font-size:13px;">10+ listings · Top placement · First look at new buyers</p>
+  </div>
 </div>
 
-<h2 style="margin-bottom:14px;">For buyers</h2>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
-  <div class="card"><div class="muted">Standard</div><div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.standard }}/mo</div><p class="muted" style="font-size:13px;">Browse + inquire</p></div>
-  <div class="card" style="border:2px solid var(--ink);"><div class="muted">Plus</div><div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.plus }}/mo</div><p class="muted" style="font-size:13px;">Up to 7 sourcing requests · Priority</p></div>
-  <div class="card"><div class="muted">Premium</div><div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.premium }}/mo</div><p class="muted" style="font-size:13px;">10+ requests · First access</p></div>
+<h2 style="margin-bottom:6px;">For buyers</h2>
+<p class="muted" style="margin-bottom:14px; font-size:13px;">Source directly from suppliers who've already passed manual verification.</p>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:48px;">
+  <div class="card">
+    <div class="muted">Standard</div>
+    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.standard }}/mo</div>
+    <p class="muted" style="font-size:13px;">Full browse access · Inquire on any listing</p>
+  </div>
+  <div class="card" style="border:2px solid var(--ink);">
+    <div class="muted">Plus</div>
+    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.plus }}/mo</div>
+    <p class="muted" style="font-size:13px;">Up to 7 sourcing requests · Priority visibility to suppliers</p>
+  </div>
+  <div class="card">
+    <div class="muted">Premium</div>
+    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.premium }}/mo</div>
+    <p class="muted" style="font-size:13px;">10+ sourcing requests · First access to new listings</p>
+  </div>
+</div>
+
+<div class="card" style="text-align:center; padding:36px 32px;">
+  <h2 style="font-size:20px; margin-bottom:8px;">Every tier includes verification, unlimited messaging, and $0 commission.</h2>
+  <p class="muted" style="max-width:480px; margin:0 auto 20px; font-size:14px;">The subscription is the only thing you ever pay Lotwise. What you negotiate and close with another verified member is 100% between the two of you.</p>
+  <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Apply now</a>
 </div>
 {% endblock %}

@@ -5,12 +5,6 @@
   <h1>Create your account</h1>
   <p class="muted" style="margin-bottom:28px;">Verification takes up to 48 hours after you submit documents.</p>
 
-  <div style="display:flex; gap:10px; margin-bottom:24px;">
-    <a href="{{ url_for('auth_google') }}" class="btn" style="flex:1; text-align:center;">Continue with Google</a>
-    <a href="{{ url_for('auth_apple') }}" class="btn" style="flex:1; text-align:center;">Continue with Apple</a>
-  </div>
-  <div class="muted" style="text-align:center; margin-bottom:24px;">— or sign up with email —</div>
-
   <form class="stacked" method="POST">
     <label>Company name</label>
     <input type="text" name="company_name" required>
