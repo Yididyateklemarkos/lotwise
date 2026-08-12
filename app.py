@@ -501,7 +501,11 @@ def create_admin():
     print(f"Admin account created: {email}")
 
 
+# Runs on import — under `python app.py` AND under gunicorn — so the
+# tables always exist before the first request, no matter how the app starts.
+with app.app_context():
+    db.create_all()
+
+
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
     app.run(debug=True, port=5000)
