@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Refund Policy — Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:640px;">
+  <h1>Refund policy</h1>
+  <p class="muted" style="margin:16px 0 28px;">Last updated August 2026</p>
+
+  <h2>All subscription fees are non-refundable</h2>
+  <p style="margin:10px 0 20px;">Lotwise subscriptions are only offered after your account has passed our manual verification process. There is no unverified or trial period during which you're charged, so there is no unused-time refund to issue — by the time you choose a plan and pay, you already have full knowledge of what you're subscribing to and immediate access to it.</p>
+
+  <h2>You can cancel any time</h2>
+  <p style="margin:10px 0 20px;">You may cancel your subscription at any time from your account's billing settings. Cancelling stops future billing, but does not refund any amount already charged for your current billing period. You'll keep full access to the platform until the end of that period, after which your account reverts to inactive.</p>
+
+  <h2>Exceptions</h2>
+  <p style="margin:10px 0 20px;">The only exceptions to this policy are cases required by applicable law, or a confirmed duplicate or erroneous charge on our part. If you believe you were charged in error, contact us and we'll look into it.</p>
+
+  <h2>Questions</h2>
+  <p style="margin:10px 0 20px;">If you have questions about a charge, reach out to us before disputing it with your bank or card provider — we're generally able to resolve billing questions directly and faster than a chargeback process.</p>
+
+  <p class="muted" style="margin-top:32px; font-size:13px;">This page works alongside our full <a href="{{ url_for('terms') }}">Terms of Service</a>, which governs your use of Lotwise.</p>
+</div>
+{% endblock %}

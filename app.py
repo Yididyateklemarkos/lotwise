@@ -147,6 +147,11 @@ def privacy():
     return render_template("public/privacy.html")
 
 
+@app.route("/refunds")
+def refunds():
+    return render_template("public/refunds.html")
+
+
 # ---------------------------------------------------------------------------
 # Auth
 # ---------------------------------------------------------------------------
