@@ -25,14 +25,14 @@
     <input type="password" name="password" required minlength="8">
 
     <label>WhatsApp or Telegram</label>
-    <div style="display:flex; gap:10px;">
-      <select name="contact_method" required style="flex:0 0 140px;">
+    <div class="contact-row">
+      <select name="contact_method" required class="contact-method">
         <option value="whatsapp">WhatsApp</option>
         <option value="telegram">Telegram</option>
       </select>
-      <input type="text" name="contact_value" placeholder="Number or @handle" required style="flex:1;">
+      <input type="text" name="contact_value" placeholder="Number or @handle" required class="contact-value">
     </div>
-    <p class="muted" style="font-size:12px; margin-top:-12px;">Only shared with a match after you've both connected on a listing.</p>
+    <p class="hint">Only shared with a match after you've both connected on a listing.</p>
 
     <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Create account</button>
   </form>
