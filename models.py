@@ -83,10 +83,16 @@ class User(UserMixin, db.Model):
         return active_count < self.listing_limit()
 
     def is_verified(self):
+        if self.is_admin:
+            return True
         return self.verification_status == "approved"
 
     def is_active_member(self):
-        """Approved AND paid — full marketplace access."""
+        """Approved AND paid — full marketplace access. Admins always pass,
+        so you can see the site exactly as live members see it without
+        having to pay yourself."""
+        if self.is_admin:
+            return True
         return self.verification_status == "approved" and self.subscription_status == "active"
 
     def to_public_dict(self):
@@ -101,6 +107,24 @@ class User(UserMixin, db.Model):
             "closed_deals_count": self.closed_deals_count,
             "verified": self.is_verified(),
         }
+
+
+class PaymentOrder(db.Model):
+    """Tracks a payment attempt (currently NOWPayments/crypto) so the IPN
+    webhook can match a provider's order_id back to a user + tier."""
+    __tablename__ = "payment_orders"
+
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    tier = db.Column(db.String(20), nullable=False)
+    amount_usd = db.Column(db.Integer, nullable=False)
+    provider = db.Column(db.String(20), default="nowpayments")
+    status = db.Column(db.String(20), default="pending")  # pending / finished / failed
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = db.relationship("User")
 
 
 class VerificationDocument(db.Model):

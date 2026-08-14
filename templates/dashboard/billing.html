@@ -1,51 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Upgrade — Lotwise{% endblock %}
 
-{% block extra_head %}
-{% if configured %}
-<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    Paddle.Environment.set("{{ environment }}");
-    Paddle.Initialize({ token: "{{ client_token }}" });
-  });
-
-  function openCheckout(priceId, tier) {
-    if (!priceId) {
-      alert("This tier's Paddle Price ID hasn't been set yet — add it in billing.py / your environment variables.");
-      return;
-    }
-    Paddle.Checkout.open({
-      items: [{ priceId: priceId, quantity: 1 }],
-      customer: { email: "{{ current_user.email }}" },
-      customData: { user_id: "{{ current_user.id }}", tier: tier }
-    });
-  }
-</script>
-{% endif %}
-{% endblock %}
-
 {% block content %}
 <h1>Choose your plan</h1>
 <p class="muted" style="margin-bottom:24px;">Current plan: <strong>{{ current_user.subscription_tier|capitalize }}</strong> · Status: {{ current_user.subscription_status }}</p>
-
-{% if not configured %}
-<div class="flash flash-warning">
-  Paddle isn't connected yet. This page will render live checkout buttons as soon as
-  <code>PADDLE_API_KEY</code>, <code>PADDLE_CLIENT_TOKEN</code>, and the six
-  <code>PADDLE_PRICE_*</code> environment variables are set (see the README and <code>billing.py</code>).
-</div>
-{% endif %}
 
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px;">
   {% for tier, price in prices.items() %}
   <div class="card">
     <div class="muted">{{ tier|capitalize }}</div>
     <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ price }}/mo</div>
-    <button class="btn btn-solid btn-sm" style="width:100%;"
-      {% if configured %}onclick="openCheckout('{{ price_ids[tier] }}', '{{ tier }}')"{% else %}disabled{% endif %}>
+    <a href="{{ url_for('billing_pay', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">
       {% if current_user.subscription_tier == tier and current_user.subscription_status == 'active' %}Current plan{% else %}Choose {{ tier|capitalize }}{% endif %}
-    </button>
+    </a>
   </div>
   {% endfor %}
 </div>

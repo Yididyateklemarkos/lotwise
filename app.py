@@ -11,9 +11,10 @@ from flask_login import (LoginManager, login_user, logout_user, login_required,
 from werkzeug.utils import secure_filename
 
 from models import (db, User, VerificationDocument, Listing, SourcingRequest,
-                     Inquiry, Connection, Message, TrackRecordEntry, TIER_LISTING_LIMITS,
-                     TIER_PRICE_USD, BUYER_TIER_PRICE_USD)
-import billing
+                     Inquiry, Connection, Message, TrackRecordEntry, PaymentOrder,
+                     TIER_LISTING_LIMITS, TIER_PRICE_USD, BUYER_TIER_PRICE_USD)
+import nowpayments
+import uuid
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, "static", "uploads")
@@ -471,57 +472,126 @@ def report_connection(connection_id):
 
 
 # ---------------------------------------------------------------------------
-# Billing (Paddle)
+# Billing (plan selection -> payment method -> NOWPayments crypto / PayPal)
 # ---------------------------------------------------------------------------
 @app.route("/billing/upgrade")
 @login_required
 def billing_upgrade():
-    """Shows tier options with a Paddle checkout button per tier.
-    Renders a 'not configured yet' notice until PADDLE_* env vars are set."""
+    """Shows the 3 tier options for this account type. Choosing one goes to
+    the payment-method page, not straight to a checkout."""
     prices = TIER_PRICE_USD if current_user.account_type == "supplier" else BUYER_TIER_PRICE_USD
-    price_ids = {tier: billing.get_price_id(current_user.account_type, tier) for tier in prices}
     return render_template(
         "dashboard/billing.html",
         prices=prices,
-        price_ids=price_ids,
-        configured=billing.is_paddle_configured(),
-        client_token=billing.PADDLE_CLIENT_TOKEN,
-        environment=billing.PADDLE_ENV,
     )
 
 
-@app.route("/billing/webhook", methods=["POST"])
-def billing_webhook():
-    """Paddle calls this on subscription/transaction events. Verifies the
-    signature, then updates the matching user's subscription fields."""
-    raw_body = request.get_data()
-    signature = request.headers.get("Paddle-Signature", "")
+@app.route("/billing/pay/<tier>")
+@login_required
+def billing_pay(tier):
+    """Payment-method choice page: Crypto (NOWPayments) or PayPal, shown
+    after a tier has been picked."""
+    prices = TIER_PRICE_USD if current_user.account_type == "supplier" else BUYER_TIER_PRICE_USD
+    if tier not in prices:
+        abort(404)
+    return render_template(
+        "dashboard/payment_method.html",
+        tier=tier,
+        amount=prices[tier],
+        crypto_configured=nowpayments.is_nowpayments_configured(),
+    )
 
-    if not billing.verify_webhook_signature(raw_body, signature):
+
+@app.route("/billing/pay/<tier>/crypto")
+@login_required
+def billing_pay_crypto(tier):
+    """Creates a NOWPayments invoice and redirects the user to it."""
+    prices = TIER_PRICE_USD if current_user.account_type == "supplier" else BUYER_TIER_PRICE_USD
+    if tier not in prices:
+        abort(404)
+    if not nowpayments.is_nowpayments_configured():
+        flash("Crypto payment isn't connected yet — check back shortly.", "warning")
+        return redirect(url_for("billing_pay", tier=tier))
+
+    amount = prices[tier]
+    order_id = f"lw-{current_user.id}-{tier}-{uuid.uuid4().hex[:10]}"
+
+    order = PaymentOrder(
+        order_id=order_id,
+        user_id=current_user.id,
+        tier=tier,
+        amount_usd=amount,
+        provider="nowpayments",
+        status="pending",
+    )
+    db.session.add(order)
+    db.session.commit()
+
+    try:
+        invoice = nowpayments.create_invoice(
+            amount_usd=amount,
+            order_id=order_id,
+            order_description=f"Lotwise {current_user.account_type} {tier} plan — monthly",
+            success_url=url_for("billing_success", order_id=order_id, _external=True),
+            cancel_url=url_for("billing_failed", order_id=order_id, _external=True),
+            ipn_callback_url=url_for("billing_webhook_nowpayments", _external=True),
+        )
+    except Exception:
+        order.status = "failed"
+        db.session.commit()
+        flash("Couldn't start the crypto payment — please try again.", "error")
+        return redirect(url_for("billing_pay", tier=tier))
+
+    invoice_url = invoice.get("invoice_url")
+    if not invoice_url:
+        order.status = "failed"
+        db.session.commit()
+        flash("Couldn't start the crypto payment — please try again.", "error")
+        return redirect(url_for("billing_pay", tier=tier))
+
+    return redirect(invoice_url)
+
+
+@app.route("/billing/success")
+def billing_success():
+    order_id = request.args.get("order_id", "")
+    order = PaymentOrder.query.filter_by(order_id=order_id).first() if order_id else None
+    return render_template("dashboard/payment_success.html", order=order)
+
+
+@app.route("/billing/failed")
+def billing_failed():
+    order_id = request.args.get("order_id", "")
+    order = PaymentOrder.query.filter_by(order_id=order_id).first() if order_id else None
+    return render_template("dashboard/payment_failed.html", order=order)
+
+
+@app.route("/billing/webhook/nowpayments", methods=["POST"])
+def billing_webhook_nowpayments():
+    """NOWPayments calls this (IPN) on payment status changes. Verifies the
+    HMAC signature before trusting anything in the payload."""
+    signature = request.headers.get("x-nowpayments-sig", "")
+    try:
+        payload = request.get_json(force=True, silent=False)
+    except Exception:
+        return jsonify({"error": "invalid body"}), 400
+
+    if not payload or not nowpayments.verify_ipn_signature(payload, signature):
         return jsonify({"error": "invalid signature"}), 401
 
-    event = billing.parse_webhook_event(raw_body)
-    event_type = event.get("event_type", "")
-    data = event.get("data", {})
+    order_id = payload.get("order_id", "")
+    payment_status = payload.get("payment_status", "")
 
-    # Paddle lets you attach custom_data at checkout time — we pass the
-    # internal user_id and tier there so we can match it back here.
-    custom_data = data.get("custom_data") or {}
-    user_id = custom_data.get("user_id")
-    tier = custom_data.get("tier")
-
-    if user_id:
-        user = User.query.get(int(user_id))
-        if user:
-            if event_type in ("subscription.activated", "subscription.trialing", "transaction.completed"):
-                user.subscription_status = "active"
-                if tier in ("standard", "plus", "premium"):
-                    user.subscription_tier = tier
-            elif event_type == "subscription.past_due":
-                user.subscription_status = "past_due"
-            elif event_type in ("subscription.canceled", "subscription.paused"):
-                user.subscription_status = "cancelled"
-            db.session.commit()
+    order = PaymentOrder.query.filter_by(order_id=order_id).first()
+    if order:
+        if payment_status in ("finished", "confirmed"):
+            order.status = "finished"
+            user = order.user
+            user.subscription_status = "active"
+            user.subscription_tier = order.tier
+        elif payment_status in ("failed", "expired", "refunded"):
+            order.status = "failed"
+        db.session.commit()
 
     return jsonify({"received": True}), 200
 
