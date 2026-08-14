@@ -558,6 +558,11 @@ def billing_pay_crypto(tier):
 def billing_success():
     order_id = request.args.get("order_id", "")
     order = PaymentOrder.query.filter_by(order_id=order_id).first() if order_id else None
+    # NOWPayments only gives us success_url/cancel_url, not a third "partial"
+    # option — so even on the success redirect, check the real order status
+    # in case the IPN already told us it was actually a partial payment.
+    if order and order.status == "partially_paid":
+        return render_template("dashboard/payment_partial.html", order=order)
     return render_template("dashboard/payment_success.html", order=order)
 
 
@@ -565,6 +570,8 @@ def billing_success():
 def billing_failed():
     order_id = request.args.get("order_id", "")
     order = PaymentOrder.query.filter_by(order_id=order_id).first() if order_id else None
+    if order and order.status == "partially_paid":
+        return render_template("dashboard/payment_partial.html", order=order)
     return render_template("dashboard/payment_failed.html", order=order)
 
 
@@ -588,6 +595,7 @@ def billing_webhook_nowpayments():
     if order:
         if payment_status in ("finished", "confirmed"):
             order.status = "finished"
+            order.amount_received = payload.get("actually_paid") or order.amount_usd
             user = order.user
             # Crypto payments are one-time, not auto-recurring — extend 30
             # days from now, or from the current expiry if they're renewing
@@ -600,6 +608,11 @@ def billing_webhook_nowpayments():
             user.subscription_status = "active"
             user.subscription_tier = order.tier
             user.subscription_renews_at = base + timedelta(days=30)
+        elif payment_status == "partially_paid":
+            # Underpaid — do NOT activate. Record how much came in so the
+            # customer can see the shortfall on the status page.
+            order.status = "partially_paid"
+            order.amount_received = payload.get("actually_paid")
         elif payment_status in ("failed", "expired", "refunded"):
             order.status = "failed"
         db.session.commit()

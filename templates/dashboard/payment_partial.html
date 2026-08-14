@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Payment incomplete — Lotwise{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:560px; margin:40px auto; text-align:center; padding:40px;">
+  <div style="width:56px; height:56px; border-radius:50%; background:#B8860B; color:#fff; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 20px;">!</div>
+  <h1 style="font-size:24px; margin-bottom:8px;">Payment incomplete</h1>
+  <p class="muted" style="margin-bottom:8px;">
+    We received part of your payment, but not the full amount — this plan hasn't been activated.
+  </p>
+
+  {% if order %}
+  <div style="background: rgba(184,134,11,0.08); border: 1px solid rgba(184,134,11,0.25); border-radius: 12px; padding: 16px; margin: 20px 0; text-align:left;">
+    <div class="card-row" style="margin-bottom:6px;">
+      <span class="muted" style="font-size:13px;">Plan</span>
+      <strong>{{ order.tier|capitalize }} — ${{ order.amount_usd }}/mo</strong>
+    </div>
+    {% if order.amount_received %}
+    <div class="card-row">
+      <span class="muted" style="font-size:13px;">Received so far</span>
+      <strong>${{ "%.2f"|format(order.amount_received) }}</strong>
+    </div>
+    <div class="card-row" style="margin-top:6px;">
+      <span class="muted" style="font-size:13px;">Still owed</span>
+      <strong>${{ "%.2f"|format(order.amount_usd - order.amount_received) }}</strong>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <p class="muted" style="margin-bottom:24px; font-size:13px;">
+    This can happen if network fees were taken out of what you sent. We've kept the funds received —
+    contact us with your order reference and we can either apply it toward a top-up or arrange a refund.
+  </p>
+
+  <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+    {% if order %}
+    <a href="{{ url_for('billing_pay', tier=order.tier) }}" class="btn btn-solid btn-sm">Try again</a>
+    {% else %}
+    <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Choose a plan</a>
+    {% endif %}
+    <a href="{{ url_for('dashboard') }}" class="btn btn-sm">Go to dashboard</a>
+  </div>
+</div>
+{% endblock %}

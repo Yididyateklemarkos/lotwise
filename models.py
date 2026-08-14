@@ -148,8 +148,9 @@ class PaymentOrder(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     tier = db.Column(db.String(20), nullable=False)
     amount_usd = db.Column(db.Integer, nullable=False)
+    amount_received = db.Column(db.Float, nullable=True)  # actually_paid, in price_currency (usd)
     provider = db.Column(db.String(20), default="nowpayments")
-    status = db.Column(db.String(20), default="pending")  # pending / finished / failed
+    status = db.Column(db.String(20), default="pending")  # pending / finished / partially_paid / failed
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
