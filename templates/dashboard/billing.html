@@ -3,7 +3,13 @@
 
 {% block content %}
 <h1>Choose your plan</h1>
-<p class="muted" style="margin-bottom:24px;">Current plan: <strong>{{ current_user.subscription_tier|capitalize }}</strong> · Status: {{ current_user.subscription_status }}</p>
+<p class="muted" style="margin-bottom:24px;">
+  Current plan: <strong>{{ current_user.subscription_tier|capitalize }}</strong> · Status: {{ current_user.subscription_status }}
+  {% if current_user.subscription_renews_at and current_user.subscription_status == 'active' %}
+    · Renews by {{ current_user.subscription_renews_at.strftime('%b %-d, %Y') }}
+  {% endif %}
+</p>
+<p class="hint" style="margin-bottom:20px;">Crypto payments are one-time — plans run 30 days per payment and don't auto-renew. Pay again anytime to extend.</p>
 
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px;">
   {% for tier, price in prices.items() %}

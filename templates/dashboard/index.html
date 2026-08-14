@@ -42,9 +42,21 @@
 </div>
 {% elif not current_user.is_active_member() %}
 <div class="card">
-  <h2>You're verified — activate your plan</h2>
-  <p class="muted" style="margin:8px 0 16px;">You're approved to trade on Lotwise. Choose a plan to unlock listings, browsing, and connections.</p>
-  <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Choose a plan</a>
+  <h2>{% if current_user.subscription_renews_at %}Your plan has expired{% else %}You're verified — activate your plan{% endif %}</h2>
+  <p class="muted" style="margin:8px 0 16px;">
+    {% if current_user.subscription_renews_at %}
+      Crypto payments don't auto-renew — your plan lapsed. Renew to get back full access to listings, browsing, and connections.
+    {% else %}
+      You're approved to trade on Lotwise. Choose a plan to unlock listings, browsing, and connections.
+    {% endif %}
+  </p>
+  <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">{% if current_user.subscription_renews_at %}Renew now{% else %}Choose a plan{% endif %}</a>
+</div>
+{% elif current_user.is_expiring_soon() %}
+<div class="card" style="border: 1px solid rgba(192,57,43,0.35);">
+  <h2>Your plan renews in {{ current_user.days_until_expiry() }} day{{ 's' if current_user.days_until_expiry() != 1 else '' }}</h2>
+  <p class="muted" style="margin:8px 0 16px;">Crypto payments don't auto-renew — pay again before it lapses to keep uninterrupted access.</p>
+  <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Renew now</a>
 </div>
 {% endif %}
 

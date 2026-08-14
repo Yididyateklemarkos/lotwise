@@ -88,12 +88,41 @@ class User(UserMixin, db.Model):
         return self.verification_status == "approved"
 
     def is_active_member(self):
-        """Approved AND paid — full marketplace access. Admins always pass,
-        so you can see the site exactly as live members see it without
-        having to pay yourself."""
+        """Approved AND paid AND not expired — full marketplace access.
+        Admins always pass, so you can see the site exactly as live members
+        see it without having to pay yourself.
+        Crypto payments are one-time, not auto-recurring, so 'active' also
+        requires subscription_renews_at to still be in the future — once it
+        lapses, this flips to False on its own without a background job."""
         if self.is_admin:
             return True
-        return self.verification_status == "approved" and self.subscription_status == "active"
+        if self.verification_status != "approved" or self.subscription_status != "active":
+            return False
+        if self.subscription_renews_at and self.subscription_renews_at < datetime.utcnow():
+            return False
+        return True
+
+    def days_until_expiry(self):
+        """Whole days left on the current paid plan, or None if not on one."""
+        if not self.subscription_renews_at:
+            return None
+        delta = self.subscription_renews_at - datetime.utcnow()
+        return max(0, delta.days)
+
+    def is_expiring_soon(self, within_days=5):
+        days = self.days_until_expiry()
+        return days is not None and 0 <= days <= within_days
+
+    def sync_expiry(self):
+        """Flips subscription_status back to 'inactive' in the DB once the
+        30-day crypto payment window has actually passed. Cheap to call on
+        every gated request — just a datetime comparison — so status stays
+        accurate everywhere (admin views, dashboard) rather than only being
+        correct inside is_active_member()'s live check."""
+        if (self.subscription_status == "active" and self.subscription_renews_at
+                and self.subscription_renews_at < datetime.utcnow()):
+            self.subscription_status = "inactive"
+            db.session.commit()
 
     def to_public_dict(self):
         """Safe fields only — never expose contact info pre-connection."""

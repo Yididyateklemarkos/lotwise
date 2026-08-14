@@ -4,7 +4,7 @@ Run with: python app.py
 Visit: http://localhost:5000
 """
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_login import (LoginManager, login_user, logout_user, login_required,
                           current_user)
@@ -88,6 +88,7 @@ def member_required(view_func):
         if not current_user.is_verified():
             flash("Your application is still under review.", "warning")
             return redirect(url_for("dashboard"))
+        current_user.sync_expiry()
         if not current_user.is_active_member():
             flash("Choose a plan to activate full marketplace access.", "info")
             return redirect(url_for("billing_upgrade"))
@@ -266,6 +267,7 @@ def verification_upload():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    current_user.sync_expiry()
     if current_user.account_type == "supplier":
         items = Listing.query.filter_by(user_id=current_user.id).order_by(
             Listing.created_at.desc()).all()
@@ -587,8 +589,17 @@ def billing_webhook_nowpayments():
         if payment_status in ("finished", "confirmed"):
             order.status = "finished"
             user = order.user
+            # Crypto payments are one-time, not auto-recurring — extend 30
+            # days from now, or from the current expiry if they're renewing
+            # a still-active plan early (so early renewal doesn't cost them
+            # days).
+            now = datetime.utcnow()
+            base = user.subscription_renews_at if (
+                user.subscription_renews_at and user.subscription_renews_at > now
+            ) else now
             user.subscription_status = "active"
             user.subscription_tier = order.tier
+            user.subscription_renews_at = base + timedelta(days=30)
         elif payment_status in ("failed", "expired", "refunded"):
             order.status = "failed"
         db.session.commit()
