@@ -3,15 +3,15 @@
 {% block content %}
 
 <div class="dash-nav">
-  <a href="{{ url_for('dashboard') }}" class="active">Overview</a>
-  <a href="{{ url_for('browse') }}">Browse</a>
-  {% if current_user.account_type == 'supplier' %}
+  <a href="{{ url_for('browse') }}">Marketplace</a>
+  {% if current_user.account_type == 'supplier' or current_user.is_admin %}
     <a href="{{ url_for('new_listing') }}">New listing</a>
-  {% else %}
+  {% endif %}
+  {% if current_user.account_type == 'buyer' or current_user.is_admin %}
     <a href="{{ url_for('new_sourcing_request') }}">New sourcing request</a>
   {% endif %}
-  <a href="{{ url_for('billing_upgrade') }}">Plan &amp; billing</a>
   <a href="{{ url_for('track_record') }}">Track record</a>
+  <a href="{{ url_for('dashboard') }}" class="active">My account</a>
 </div>
 
 <div class="card-row" style="margin-bottom:28px;">
@@ -60,22 +60,39 @@
 </div>
 {% endif %}
 
+{% if current_user.verification_status == 'approved' and current_user.is_active_member() and not current_user.is_expiring_soon() %}
 <div class="card">
-  <h2>{{ 'Your listings' if current_user.account_type == 'supplier' else 'Your sourcing requests' }}</h2>
+  <div class="card-row">
+    <div>
+      <h2>Plan &amp; billing</h2>
+      <p class="muted" style="margin-top:6px;">
+        {{ current_user.subscription_tier|capitalize }} plan
+        {% if current_user.subscription_renews_at %} · renews by {{ current_user.subscription_renews_at.strftime('%b %-d, %Y') }}{% endif %}
+      </p>
+    </div>
+    <a href="{{ url_for('billing_upgrade') }}" class="btn btn-sm">Manage plan</a>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>{{ 'Your listings' if current_user.account_type == 'supplier' else 'Your sourcing requests' if current_user.account_type == 'buyer' else 'Your listings & requests' }}</h2>
   <p class="muted" style="margin:6px 0 16px;">
     {% if current_user.account_type == 'supplier' %}
       {{ items|length }} of {{ current_user.listing_limit() }} used on your {{ current_user.subscription_tier|capitalize }} plan.
-    {% else %}
+    {% elif current_user.account_type == 'buyer' %}
       {{ items|length }} active requests.
+    {% else %}
+      {{ items|length }} posted.
     {% endif %}
   </p>
   {% if items %}
   <table>
-    <tr><th></th><th>Title</th><th>Category</th><th>Qty (FCL)</th><th>Status</th>{% if current_user.account_type == 'supplier' %}<th></th>{% endif %}</tr>
+    <tr><th></th><th>Title</th><th>Category</th><th>Qty (FCL)</th><th>Status</th><th></th></tr>
     {% for item in items %}
     <tr>
       <td>
-        {% if current_user.account_type == 'supplier' and item.photos %}
+        {% if item.photos %}
         <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;" alt="">
         {% endif %}
       </td>
@@ -83,17 +100,17 @@
       <td>{{ item.category }}</td>
       <td>{{ item.quantity_fcl }}</td>
       <td>
-        {% if current_user.account_type == 'supplier' and item.is_sold %}Sold
+        {% if item.is_sold is defined and item.is_sold %}Sold
         {% else %}{{ 'Active' if item.is_active else 'Inactive' }}{% if item.is_urgent %} · Urgent{% endif %}
         {% endif %}
       </td>
-      {% if current_user.account_type == 'supplier' %}
       <td>
+        {% if item.is_sold is defined %}
         <form method="POST" action="{{ url_for('toggle_sold', listing_id=item.id) }}">
           <button type="submit" class="btn btn-sm">{{ 'Mark available' if item.is_sold else 'Mark sold' }}</button>
         </form>
+        {% endif %}
       </td>
-      {% endif %}
     </tr>
     {% endfor %}
   </table>

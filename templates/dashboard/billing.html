@@ -13,11 +13,19 @@
 
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px;">
   {% for tier, price in prices.items() %}
-  <div class="card">
+  <div class="card" style="display:flex; flex-direction:column;">
     <div class="muted">{{ tier|capitalize }}</div>
-    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ price }}/mo</div>
+    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ price }}<span style="font-size:15px; font-weight:400;">/mo</span></div>
+    <ul style="list-style:none; padding:0; margin:12px 0 20px; flex:1;">
+      {% for feature in features.get(tier, []) %}
+      <li style="display:flex; gap:8px; align-items:flex-start; margin-bottom:10px; font-size:13px;">
+        <span style="color:var(--ok); flex-shrink:0;">✓</span>
+        <span>{{ feature }}</span>
+      </li>
+      {% endfor %}
+    </ul>
     <a href="{{ url_for('billing_pay', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">
-      {% if current_user.subscription_tier == tier and current_user.subscription_status == 'active' %}Current plan{% else %}Choose {{ tier|capitalize }}{% endif %}
+      {% if current_user.subscription_tier == tier and current_user.subscription_status == 'active' %}Current plan — renew{% else %}Choose {{ tier|capitalize }}{% endif %}
     </a>
   </div>
   {% endfor %}

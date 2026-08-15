@@ -4,7 +4,7 @@
 <div style="max-width:520px;">
   <h1>New sourcing request</h1>
   <p class="muted" style="margin-bottom:24px;">Let verified suppliers know what you're looking for.</p>
-  <form class="stacked" method="POST">
+  <form class="stacked" method="POST" enctype="multipart/form-data">
     <label>Category</label>
     <select name="category" required>
       <option>Minerals</option>
@@ -21,6 +21,9 @@
     <input type="number" name="quantity_fcl" min="1" required>
     <label>Target price note (optional)</label>
     <input type="text" name="target_price_note" placeholder="e.g. Budget range, per-unit target">
+    <label>Reference photos (optional)</label>
+    <input type="file" name="photos" accept=".png,.jpg,.jpeg" multiple>
+    <div class="hint">Up to 6 photos — a sample or reference of exactly what you're after.</div>
     <div class="checkbox-row">
       <input type="checkbox" name="is_urgent" id="urgent" {% if current_user.subscription_tier == 'standard' %}disabled{% endif %}>
       <label for="urgent">Flag as urgent {% if current_user.subscription_tier == 'standard' %}(Plus/Premium only){% endif %}</label>

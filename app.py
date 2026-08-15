@@ -11,8 +11,9 @@ from flask_login import (LoginManager, login_user, logout_user, login_required,
 from werkzeug.utils import secure_filename
 
 from models import (db, User, VerificationDocument, Listing, ListingPhoto, SourcingRequest,
-                     Inquiry, Connection, Message, TrackRecordEntry, PaymentOrder,
-                     TIER_LISTING_LIMITS, TIER_PRICE_USD, BUYER_TIER_PRICE_USD)
+                     SourcingRequestPhoto, Inquiry, Connection, Message, TrackRecordEntry, PaymentOrder,
+                     TIER_LISTING_LIMITS, TIER_PRICE_USD, BUYER_TIER_PRICE_USD,
+                     SUPPLIER_TIER_FEATURES, BUYER_TIER_FEATURES)
 import nowpayments
 import uuid
 
@@ -108,14 +109,9 @@ def home():
         "volume_usd": "150M+",
     }
     if current_user.is_authenticated and current_user.is_active_member():
-        # Logged-in, active members get the marketplace view, not the pitch.
-        trending_listings = Listing.query.filter_by(is_active=True, is_sold=False).order_by(
-            Listing.is_urgent.desc(), Listing.created_at.desc()).limit(9).all()
-        trending_requests = SourcingRequest.query.filter_by(is_active=True).order_by(
-            SourcingRequest.is_urgent.desc(), SourcingRequest.created_at.desc()).limit(9).all()
-        return render_template("public/home_member.html", stats=stats,
-                                trending_listings=trending_listings,
-                                trending_requests=trending_requests)
+        # Logged-in, active members land straight on the real marketplace —
+        # not a separate trending preview.
+        return redirect(url_for("browse"))
 
     sample_listings = Listing.query.filter_by(is_active=True, is_sold=False).order_by(
         Listing.created_at.desc()).limit(3).all()
@@ -279,7 +275,11 @@ def verification_upload():
 @login_required
 def dashboard():
     current_user.sync_expiry()
-    if current_user.account_type == "supplier":
+    if current_user.is_admin:
+        items = (Listing.query.filter_by(user_id=current_user.id).all() +
+                 SourcingRequest.query.filter_by(user_id=current_user.id).all())
+        items.sort(key=lambda x: x.created_at, reverse=True)
+    elif current_user.account_type == "supplier":
         items = Listing.query.filter_by(user_id=current_user.id).order_by(
             Listing.created_at.desc()).all()
     else:
@@ -296,7 +296,7 @@ def dashboard():
 @app.route("/dashboard/listings/new", methods=["GET", "POST"])
 @member_required
 def new_listing():
-    if current_user.account_type != "supplier":
+    if current_user.account_type != "supplier" and not current_user.is_admin:
         abort(403)
     if not current_user.can_create_listing():
         flash(f"You've reached your plan's limit of {current_user.listing_limit()} listings. Upgrade to add more.", "warning")
@@ -377,8 +377,12 @@ def track_record():
 @app.route("/dashboard/requests/new", methods=["GET", "POST"])
 @member_required
 def new_sourcing_request():
-    if current_user.account_type != "buyer":
+    if current_user.account_type != "buyer" and not current_user.is_admin:
         abort(403)
+
+    if not current_user.can_create_request() and not current_user.is_admin:
+        flash(f"You've reached your plan's limit of {current_user.listing_limit()} active requests. Upgrade to add more.", "warning")
+        return redirect(url_for("billing_upgrade"))
 
     if request.method == "POST":
         req = SourcingRequest(
@@ -391,35 +395,84 @@ def new_sourcing_request():
             is_urgent=bool(request.form.get("is_urgent")) and current_user.subscription_tier != "standard",
         )
         db.session.add(req)
+        db.session.flush()
+
+        photos = request.files.getlist("photos")[:6]
+        for photo in photos:
+            if photo and photo.filename and allowed_file(photo.filename):
+                filename = secure_filename(f"request_{req.id}_{uuid.uuid4().hex[:8]}_{photo.filename}")
+                photo.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                db.session.add(SourcingRequestPhoto(sourcing_request_id=req.id, file_path=filename))
+
         db.session.commit()
         flash("Sourcing request posted.", "success")
         return redirect(url_for("dashboard"))
 
-    return render_template("dashboard/new_request.html")
+    return render_template("dashboard/new_request.html", limit=current_user.listing_limit())
 
 
 # ---------------------------------------------------------------------------
-# Browse (verified users only — nothing public per platform policy)
+# Marketplace (verified + paid members only — one shared feed for everyone)
 # ---------------------------------------------------------------------------
+MARKETPLACE_CATEGORIES = ["Minerals", "Agriculture", "Chemicals", "Construction materials", "Other bulk goods"]
+
+
 @app.route("/browse")
 @member_required
 def browse():
-    if current_user.account_type == "buyer":
-        items = Listing.query.filter_by(is_active=True, is_sold=False).order_by(
-            Listing.is_urgent.desc(), Listing.created_at.desc()).all()
-        return render_template("dashboard/browse_listings.html", items=items)
-    else:
-        items = SourcingRequest.query.filter_by(is_active=True).order_by(
-            SourcingRequest.is_urgent.desc(), SourcingRequest.created_at.desc()).all()
-        return render_template("dashboard/browse_requests.html", items=items)
+    q = request.args.get("q", "").strip()
+    category = request.args.get("category", "").strip()
+    item_type = request.args.get("type", "all").strip()  # all / listings / requests
+
+    listings = []
+    requests_ = []
+
+    if item_type in ("all", "listings"):
+        query = Listing.query.filter_by(is_active=True, is_sold=False)
+        if category:
+            query = query.filter_by(category=category)
+        if q:
+            like = f"%{q}%"
+            query = query.filter(db.or_(Listing.title.ilike(like), Listing.description.ilike(like)))
+        listings = query.order_by(Listing.is_urgent.desc(), Listing.created_at.desc()).all()
+
+    if item_type in ("all", "requests"):
+        query = SourcingRequest.query.filter_by(is_active=True)
+        if category:
+            query = query.filter_by(category=category)
+        if q:
+            like = f"%{q}%"
+            query = query.filter(db.or_(SourcingRequest.title.ilike(like), SourcingRequest.description.ilike(like)))
+        requests_ = query.order_by(SourcingRequest.is_urgent.desc(), SourcingRequest.created_at.desc()).all()
+
+    # Merge into one feed, newest/urgent first, tagged by type so the
+    # template knows which card layout and action button to use.
+    feed = (
+        [{"kind": "listing", "item": item} for item in listings] +
+        [{"kind": "request", "item": item} for item in requests_]
+    )
+    feed.sort(key=lambda x: (not x["item"].is_urgent, x["item"].created_at), reverse=True)
+
+    stats = {
+        "active_listings": Listing.query.filter_by(is_active=True, is_sold=False).count(),
+        "active_requests": SourcingRequest.query.filter_by(is_active=True).count(),
+        "verified_traders": User.query.filter_by(verification_status="approved").count(),
+        "connections_made": Connection.query.count(),
+    }
+
+    return render_template(
+        "dashboard/marketplace.html",
+        feed=feed, q=q, category=category, item_type=item_type,
+        categories=MARKETPLACE_CATEGORIES, stats=stats,
+    )
 
 
 @app.route("/listing/<int:listing_id>/inquire", methods=["POST"])
 @member_required
 def inquire(listing_id):
-    if current_user.account_type != "buyer":
-        abort(403)
     listing = Listing.query.get_or_404(listing_id)
+    if listing.user_id == current_user.id:
+        abort(403)  # can't inquire on your own listing
 
     inquiry = Inquiry(listing_id=listing.id, buyer_id=current_user.id,
                        message=request.form.get("message", ""))
@@ -433,6 +486,30 @@ def inquire(listing_id):
     db.session.commit()
 
     flash("Inquiry sent — you now have this supplier's contact info in the connection thread.", "success")
+    return redirect(url_for("connection_thread", connection_id=connection.id))
+
+
+@app.route("/request/<int:request_id>/respond", methods=["POST"])
+@member_required
+def respond_to_request(request_id):
+    """Mirror of inquire(), but for a supplier responding to a buyer's
+    sourcing request instead of a buyer inquiring on a listing."""
+    req = SourcingRequest.query.get_or_404(request_id)
+    if req.user_id == current_user.id:
+        abort(403)  # can't respond to your own request
+
+    inquiry = Inquiry(sourcing_request_id=req.id, buyer_id=current_user.id,
+                       message=request.form.get("message", ""))
+    db.session.add(inquiry)
+    db.session.flush()
+
+    # Here current_user is the supplier responding; req.user_id is the buyer.
+    connection = Connection(inquiry_id=inquiry.id, supplier_id=current_user.id,
+                             buyer_id=req.user_id)
+    db.session.add(connection)
+    db.session.commit()
+
+    flash("Response sent — you now have this buyer's contact info in the connection thread.", "success")
     return redirect(url_for("connection_thread", connection_id=connection.id))
 
 
@@ -501,10 +578,13 @@ def report_connection(connection_id):
 def billing_upgrade():
     """Shows the 3 tier options for this account type. Choosing one goes to
     the payment-method page, not straight to a checkout."""
-    prices = TIER_PRICE_USD if current_user.account_type == "supplier" else BUYER_TIER_PRICE_USD
+    is_buyer = current_user.account_type == "buyer" and not current_user.is_admin
+    prices = BUYER_TIER_PRICE_USD if is_buyer else TIER_PRICE_USD
+    features = BUYER_TIER_FEATURES if is_buyer else SUPPLIER_TIER_FEATURES
     return render_template(
         "dashboard/billing.html",
         prices=prices,
+        features=features,
     )
 
 

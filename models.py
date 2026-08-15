@@ -24,6 +24,48 @@ TIER_LISTING_LIMITS = {"standard": 3, "plus": 7, "premium": 999}
 TIER_PRICE_USD = {"standard": 39, "plus": 79, "premium": 139}
 BUYER_TIER_PRICE_USD = {"standard": 39, "plus": 79, "premium": 139}
 
+SUPPLIER_TIER_FEATURES = {
+    "standard": [
+        "Up to 3 active listings",
+        "Full marketplace access — browse every listing and sourcing request",
+        "Direct contact info exchange on every matched connection",
+        "Track record profile",
+    ],
+    "plus": [
+        "Up to 7 active listings",
+        "Everything in Standard",
+        "Urgent-sale flag on your listings (priority placement)",
+        "Priority tier grade eligibility (B and above)",
+    ],
+    "premium": [
+        "Unlimited active listings",
+        "Everything in Plus",
+        "Top placement across the marketplace",
+        "Priority tier grade eligibility (A)",
+    ],
+}
+
+BUYER_TIER_FEATURES = {
+    "standard": [
+        "Up to 3 active sourcing requests",
+        "Full marketplace access — browse every listing and sourcing request",
+        "Direct contact info exchange on every matched connection",
+        "Track record profile",
+    ],
+    "plus": [
+        "Up to 7 active sourcing requests",
+        "Everything in Standard",
+        "Urgent-need flag on your requests (priority placement)",
+        "Priority tier grade eligibility (B and above)",
+    ],
+    "premium": [
+        "Unlimited active sourcing requests",
+        "Everything in Plus",
+        "Top placement across the marketplace",
+        "Priority tier grade eligibility (A)",
+    ],
+}
+
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -80,6 +122,10 @@ class User(UserMixin, db.Model):
 
     def can_create_listing(self):
         active_count = Listing.query.filter_by(user_id=self.id, is_active=True).count()
+        return active_count < self.listing_limit()
+
+    def can_create_request(self):
+        active_count = SourcingRequest.query.filter_by(user_id=self.id, is_active=True).count()
         return active_count < self.listing_limit()
 
     def is_verified(self):
@@ -239,19 +285,42 @@ class SourcingRequest(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    photos = db.relationship("SourcingRequestPhoto", backref="sourcing_request", lazy=True,
+                              order_by="SourcingRequestPhoto.created_at",
+                              cascade="all, delete-orphan")
+
+
+class SourcingRequestPhoto(db.Model):
+    """One of several reference photos attached to a buyer's sourcing request
+    (e.g. a sample of the exact product/spec they're after)."""
+    __tablename__ = "sourcing_request_photos"
+
+    id = db.Column(db.Integer, primary_key=True)
+    sourcing_request_id = db.Column(db.Integer, db.ForeignKey("sourcing_requests.id"), nullable=False)
+    file_path = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class Inquiry(db.Model):
-    """A buyer's inquiry against a listing. Triggers an in-platform connection
-    once the buyer is verified — no contact info is ever exposed by the platform."""
+    """A contact attempt between a buyer and supplier, triggered from either
+    side: a buyer inquiring on a listing, or a supplier responding to a
+    sourcing request. Exactly one of listing_id/sourcing_request_id is set.
+    Triggers an in-platform connection once both are verified — no contact
+    info is ever exposed by the platform outside that connection."""
     __tablename__ = "inquiries"
 
     id = db.Column(db.Integer, primary_key=True)
-    listing_id = db.Column(db.Integer, db.ForeignKey("listings.id"), nullable=False)
+    listing_id = db.Column(db.Integer, db.ForeignKey("listings.id"), nullable=True)
+    sourcing_request_id = db.Column(db.Integer, db.ForeignKey("sourcing_requests.id"), nullable=True)
+    # "from_user" is whoever initiated contact — the buyer (on a listing) or
+    # the supplier (on a sourcing request). Kept as buyer_id for backward
+    # compatibility with existing data/columns.
     buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     message = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    sourcing_request = db.relationship("SourcingRequest", backref="inquiries", lazy=True)
     connection = db.relationship("Connection", backref="inquiry", uselist=False)
 
 
