@@ -20,6 +20,7 @@
 
     <label>Email</label>
     <input type="email" name="email" required>
+    <p class="hint">⚠️ We have no way to verify or reset this later — there's no email confirmation step. Double-check it's correct: it's the only way we can reach you about your account, verification, or payments.</p>
 
     <label>Password</label>
     <input type="password" name="password" required minlength="8">
@@ -33,6 +34,11 @@
       <input type="text" name="contact_value" placeholder="Number or @handle" required class="contact-value">
     </div>
     <p class="hint">Only shared with a match after you've both connected on a listing.</p>
+
+    <label style="display:flex; align-items:flex-start; gap:8px; margin-top:16px; font-weight:400;">
+      <input type="checkbox" name="agree_terms" required style="margin-top:3px;">
+      <span>I confirm the email above is correct and understand it's my only way to be contacted, and I agree to the <a href="{{ url_for('terms') }}" target="_blank" style="text-decoration:underline;">Terms of Service</a> and <a href="{{ url_for('refunds') }}" target="_blank" style="text-decoration:underline;">Refund Policy</a>.</span>
+    </label>
 
     <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Create account</button>
   </form>

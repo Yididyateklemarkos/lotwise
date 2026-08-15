@@ -167,6 +167,7 @@ def signup():
         country = request.form.get("country", "").strip()
         contact_method = request.form.get("contact_method", "").strip()
         contact_value = request.form.get("contact_value", "").strip()
+        agree_terms = request.form.get("agree_terms")
 
         if not email or not password or not company_name or account_type not in ("supplier", "buyer"):
             flash("Please fill in all required fields.", "error")
@@ -174,6 +175,10 @@ def signup():
 
         if not contact_method or not contact_value:
             flash("Please provide a WhatsApp or Telegram number so verified matches can reach you.", "error")
+            return redirect(url_for("signup"))
+
+        if not agree_terms:
+            flash("Please confirm your email is correct and agree to the Terms of Service to continue.", "error")
             return redirect(url_for("signup"))
 
         if User.query.filter_by(email=email).first():
@@ -242,6 +247,12 @@ def verification_upload():
     if request.method == "POST":
         doc_type = request.form.get("doc_type")
         file = request.files.get("document")
+        agree_terms = request.form.get("agree_terms")
+
+        if not agree_terms:
+            flash("Please confirm the document is accurate and agree to the Terms of Service before submitting.", "error")
+            return redirect(url_for("verification_upload"))
+
         if not file or not allowed_file(file.filename):
             flash("Please upload a valid PDF or image file.", "error")
             return redirect(url_for("verification_upload"))
