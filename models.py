@@ -101,6 +101,8 @@ class User(UserMixin, db.Model):
     last_activity_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     is_admin = db.Column(db.Boolean, default=False)
+    payment_exempt = db.Column(db.Boolean, default=False)  # admin-granted bypass, ignores plan/expiry
+    profile_photo_path = db.Column(db.String(500))
 
     listings = db.relationship("Listing", backref="owner", lazy=True,
                                 foreign_keys="Listing.user_id")
@@ -136,13 +138,19 @@ class User(UserMixin, db.Model):
     def is_active_member(self):
         """Approved AND paid AND not expired — full marketplace access.
         Admins always pass, so you can see the site exactly as live members
-        see it without having to pay yourself.
+        see it without having to pay yourself. payment_exempt users skip
+        only the payment/expiry check (an admin-granted comp), but still
+        need to be verified like anyone else.
         Crypto payments are one-time, not auto-recurring, so 'active' also
         requires subscription_renews_at to still be in the future — once it
         lapses, this flips to False on its own without a background job."""
         if self.is_admin:
             return True
-        if self.verification_status != "approved" or self.subscription_status != "active":
+        if self.verification_status != "approved":
+            return False
+        if self.payment_exempt:
+            return True
+        if self.subscription_status != "active":
             return False
         if self.subscription_renews_at and self.subscription_renews_at < datetime.utcnow():
             return False

@@ -1,30 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Marketplace — Lotwise{% endblock %}
+{% block title %}Browse — Lotwise{% endblock %}
 
 {% block content %}
-<h1>Marketplace</h1>
-<p class="muted" style="margin-bottom:20px;">Every listing and sourcing request from verified traders across the platform, in one place.</p>
+<h1>Browse</h1>
+<p class="muted" style="margin-bottom:24px;">Every listing and sourcing request from verified traders across the platform, in one place.</p>
 
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px;">
-  <div class="card" style="padding:16px; text-align:center; margin-bottom:0;">
-    <div style="font-size:22px; font-weight:700;">{{ stats.active_listings }}</div>
-    <div class="muted" style="font-size:12px;">Active listings</div>
-  </div>
-  <div class="card" style="padding:16px; text-align:center; margin-bottom:0;">
-    <div style="font-size:22px; font-weight:700;">{{ stats.active_requests }}</div>
-    <div class="muted" style="font-size:12px;">Active requests</div>
-  </div>
-  <div class="card" style="padding:16px; text-align:center; margin-bottom:0;">
-    <div style="font-size:22px; font-weight:700;">{{ stats.verified_traders }}</div>
-    <div class="muted" style="font-size:12px;">Verified traders</div>
-  </div>
-  <div class="card" style="padding:16px; text-align:center; margin-bottom:0;">
-    <div style="font-size:22px; font-weight:700;">{{ stats.connections_made }}</div>
-    <div class="muted" style="font-size:12px;">Connections made</div>
-  </div>
-</div>
-
-<form method="GET" action="{{ url_for('browse') }}" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px;">
+<form method="GET" action="{{ url_for('browse') }}" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px;">
   <input type="text" name="q" value="{{ q }}" placeholder="Search titles and descriptions..." style="flex:1; min-width:220px; padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg);">
   <select name="category" style="padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg);">
     <option value="">All categories</option>
@@ -43,51 +24,53 @@
   {% endif %}
 </form>
 
+<div class="browse-grid">
 {% for entry in feed %}
 {% set item = entry.item %}
-<div class="card">
-  <div style="display:flex; gap:16px;">
-    {% if item.photos %}
-    <div style="display:flex; gap:6px; flex-shrink:0;">
-      {% for photo in item.photos[:3] %}
-      <img src="{{ url_for('static', filename='uploads/' + photo.file_path) }}" style="width:72px; height:72px; object-fit:cover; border-radius:8px;" alt="{{ item.title }}">
-      {% endfor %}
-    </div>
-    {% endif %}
-    <div style="flex:1;">
-      <div class="muted" style="font-size:12px;">
-        {% if entry.kind == 'listing' %}<span class="pill" style="background:rgba(30,132,73,0.14); color:var(--ok);">Listing</span>{% else %}<span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Sourcing request</span>{% endif %}
-        &nbsp;{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}
-      </div>
-      <h2 style="font-size:18px; margin:6px 0;">{{ item.title }}</h2>
-      {% if item.description %}<p class="muted" style="font-size:14px; margin-bottom:8px;">{{ item.description[:160] }}{% if item.description|length > 160 %}…{% endif %}</p>{% endif %}
-      <div class="muted" style="font-size:13px;">
-        {{ item.quantity_fcl }} FCL
-        {% if entry.kind == 'listing' and item.origin_country %} · {{ item.origin_country }}{% endif %}
-        {% if entry.kind == 'listing' and item.grade_spec %} · {{ item.grade_spec }}{% endif %}
-        {% if entry.kind == 'request' and item.target_price_note %} · {{ item.target_price_note }}{% endif %}
-        · {{ item.owner.company_name }}
-      </div>
+<div class="card browse-card">
+  {% if item.photos %}
+  <div class="browse-thumb">
+    <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" alt="{{ item.title }}">
+  </div>
+  {% else %}
+  <div class="browse-thumb browse-thumb-empty">
+    <span>{{ item.category }}</span>
+  </div>
+  {% endif %}
 
-      {% if entry.kind == 'listing' and item.user_id != current_user.id %}
-      <form method="POST" action="{{ url_for('inquire', listing_id=item.id) }}" style="margin-top:12px; display:flex; gap:8px;">
-        <input type="text" name="message" placeholder="Optional message..." style="flex:1; padding:8px 12px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:13px;">
-        <button type="submit" class="btn btn-solid btn-sm">Send inquiry</button>
-      </form>
-      {% elif entry.kind == 'request' and item.user_id != current_user.id %}
-      <form method="POST" action="{{ url_for('respond_to_request', request_id=item.id) }}" style="margin-top:12px; display:flex; gap:8px;">
-        <input type="text" name="message" placeholder="Optional message..." style="flex:1; padding:8px 12px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:13px;">
-        <button type="submit" class="btn btn-solid btn-sm">I can supply this</button>
-      </form>
-      {% else %}
-      <div class="hint" style="margin-top:10px;">This is your own {{ 'listing' if entry.kind == 'listing' else 'request' }}.</div>
-      {% endif %}
+  <div style="padding:16px;">
+    <div class="muted" style="font-size:12px; margin-bottom:6px;">
+      {% if entry.kind == 'listing' %}<span class="pill" style="background:rgba(30,132,73,0.14); color:var(--ok);">Listing</span>{% else %}<span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Sourcing request</span>{% endif %}
+      &nbsp;{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}
     </div>
+    <h2 style="font-size:17px; margin:0 0 6px;">{{ item.title }}</h2>
+    {% if item.description %}<p class="muted" style="font-size:13px; margin-bottom:10px;">{{ item.description[:110] }}{% if item.description|length > 110 %}…{% endif %}</p>{% endif %}
+    <div class="muted" style="font-size:12px; margin-bottom:12px;">
+      {{ item.quantity_fcl }} FCL
+      {% if entry.kind == 'listing' and item.origin_country %} · {{ item.origin_country }}{% endif %}
+      {% if entry.kind == 'request' and item.target_price_note %} · {{ item.target_price_note }}{% endif %}
+      · {{ item.owner.company_name }}
+    </div>
+
+    {% if entry.kind == 'listing' and item.user_id != current_user.id %}
+    <form method="POST" action="{{ url_for('inquire', listing_id=item.id) }}" style="display:flex; gap:8px;">
+      <input type="text" name="message" placeholder="Optional message..." style="flex:1; min-width:0; padding:8px 10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:12px;">
+      <button type="submit" class="btn btn-solid btn-sm">Inquire</button>
+    </form>
+    {% elif entry.kind == 'request' and item.user_id != current_user.id %}
+    <form method="POST" action="{{ url_for('respond_to_request', request_id=item.id) }}" style="display:flex; gap:8px;">
+      <input type="text" name="message" placeholder="Optional message..." style="flex:1; min-width:0; padding:8px 10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:12px;">
+      <button type="submit" class="btn btn-solid btn-sm">I can supply</button>
+    </form>
+    {% else %}
+    <div class="hint">This is your own {{ 'listing' if entry.kind == 'listing' else 'request' }}.</div>
+    {% endif %}
   </div>
 </div>
 {% else %}
-<div class="card" style="text-align:center; padding:40px;">
+<div class="card" style="text-align:center; padding:40px; grid-column: 1 / -1;">
   <p class="muted">No results match your search.</p>
 </div>
 {% endfor %}
+</div>
 {% endblock %}

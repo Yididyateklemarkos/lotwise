@@ -6,6 +6,17 @@
 <p class="muted" style="margin-bottom:24px;">{{ user.account_type|capitalize }} · {{ user.country or '—' }} · {{ user.email }} · Applied {{ user.created_at.strftime('%b %d, %Y') }}</p>
 
 <div class="card">
+  <h2>Contact &amp; plan</h2>
+  <p class="muted" style="margin-top:8px;">Contact: {{ user.contact_method|capitalize if user.contact_method else "—" }} {{ user.contact_value or "" }}</p>
+  <p class="muted" style="margin-top:4px;">Plan: {{ user.subscription_tier|capitalize }} · {{ user.subscription_status }}{% if user.subscription_renews_at %} · renews {{ user.subscription_renews_at.strftime('%b %-d, %Y') }}{% endif %}</p>
+  {% if not user.is_admin %}
+  <form method="POST" action="{{ url_for('admin_toggle_payment_exempt', user_id=user.id) }}" style="margin-top:12px;">
+    <button type="submit" class="btn btn-sm">{{ 'Remove payment bypass' if user.payment_exempt else 'Bypass payment for this account' }}</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="card">
   <h2>Submitted documents</h2>
   {% for doc in user.documents %}
   <div style="display:flex; justify-content:space-between; padding:10px 0; border-top:1px solid var(--line);">

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Admin — All users{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('admin_dashboard') }}">Verification queue</a>
+  <a href="{{ url_for('admin_users') }}" class="active">All users</a>
+  <a href="{{ url_for('admin_listings') }}">Listings</a>
+  <a href="{{ url_for('admin_requests') }}">Sourcing requests</a>
+  <a href="{{ url_for('admin_connections') }}">Connections</a>
+</div>
+
+<h1>All users ({{ users|length }})</h1>
+<p class="muted" style="margin-bottom:24px;">Contact info is normally only revealed to matched connections — visible here for admin support purposes.</p>
+
+{% for u in users %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <div class="card-row" style="gap:8px; justify-content:flex-start;">
+        <strong>{{ u.company_name }}</strong>
+        {% if u.is_admin %}<span class="pill" style="background:rgba(28,28,30,0.1);">Admin</span>{% endif %}
+        {% if u.verification_status == 'approved' %}<span class="pill pill-approved">Verified</span>
+        {% elif u.verification_status == 'pending' %}<span class="pill pill-pending">Pending</span>
+        {% else %}<span class="pill pill-disapproved">Disapproved</span>{% endif %}
+        {% if u.payment_exempt %}<span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Payment exempt</span>{% endif %}
+      </div>
+      <div class="muted" style="font-size:13px; margin-top:6px;">
+        {{ u.account_type|capitalize }} · {{ u.country or "—" }} · {{ u.email }}
+      </div>
+      <div class="muted" style="font-size:13px; margin-top:2px;">
+        Contact: {{ u.contact_method|capitalize if u.contact_method else "—" }} {{ u.contact_value or "" }}
+      </div>
+      <div class="muted" style="font-size:13px; margin-top:2px;">
+        Plan: {{ u.subscription_tier|capitalize }} · {{ u.subscription_status }}
+        {% if u.subscription_renews_at %} · renews {{ u.subscription_renews_at.strftime('%b %-d, %Y') }}{% endif %}
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+      <a href="{{ url_for('admin_user_detail', user_id=u.id) }}" class="btn btn-sm">Review</a>
+      {% if not u.is_admin %}
+      <form method="POST" action="{{ url_for('admin_toggle_payment_exempt', user_id=u.id) }}">
+        <button type="submit" class="btn btn-sm">{{ 'Remove payment bypass' if u.payment_exempt else 'Bypass payment' }}</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

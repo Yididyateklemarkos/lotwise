@@ -2,6 +2,7 @@
 {% block title %}Admin — Sourcing requests{% endblock %}
 {% block content %}
 <div class="dash-nav">
+  <a href="{{ url_for('admin_users') }}">All users</a>
   <a href="{{ url_for('admin_dashboard') }}">Verification queue</a>
   <a href="{{ url_for('admin_listings') }}">Listings</a>
   <a href="{{ url_for('admin_requests') }}" class="active">Sourcing requests</a>

@@ -128,6 +128,11 @@ def faq():
     return render_template("public/faq.html")
 
 
+@app.route("/contact")
+def contact():
+    return render_template("public/contact.html")
+
+
 @app.route("/pricing")
 def pricing():
     return render_template("public/pricing.html",
@@ -293,6 +298,28 @@ def dashboard():
     return render_template("dashboard/index.html", items=items, connections=connections)
 
 
+@app.route("/account/photo", methods=["POST"])
+@login_required
+def update_profile_photo():
+    photo = request.files.get("photo")
+    if not photo or not photo.filename or not allowed_file(photo.filename):
+        flash("Please choose a PNG or JPG image.", "error")
+        return redirect(url_for("dashboard"))
+
+    # Remove the old photo file if there was one, so we don't accumulate orphans.
+    if current_user.profile_photo_path:
+        old_path = os.path.join(app.config["UPLOAD_FOLDER"], current_user.profile_photo_path)
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
+    filename = secure_filename(f"profile_{current_user.id}_{uuid.uuid4().hex[:8]}_{photo.filename}")
+    photo.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+    current_user.profile_photo_path = filename
+    db.session.commit()
+    flash("Profile photo updated.", "success")
+    return redirect(request.referrer or url_for("dashboard"))
+
+
 @app.route("/dashboard/listings/new", methods=["GET", "POST"])
 @member_required
 def new_listing():
@@ -453,17 +480,10 @@ def browse():
     )
     feed.sort(key=lambda x: (not x["item"].is_urgent, x["item"].created_at), reverse=True)
 
-    stats = {
-        "active_listings": Listing.query.filter_by(is_active=True, is_sold=False).count(),
-        "active_requests": SourcingRequest.query.filter_by(is_active=True).count(),
-        "verified_traders": User.query.filter_by(verification_status="approved").count(),
-        "connections_made": Connection.query.count(),
-    }
-
     return render_template(
         "dashboard/marketplace.html",
         feed=feed, q=q, category=category, item_type=item_type,
-        categories=MARKETPLACE_CATEGORIES, stats=stats,
+        categories=MARKETPLACE_CATEGORIES,
     )
 
 
@@ -764,6 +784,25 @@ def admin_disapprove(user_id):
     db.session.commit()
     flash(f"{user.company_name} disapproved.", "info")
     return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/users")
+@admin_required
+def admin_users():
+    """Every user, with contact info visible and a payment-bypass toggle —
+    separate from the pending-review queue on the main admin dashboard."""
+    users = User.query.order_by(User.created_at.desc()).all()
+    return render_template("admin/users.html", users=users)
+
+
+@app.route("/admin/user/<int:user_id>/toggle-payment-exempt", methods=["POST"])
+@admin_required
+def admin_toggle_payment_exempt(user_id):
+    user = User.query.get_or_404(user_id)
+    user.payment_exempt = not user.payment_exempt
+    db.session.commit()
+    flash(f"{user.company_name} {'now bypasses payment' if user.payment_exempt else 'no longer bypasses payment'}.", "info")
+    return redirect(request.referrer or url_for("admin_users"))
 
 
 # ---------------------------------------------------------------------------
