@@ -902,6 +902,31 @@ def setup_admin():
     return f"{email} is now an admin. You can remove SETUP_ADMIN_KEY from your environment variables now."
 
 
+@app.route("/setup-migrate")
+def setup_migrate():
+    """One-time browser-based schema fix for hosts without shell access
+    (e.g. Render's free tier) — same pattern and same secret key as
+    /setup-admin. Makes listings.id nullable on inquiries so a supplier can
+    respond to a sourcing request (which has no listing_id) without hitting
+    a NOT NULL constraint from before this feature existed.
+    Safe to reload — running it again on an already-migrated DB is a no-op."""
+    setup_key = os.environ.get("SETUP_ADMIN_KEY", "")
+    if not setup_key:
+        abort(404)
+    if request.args.get("key", "") != setup_key:
+        abort(403)
+
+    from sqlalchemy import text
+    try:
+        db.session.execute(text("ALTER TABLE inquiries ALTER COLUMN listing_id DROP NOT NULL"))
+        db.session.execute(text("ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS sourcing_request_id INTEGER REFERENCES sourcing_requests(id)"))
+        db.session.commit()
+        return "Migration applied: inquiries.listing_id is now nullable, sourcing_request_id column confirmed present."
+    except Exception as e:
+        db.session.rollback()
+        return f"Migration failed or already applied: {e}", 500
+
+
 @app.cli.command("create-admin")
 def create_admin():
     email = input("Admin email: ").strip().lower()
