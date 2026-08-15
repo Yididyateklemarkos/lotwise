@@ -258,6 +258,17 @@ class ListingPhoto(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+class ContactMessage(db.Model):
+    """A message submitted via the Contact us page. No email service is
+    configured, so these are stored for admin to review directly."""
+    __tablename__ = "contact_messages"
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class TrackRecordEntry(db.Model):
     """A supplier or buyer's self-reported past deal, shown as proof of
     performance on their profile. Optional supporting document."""

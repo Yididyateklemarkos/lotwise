@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 
 from models import (db, User, VerificationDocument, Listing, ListingPhoto, SourcingRequest,
                      SourcingRequestPhoto, Inquiry, Connection, Message, TrackRecordEntry, PaymentOrder,
-                     TIER_LISTING_LIMITS, TIER_PRICE_USD, BUYER_TIER_PRICE_USD,
+                     ContactMessage, TIER_LISTING_LIMITS, TIER_PRICE_USD, BUYER_TIER_PRICE_USD,
                      SUPPLIER_TIER_FEATURES, BUYER_TIER_FEATURES)
 import nowpayments
 import uuid
@@ -128,9 +128,19 @@ def faq():
     return render_template("public/faq.html")
 
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
-    return render_template("public/contact.html")
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        message = request.form.get("message", "").strip()
+        if not email or not message:
+            flash("Please fill in both your email and a message.", "error")
+            return redirect(url_for("contact"))
+        db.session.add(ContactMessage(email=email, message=message))
+        db.session.commit()
+        flash("Message sent — we'll get back to you soon.", "success")
+        return redirect(url_for("contact"))
+    return render_template("public/contact.html", telegram_url="https://t.me/+csEU8zHsMyk4MTU0")
 
 
 @app.route("/pricing")
@@ -795,6 +805,13 @@ def admin_users():
     return render_template("admin/users.html", users=users)
 
 
+@app.route("/admin/messages")
+@admin_required
+def admin_messages():
+    messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+    return render_template("admin/messages.html", messages=messages)
+
+
 @app.route("/admin/user/<int:user_id>/toggle-payment-exempt", methods=["POST"])
 @admin_required
 def admin_toggle_payment_exempt(user_id):
@@ -945,10 +962,11 @@ def setup_admin():
 def setup_migrate():
     """One-time browser-based schema fix for hosts without shell access
     (e.g. Render's free tier) — same pattern and same secret key as
-    /setup-admin. Makes listings.id nullable on inquiries so a supplier can
-    respond to a sourcing request (which has no listing_id) without hitting
-    a NOT NULL constraint from before this feature existed.
-    Safe to reload — running it again on an already-migrated DB is a no-op."""
+    /setup-admin. Each statement runs and commits independently, so if one
+    was already applied in an earlier run it won't block the rest (Postgres
+    aborts a whole transaction on any single error otherwise).
+    Safe to reload — running it again on an already-migrated DB just
+    reports each step as already applied."""
     setup_key = os.environ.get("SETUP_ADMIN_KEY", "")
     if not setup_key:
         abort(404)
@@ -956,14 +974,31 @@ def setup_migrate():
         abort(403)
 
     from sqlalchemy import text
-    try:
-        db.session.execute(text("ALTER TABLE inquiries ALTER COLUMN listing_id DROP NOT NULL"))
-        db.session.execute(text("ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS sourcing_request_id INTEGER REFERENCES sourcing_requests(id)"))
-        db.session.commit()
-        return "Migration applied: inquiries.listing_id is now nullable, sourcing_request_id column confirmed present."
-    except Exception as e:
-        db.session.rollback()
-        return f"Migration failed or already applied: {e}", 500
+    statements = [
+        ("inquiries.listing_id nullable",
+         "ALTER TABLE inquiries ALTER COLUMN listing_id DROP NOT NULL"),
+        ("inquiries.sourcing_request_id column",
+         "ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS sourcing_request_id INTEGER REFERENCES sourcing_requests(id)"),
+        ("users.payment_exempt column",
+         "ALTER TABLE users ADD COLUMN IF NOT EXISTS payment_exempt BOOLEAN DEFAULT FALSE"),
+        ("users.profile_photo_path column",
+         "ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo_path VARCHAR(500)"),
+    ]
+
+    results = []
+    for label, sql in statements:
+        try:
+            db.session.execute(text(sql))
+            db.session.commit()
+            results.append(f"✓ {label} — applied")
+        except Exception as e:
+            db.session.rollback()
+            results.append(f"· {label} — already applied or not needed ({type(e).__name__})")
+
+    # New tables (contact_messages, sourcing_request_photos, etc.) don't need
+    # manual ALTER statements — db.create_all() already creates any missing
+    # table automatically on every app startup.
+    return "<br>".join(results)
 
 
 @app.cli.command("create-admin")

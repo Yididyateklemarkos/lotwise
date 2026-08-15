@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Admin — Contact messages{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('admin_dashboard') }}">Verification queue</a>
+  <a href="{{ url_for('admin_users') }}">All users</a>
+  <a href="{{ url_for('admin_listings') }}">Listings</a>
+  <a href="{{ url_for('admin_requests') }}">Sourcing requests</a>
+  <a href="{{ url_for('admin_connections') }}">Connections</a>
+  <a href="{{ url_for('admin_messages') }}" class="active">Contact messages</a>
+</div>
+
+<h1>Contact messages ({{ messages|length }})</h1>
+
+{% for m in messages %}
+<div class="card">
+  <div class="card-row">
+    <strong>{{ m.email }}</strong>
+    <span class="muted" style="font-size:12px;">{{ m.created_at.strftime('%b %d, %Y %H:%M') }}</span>
+  </div>
+  <p style="margin-top:8px;">{{ m.message }}</p>
+  <a href="mailto:{{ m.email }}" class="btn btn-sm" style="margin-top:10px; display:inline-block;">Reply by email</a>
+</div>
+{% else %}
+<p class="muted">No messages yet.</p>
+{% endfor %}
+{% endblock %}

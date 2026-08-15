@@ -3,10 +3,22 @@
 {% block content %}
 <div style="max-width:520px;">
   <h1>Contact us</h1>
-  <p class="muted" style="margin:12px 0 24px;">Questions about verification, billing, or anything else — reach out and we'll get back to you.</p>
+  <p class="muted" style="margin:12px 0 24px;">Questions about verification, billing, or anything else — drop your email and message below and we'll get back to you.</p>
+
   <div class="card">
-    <p><strong>Email</strong></p>
-    <p class="muted" style="margin-top:4px;"><a href="mailto:support@lotwiseglobal.com" style="text-decoration:underline;">support@lotwiseglobal.com</a></p>
+    <form class="stacked" method="POST">
+      <label>Your email</label>
+      <input type="email" name="email" required>
+      <label>Message</label>
+      <textarea name="message" rows="5" required></textarea>
+      <button type="submit" class="btn btn-solid" style="width:100%; margin-top:20px; padding:13px;">Send message</button>
+    </form>
+  </div>
+
+  <div class="card" style="text-align:center; background: linear-gradient(135deg, rgba(28,28,30,0.03), rgba(184,134,11,0.06));">
+    <h2 style="margin-bottom:8px;">Join our exclusive Telegram channel</h2>
+    <p class="muted" style="margin-bottom:20px;">Get access to exclusive trader events, meetings, and platform updates before anyone else.</p>
+    <a href="{{ telegram_url }}" target="_blank" rel="noopener" class="btn btn-solid" style="display:inline-block; padding:12px 28px;">Join the channel</a>
   </div>
 </div>
 {% endblock %}
