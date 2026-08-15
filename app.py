@@ -477,7 +477,7 @@ def report_connection(connection_id):
 # Billing (plan selection -> payment method -> NOWPayments crypto / PayPal)
 # ---------------------------------------------------------------------------
 @app.route("/billing/upgrade")
-@login_required
+@verified_required
 def billing_upgrade():
     """Shows the 3 tier options for this account type. Choosing one goes to
     the payment-method page, not straight to a checkout."""
@@ -489,7 +489,7 @@ def billing_upgrade():
 
 
 @app.route("/billing/pay/<tier>")
-@login_required
+@verified_required
 def billing_pay(tier):
     """Payment-method choice page: Crypto (NOWPayments) or PayPal, shown
     after a tier has been picked."""
@@ -505,7 +505,7 @@ def billing_pay(tier):
 
 
 @app.route("/billing/pay/<tier>/crypto")
-@login_required
+@verified_required
 def billing_pay_crypto(tier):
     """Creates a NOWPayments invoice and redirects the user to it."""
     prices = TIER_PRICE_USD if current_user.account_type == "supplier" else BUYER_TIER_PRICE_USD
