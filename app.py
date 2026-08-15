@@ -10,7 +10,7 @@ from flask_login import (LoginManager, login_user, logout_user, login_required,
                           current_user)
 from werkzeug.utils import secure_filename
 
-from models import (db, User, VerificationDocument, Listing, SourcingRequest,
+from models import (db, User, VerificationDocument, Listing, ListingPhoto, SourcingRequest,
                      Inquiry, Connection, Message, TrackRecordEntry, PaymentOrder,
                      TIER_LISTING_LIMITS, TIER_PRICE_USD, BUYER_TIER_PRICE_USD)
 import nowpayments
@@ -314,6 +314,15 @@ def new_listing():
             is_urgent=bool(request.form.get("is_urgent")) and current_user.subscription_tier != "standard",
         )
         db.session.add(listing)
+        db.session.flush()  # get listing.id before saving photo rows
+
+        photos = request.files.getlist("photos")[:6]  # cap at 6 per listing
+        for photo in photos:
+            if photo and photo.filename and allowed_file(photo.filename):
+                filename = secure_filename(f"listing_{listing.id}_{uuid.uuid4().hex[:8]}_{photo.filename}")
+                photo.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                db.session.add(ListingPhoto(listing_id=listing.id, file_path=filename))
+
         db.session.commit()
         flash("Listing created.", "success")
         return redirect(url_for("dashboard"))
@@ -675,6 +684,107 @@ def admin_disapprove(user_id):
     db.session.commit()
     flash(f"{user.company_name} disapproved.", "info")
     return redirect(url_for("admin_dashboard"))
+
+
+# ---------------------------------------------------------------------------
+# Admin — listings & sourcing requests (view all, delete any, add on behalf)
+# ---------------------------------------------------------------------------
+@app.route("/admin/listings")
+@admin_required
+def admin_listings():
+    listings = Listing.query.order_by(Listing.created_at.desc()).all()
+    return render_template("admin/listings.html", listings=listings)
+
+
+@app.route("/admin/listings/new", methods=["GET", "POST"])
+@admin_required
+def admin_new_listing():
+    """Lets the admin post a listing directly — e.g. showcase/demo content,
+    or on behalf of a supplier who can't do it themselves yet. Attributed to
+    the admin's own account."""
+    if request.method == "POST":
+        listing = Listing(
+            user_id=current_user.id,
+            category=request.form.get("category"),
+            title=request.form.get("title"),
+            description=request.form.get("description"),
+            grade_spec=request.form.get("grade_spec"),
+            quantity_fcl=request.form.get("quantity_fcl", type=int),
+            origin_country=request.form.get("origin_country"),
+            is_urgent=bool(request.form.get("is_urgent")),
+        )
+        db.session.add(listing)
+        db.session.flush()
+
+        photos = request.files.getlist("photos")[:6]
+        for photo in photos:
+            if photo and photo.filename and allowed_file(photo.filename):
+                filename = secure_filename(f"listing_{listing.id}_{uuid.uuid4().hex[:8]}_{photo.filename}")
+                photo.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                db.session.add(ListingPhoto(listing_id=listing.id, file_path=filename))
+
+        db.session.commit()
+        flash("Listing created.", "success")
+        return redirect(url_for("admin_listings"))
+
+    return render_template("admin/new_listing.html")
+
+
+@app.route("/admin/listings/<int:listing_id>/delete", methods=["POST"])
+@admin_required
+def admin_delete_listing(listing_id):
+    listing = Listing.query.get_or_404(listing_id)
+    if listing.inquiries:
+        flash("Can't remove this listing — it has inquiries/connections attached, which are part of the trade record. Mark it sold or inactive instead.", "error")
+        return redirect(url_for("admin_listings"))
+    for photo in listing.photos:
+        photo_path = os.path.join(app.config["UPLOAD_FOLDER"], photo.file_path)
+        if os.path.exists(photo_path):
+            os.remove(photo_path)
+    db.session.delete(listing)
+    db.session.commit()
+    flash("Listing removed.", "info")
+    return redirect(url_for("admin_listings"))
+
+
+@app.route("/admin/requests")
+@admin_required
+def admin_requests():
+    requests_list = SourcingRequest.query.order_by(SourcingRequest.created_at.desc()).all()
+    return render_template("admin/requests.html", requests_list=requests_list)
+
+
+@app.route("/admin/requests/new", methods=["GET", "POST"])
+@admin_required
+def admin_new_request():
+    """Lets the admin post a sourcing request directly, attributed to the
+    admin's own account — same rationale as admin_new_listing."""
+    if request.method == "POST":
+        req = SourcingRequest(
+            user_id=current_user.id,
+            category=request.form.get("category"),
+            title=request.form.get("title"),
+            description=request.form.get("description"),
+            quantity_fcl=request.form.get("quantity_fcl", type=int),
+            target_price_note=request.form.get("target_price_note"),
+            is_urgent=bool(request.form.get("is_urgent")),
+        )
+        db.session.add(req)
+        db.session.commit()
+        flash("Sourcing request posted.", "success")
+        return redirect(url_for("admin_requests"))
+
+    return render_template("admin/new_request.html")
+
+
+@app.route("/admin/requests/<int:request_id>/delete", methods=["POST"])
+@admin_required
+def admin_delete_request(request_id):
+    req = SourcingRequest.query.get_or_404(request_id)
+    db.session.delete(req)
+    db.session.commit()
+    flash("Sourcing request removed.", "info")
+    return redirect(url_for("admin_requests"))
 
 
 @app.route("/admin/connections")

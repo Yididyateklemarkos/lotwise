@@ -11,6 +11,13 @@
 
 {% for item in items %}
 <div class="card">
+  {% if item.photos %}
+  <div style="display:flex; gap:8px; margin-bottom:14px; overflow-x:auto;">
+    {% for photo in item.photos %}
+    <img src="{{ url_for('static', filename='uploads/' + photo.file_path) }}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; flex-shrink:0;" alt="{{ item.title }}">
+    {% endfor %}
+  </div>
+  {% endif %}
   <div class="card-row">
     <div>
       <div class="muted" style="margin-bottom:4px;">{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}</div>

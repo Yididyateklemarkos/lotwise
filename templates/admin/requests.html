@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Admin — Sourcing requests{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('admin_dashboard') }}">Verification queue</a>
+  <a href="{{ url_for('admin_listings') }}">Listings</a>
+  <a href="{{ url_for('admin_requests') }}" class="active">Sourcing requests</a>
+  <a href="{{ url_for('admin_connections') }}">Connections</a>
+</div>
+
+<div class="card-row" style="margin-bottom:20px;">
+  <h1>Sourcing requests ({{ requests_list|length }})</h1>
+  <a href="{{ url_for('admin_new_request') }}" class="btn btn-solid btn-sm">Add request</a>
+</div>
+
+{% for item in requests_list %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <div class="muted" style="font-size:12px;">{{ item.category }}{% if item.is_urgent %} · Urgent{% endif %}</div>
+      <strong>{{ item.title }}</strong>
+      <div class="muted" style="font-size:13px; margin-top:4px;">{{ item.owner.company_name }} · {{ item.quantity_fcl }} FCL{% if item.target_price_note %} · {{ item.target_price_note }}{% endif %}</div>
+    </div>
+    <form method="POST" action="{{ url_for('admin_delete_request', request_id=item.id) }}" onsubmit="return confirm('Remove this sourcing request?');">
+      <button type="submit" class="btn btn-sm">Remove</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<p class="muted">No sourcing requests yet.</p>
+{% endfor %}
+{% endblock %}

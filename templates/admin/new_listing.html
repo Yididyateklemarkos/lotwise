@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}New listing — Lotwise{% endblock %}
+{% block title %}Admin — New listing{% endblock %}
 {% block content %}
 <div style="max-width:520px;">
-  <h1>New listing</h1>
-  <p class="muted" style="margin-bottom:24px;">Minimum quantity is 1 FCL (full container load). Bulk only.</p>
+  <h1>New listing (admin)</h1>
+  <p class="muted" style="margin-bottom:24px;">Posted under your admin account. Use for showcase content or on behalf of a supplier.</p>
   <form class="stacked" method="POST" enctype="multipart/form-data">
     <label>Category</label>
     <select name="category" required>
@@ -14,9 +14,9 @@
       <option>Other bulk goods</option>
     </select>
     <label>Title</label>
-    <input type="text" name="title" placeholder="e.g. Crushed limestone, Grade A" required>
+    <input type="text" name="title" required>
     <label>Description</label>
-    <textarea name="description" placeholder="Spec, packaging, delivery terms..."></textarea>
+    <textarea name="description"></textarea>
     <label>Grade / spec</label>
     <input type="text" name="grade_spec">
     <label>Quantity (FCL)</label>
@@ -25,12 +25,13 @@
     <input type="text" name="origin_country">
     <label>Photos</label>
     <input type="file" name="photos" accept=".png,.jpg,.jpeg" multiple>
-    <div class="hint">Up to 6 photos. PNG or JPG.</div>
+    <div class="hint">Up to 6 photos.</div>
     <div class="checkbox-row">
-      <input type="checkbox" name="is_urgent" id="urgent" {% if current_user.subscription_tier == 'standard' %}disabled{% endif %}>
-      <label for="urgent">Flag as urgent sale {% if current_user.subscription_tier == 'standard' %}(Plus/Premium only){% endif %}</label>
+      <input type="checkbox" name="is_urgent" id="urgent">
+      <label for="urgent">Flag as urgent</label>
     </div>
     <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Create listing</button>
   </form>
+  <p class="muted" style="margin-top:20px;"><a href="{{ url_for('admin_listings') }}" style="text-decoration:underline;">Back to listings</a></p>
 </div>
 {% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Admin — New sourcing request{% endblock %}
+{% block content %}
+<div style="max-width:520px;">
+  <h1>New sourcing request (admin)</h1>
+  <p class="muted" style="margin-bottom:24px;">Posted under your admin account.</p>
+  <form class="stacked" method="POST">
+    <label>Category</label>
+    <select name="category" required>
+      <option>Minerals</option>
+      <option>Agriculture</option>
+      <option>Chemicals</option>
+      <option>Construction materials</option>
+      <option>Other bulk goods</option>
+    </select>
+    <label>Title</label>
+    <input type="text" name="title" required>
+    <label>Description</label>
+    <textarea name="description"></textarea>
+    <label>Quantity (FCL)</label>
+    <input type="number" name="quantity_fcl" min="1" required>
+    <label>Target price note</label>
+    <input type="text" name="target_price_note">
+    <div class="checkbox-row">
+      <input type="checkbox" name="is_urgent" id="urgent">
+      <label for="urgent">Flag as urgent</label>
+    </div>
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Post request</button>
+  </form>
+  <p class="muted" style="margin-top:20px;"><a href="{{ url_for('admin_requests') }}" style="text-decoration:underline;">Back to requests</a></p>
+</div>
+{% endblock %}

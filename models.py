@@ -189,6 +189,19 @@ class Listing(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     inquiries = db.relationship("Inquiry", backref="listing", lazy=True)
+    photos = db.relationship("ListingPhoto", backref="listing", lazy=True,
+                              order_by="ListingPhoto.created_at",
+                              cascade="all, delete-orphan")
+
+
+class ListingPhoto(db.Model):
+    """One of several photos attached to a listing."""
+    __tablename__ = "listing_photos"
+
+    id = db.Column(db.Integer, primary_key=True)
+    listing_id = db.Column(db.Integer, db.ForeignKey("listings.id"), nullable=False)
+    file_path = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class TrackRecordEntry(db.Model):

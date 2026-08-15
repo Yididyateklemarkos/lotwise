@@ -71,9 +71,14 @@
   </p>
   {% if items %}
   <table>
-    <tr><th>Title</th><th>Category</th><th>Qty (FCL)</th><th>Status</th>{% if current_user.account_type == 'supplier' %}<th></th>{% endif %}</tr>
+    <tr><th></th><th>Title</th><th>Category</th><th>Qty (FCL)</th><th>Status</th>{% if current_user.account_type == 'supplier' %}<th></th>{% endif %}</tr>
     {% for item in items %}
     <tr>
+      <td>
+        {% if current_user.account_type == 'supplier' and item.photos %}
+        <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;" alt="">
+        {% endif %}
+      </td>
       <td>{{ item.title }}</td>
       <td>{{ item.category }}</td>
       <td>{{ item.quantity_fcl }}</td>
