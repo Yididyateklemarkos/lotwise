@@ -2,45 +2,86 @@
 {% block title %}Pricing — Lotwise{% endblock %}
 {% block content %}
 <h1>Simple pricing. Zero commission, ever.</h1>
-<p class="muted" style="margin-bottom:40px; max-width:520px;">Billed monthly in USD, cancel any time. Whatever you close on Lotwise is entirely yours — no cut, no hidden fee, no matter the deal size.</p>
+<p class="muted" style="margin-bottom:28px; max-width:520px;">Billed monthly in USD, cancel any time. Whatever you close on Lotwise is entirely yours — no cut, no hidden fee, no matter the deal size.</p>
 
-<h2 style="margin-bottom:6px;">For suppliers</h2>
-<p class="muted" style="margin-bottom:14px; font-size:13px;">Get your inventory in front of verified buyers actively sourcing container volume.</p>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:48px;">
-  <div class="card">
-    <div class="muted">Standard</div>
-    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.standard }}/mo</div>
-    <p class="muted" style="font-size:13px;">Up to 3 listings · Standard placement</p>
-  </div>
-  <div class="card" style="border:2px solid var(--ink);">
-    <div class="muted">Plus</div>
-    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.plus }}/mo</div>
-    <p class="muted" style="font-size:13px;">Up to 7 listings · Priority + SEO placement · Urgent flag</p>
-  </div>
-  <div class="card">
-    <div class="muted">Premium</div>
-    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ supplier_prices.premium }}/mo</div>
-    <p class="muted" style="font-size:13px;">10+ listings · Top placement · First look at new buyers</p>
+<div class="role-toggle" id="role-toggle">
+  <button type="button" class="active" data-role="supplier">For suppliers</button>
+  <button type="button" data-role="buyer">For buyers</button>
+</div>
+
+<div id="role-supplier">
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:48px;">
+    <div class="card price-card">
+      <div class="muted">Standard</div>
+      <div class="price-num">${{ supplier_prices.standard }}<span style="font-size:15px; font-weight:400;">/mo</span></div>
+      <div class="price-row"><span class="mark-val">Up to 3</span> Active listings</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Full marketplace access</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Direct contact on connections</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
+      <div class="price-row"><span class="mark-no">✕</span> Urgent-sale flag</div>
+      <div class="price-row"><span class="mark-no">✕</span> Priority placement</div>
+      <div class="price-row"><span class="mark-no">✕</span> Priority tier grading</div>
+    </div>
+    <div class="card price-card featured">
+      <div class="muted">Plus</div>
+      <div class="price-num">${{ supplier_prices.plus }}<span style="font-size:15px; font-weight:400;">/mo</span></div>
+      <div class="price-row"><span class="mark-val">Up to 7</span> Active listings</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Full marketplace access</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Direct contact on connections</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Urgent-sale flag</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Priority placement</div>
+      <div class="price-row"><span class="mark-val">B+</span> Priority tier grading</div>
+    </div>
+    <div class="card price-card">
+      <div class="muted">Premium</div>
+      <div class="price-num">${{ supplier_prices.premium }}<span style="font-size:15px; font-weight:400;">/mo</span></div>
+      <div class="price-row"><span class="mark-val">Unlimited</span> Active listings</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Full marketplace access</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Direct contact on connections</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Urgent-sale flag</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Top placement</div>
+      <div class="price-row"><span class="mark-val">A</span> Priority tier grading</div>
+    </div>
   </div>
 </div>
 
-<h2 style="margin-bottom:6px;">For buyers</h2>
-<p class="muted" style="margin-bottom:14px; font-size:13px;">Source directly from suppliers who've already passed manual verification.</p>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:48px;">
-  <div class="card">
-    <div class="muted">Standard</div>
-    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.standard }}/mo</div>
-    <p class="muted" style="font-size:13px;">Full browse access · Inquire on any listing</p>
-  </div>
-  <div class="card" style="border:2px solid var(--ink);">
-    <div class="muted">Plus</div>
-    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.plus }}/mo</div>
-    <p class="muted" style="font-size:13px;">Up to 7 sourcing requests · Priority visibility to suppliers</p>
-  </div>
-  <div class="card">
-    <div class="muted">Premium</div>
-    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ buyer_prices.premium }}/mo</div>
-    <p class="muted" style="font-size:13px;">10+ sourcing requests · First access to new listings</p>
+<div id="role-buyer" style="display:none;">
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:48px;">
+    <div class="card price-card">
+      <div class="muted">Standard</div>
+      <div class="price-num">${{ buyer_prices.standard }}<span style="font-size:15px; font-weight:400;">/mo</span></div>
+      <div class="price-row"><span class="mark-val">Up to 3</span> Active sourcing requests</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Full marketplace access</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Direct contact on connections</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
+      <div class="price-row"><span class="mark-no">✕</span> Urgent-need flag</div>
+      <div class="price-row"><span class="mark-no">✕</span> Priority visibility to suppliers</div>
+      <div class="price-row"><span class="mark-no">✕</span> Priority tier grading</div>
+    </div>
+    <div class="card price-card featured">
+      <div class="muted">Plus</div>
+      <div class="price-num">${{ buyer_prices.plus }}<span style="font-size:15px; font-weight:400;">/mo</span></div>
+      <div class="price-row"><span class="mark-val">Up to 7</span> Active sourcing requests</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Full marketplace access</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Direct contact on connections</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Urgent-need flag</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Priority visibility to suppliers</div>
+      <div class="price-row"><span class="mark-val">B+</span> Priority tier grading</div>
+    </div>
+    <div class="card price-card">
+      <div class="muted">Premium</div>
+      <div class="price-num">${{ buyer_prices.premium }}<span style="font-size:15px; font-weight:400;">/mo</span></div>
+      <div class="price-row"><span class="mark-val">Unlimited</span> Active sourcing requests</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Full marketplace access</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Direct contact on connections</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Urgent-need flag</div>
+      <div class="price-row"><span class="mark-yes">✓</span> First access to new listings</div>
+      <div class="price-row"><span class="mark-val">A</span> Priority tier grading</div>
+    </div>
   </div>
 </div>
 
@@ -50,4 +91,26 @@
   <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Apply now</a>
 </div>
 <p class="muted" style="text-align:center; font-size:12px; margin-top:16px;">Subscriptions begin only after your account is verified. Fees are non-refundable — cancel any time and you'll keep access until the end of your current billing period. See our <a href="{{ url_for('refunds') }}">Refund Policy</a>.</p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+  const toggle = document.getElementById('role-toggle');
+  if (!toggle) return;
+  const supplierBtn = toggle.querySelector('[data-role="supplier"]');
+  const buyerBtn = toggle.querySelector('[data-role="buyer"]');
+  const supplierPanel = document.getElementById('role-supplier');
+  const buyerPanel = document.getElementById('role-buyer');
+  toggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-role]');
+    if (!btn) return;
+    const role = btn.dataset.role;
+    supplierBtn.classList.toggle('active', role === 'supplier');
+    buyerBtn.classList.toggle('active', role === 'buyer');
+    supplierPanel.style.display = role === 'supplier' ? '' : 'none';
+    buyerPanel.style.display = role === 'buyer' ? '' : 'none';
+  });
+})();
+</script>
 {% endblock %}
