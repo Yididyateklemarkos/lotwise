@@ -24,8 +24,12 @@
   <div class="card">
     <div style="font-weight:700; font-size:18px; margin-bottom:6px;">PayPal</div>
     <p class="muted" style="font-size:13px; margin-bottom:20px;">Pay with your PayPal balance, bank, or card.</p>
-    <button class="btn btn-sm" style="width:100%;" disabled>Coming soon</button>
+    {% if paypal_configured %}
+    <a href="{{ url_for('billing_pay_paypal', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">Pay with PayPal</a>
+    {% else %}
+    <button class="btn btn-sm" style="width:100%;" disabled>Not available yet</button>
     <p class="hint" style="margin-top:8px;">PayPal checkout is being connected — check back shortly.</p>
+    {% endif %}
   </div>
 
 </div>

@@ -15,6 +15,7 @@ from models import (db, User, VerificationDocument, Listing, ListingPhoto, Sourc
                      ContactMessage, TIER_LISTING_LIMITS, TIER_PRICE_USD, BUYER_TIER_PRICE_USD,
                      SUPPLIER_TIER_FEATURES, BUYER_TIER_FEATURES)
 import nowpayments
+import paypal
 import uuid
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -631,6 +632,7 @@ def billing_pay(tier):
         tier=tier,
         amount=prices[tier],
         crypto_configured=nowpayments.is_nowpayments_configured(),
+        paypal_configured=paypal.is_paypal_configured(),
     )
 
 
@@ -684,6 +686,112 @@ def billing_pay_crypto(tier):
     return redirect(invoice_url)
 
 
+@app.route("/billing/pay/<tier>/paypal")
+@verified_required
+def billing_pay_paypal(tier):
+    """Creates a PayPal order and redirects the user to PayPal's approval page."""
+    prices = TIER_PRICE_USD if current_user.account_type == "supplier" else BUYER_TIER_PRICE_USD
+    if tier not in prices:
+        abort(404)
+    if not paypal.is_paypal_configured():
+        flash("PayPal isn't connected yet — check back shortly.", "warning")
+        return redirect(url_for("billing_pay", tier=tier))
+
+    amount = prices[tier]
+    order_id = f"lw-{current_user.id}-{tier}-{uuid.uuid4().hex[:10]}"
+
+    order = PaymentOrder(
+        order_id=order_id,
+        user_id=current_user.id,
+        tier=tier,
+        amount_usd=amount,
+        provider="paypal",
+        status="pending",
+    )
+    db.session.add(order)
+    db.session.commit()
+
+    try:
+        paypal_order = paypal.create_order(
+            amount_usd=amount,
+            order_id=order_id,
+            order_description=f"Lotwise {current_user.account_type} {tier} plan — monthly",
+            return_url=url_for("billing_paypal_capture", order_id=order_id, _external=True),
+            cancel_url=url_for("billing_failed", order_id=order_id, _external=True),
+        )
+        approval_url = paypal.get_approval_url(paypal_order)
+    except Exception:
+        approval_url = ""
+
+    if not approval_url:
+        order.status = "failed"
+        db.session.commit()
+        flash("Couldn't start the PayPal payment — please try again.", "error")
+        return redirect(url_for("billing_pay", tier=tier))
+
+    # Store PayPal's own order ID (different from our internal order_id) so
+    # the capture step knows which PayPal order to actually capture.
+    order.provider_order_id = paypal_order.get("id", "")
+    db.session.commit()
+
+    return redirect(approval_url)
+
+
+@app.route("/billing/paypal/capture")
+@login_required
+def billing_paypal_capture():
+    """PayPal sends the buyer back here after they approve on PayPal's site.
+    We capture (actually charge) the order server-side before activating
+    anything — approval alone doesn't move money."""
+    order_id = request.args.get("order_id", "")
+    order = PaymentOrder.query.filter_by(order_id=order_id).first()
+    if not order or order.user_id != current_user.id or not order.provider_order_id:
+        abort(404)
+
+    if order.status == "finished":
+        # Already captured (e.g. webhook beat us to it, or page reloaded) —
+        # don't double-charge or double-extend the subscription.
+        return redirect(url_for("billing_success", order_id=order_id))
+
+    try:
+        result = paypal.capture_order(order.provider_order_id)
+    except Exception:
+        order.status = "failed"
+        db.session.commit()
+        return redirect(url_for("billing_failed", order_id=order_id))
+
+    status = result.get("status", "")
+    if status == "COMPLETED":
+        _activate_paid_order(order)
+    else:
+        order.status = "failed"
+        db.session.commit()
+        return redirect(url_for("billing_failed", order_id=order_id))
+
+    return redirect(url_for("billing_success", order_id=order_id))
+
+
+@app.route("/billing/webhook/paypal", methods=["POST"])
+def billing_webhook_paypal():
+    """Backup confirmation path — PayPal calls this independently of the
+    browser redirect, so a payment still gets activated even if the buyer
+    closes their tab right after approving on PayPal's page."""
+    payload = request.get_json(force=True, silent=True) or {}
+
+    if not paypal.verify_webhook_signature(request.headers, payload):
+        return jsonify({"error": "invalid signature"}), 401
+
+    event_type = payload.get("event_type", "")
+    if event_type == "PAYMENT.CAPTURE.COMPLETED":
+        resource = payload.get("resource", {})
+        internal_order_id = resource.get("custom_id", "")
+        order = PaymentOrder.query.filter_by(order_id=internal_order_id).first()
+        if order and order.status != "finished":
+            _activate_paid_order(order)
+
+    return jsonify({"received": True}), 200
+
+
 @app.route("/billing/success")
 def billing_success():
     order_id = request.args.get("order_id", "")
@@ -705,6 +813,26 @@ def billing_failed():
     return render_template("dashboard/payment_failed.html", order=order)
 
 
+def _activate_paid_order(order, amount_received=None):
+    """Marks an order finished and extends the paying user's subscription
+    30 days — shared by every payment provider (NOWPayments, PayPal, ...)
+    so activation logic and expiry math stay in exactly one place.
+    Renewing early (still-active plan) stacks the days on top of the
+    current expiry rather than resetting from now, so early renewal never
+    costs the user days."""
+    order.status = "finished"
+    order.amount_received = amount_received if amount_received is not None else order.amount_usd
+    user = order.user
+    now = datetime.utcnow()
+    base = user.subscription_renews_at if (
+        user.subscription_renews_at and user.subscription_renews_at > now
+    ) else now
+    user.subscription_status = "active"
+    user.subscription_tier = order.tier
+    user.subscription_renews_at = base + timedelta(days=30)
+    db.session.commit()
+
+
 @app.route("/billing/webhook/nowpayments", methods=["POST"])
 def billing_webhook_nowpayments():
     """NOWPayments calls this (IPN) on payment status changes. Verifies the
@@ -724,28 +852,17 @@ def billing_webhook_nowpayments():
     order = PaymentOrder.query.filter_by(order_id=order_id).first()
     if order:
         if payment_status in ("finished", "confirmed"):
-            order.status = "finished"
-            order.amount_received = payload.get("actually_paid") or order.amount_usd
-            user = order.user
-            # Crypto payments are one-time, not auto-recurring — extend 30
-            # days from now, or from the current expiry if they're renewing
-            # a still-active plan early (so early renewal doesn't cost them
-            # days).
-            now = datetime.utcnow()
-            base = user.subscription_renews_at if (
-                user.subscription_renews_at and user.subscription_renews_at > now
-            ) else now
-            user.subscription_status = "active"
-            user.subscription_tier = order.tier
-            user.subscription_renews_at = base + timedelta(days=30)
+            if order.status != "finished":
+                _activate_paid_order(order, amount_received=payload.get("actually_paid"))
         elif payment_status == "partially_paid":
             # Underpaid — do NOT activate. Record how much came in so the
             # customer can see the shortfall on the status page.
             order.status = "partially_paid"
             order.amount_received = payload.get("actually_paid")
+            db.session.commit()
         elif payment_status in ("failed", "expired", "refunded"):
             order.status = "failed"
-        db.session.commit()
+            db.session.commit()
 
     return jsonify({"received": True}), 200
 
@@ -983,6 +1100,8 @@ def setup_migrate():
          "ALTER TABLE users ADD COLUMN IF NOT EXISTS payment_exempt BOOLEAN DEFAULT FALSE"),
         ("users.profile_photo_path column",
          "ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo_path VARCHAR(500)"),
+        ("payment_orders.provider_order_id column",
+         "ALTER TABLE payment_orders ADD COLUMN IF NOT EXISTS provider_order_id VARCHAR(128)"),
     ]
 
     results = []

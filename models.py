@@ -199,6 +199,7 @@ class PaymentOrder(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    provider_order_id = db.Column(db.String(128), nullable=True)  # e.g. PayPal's own order ID
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     tier = db.Column(db.String(20), nullable=False)
     amount_usd = db.Column(db.Integer, nullable=False)
