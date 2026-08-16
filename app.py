@@ -1120,6 +1120,27 @@ def setup_migrate():
     return "<br>".join(results)
 
 
+@app.route("/setup-diagnose")
+def setup_diagnose():
+    """One-time diagnostic — shows exactly which columns Postgres thinks
+    payment_orders actually has right now, so we're not guessing based on
+    what the migration route claimed vs. what's really live."""
+    setup_key = os.environ.get("SETUP_ADMIN_KEY", "")
+    if not setup_key:
+        abort(404)
+    if request.args.get("key", "") != setup_key:
+        abort(403)
+
+    from sqlalchemy import text
+    result = db.session.execute(text(
+        "SELECT column_name, data_type FROM information_schema.columns "
+        "WHERE table_name = 'payment_orders' ORDER BY ordinal_position"
+    ))
+    rows = result.fetchall()
+    lines = [f"{r[0]} — {r[1]}" for r in rows]
+    return "<br>".join(lines) if lines else "No columns found — table may not exist."
+
+
 @app.cli.command("create-admin")
 def create_admin():
     email = input("Admin email: ").strip().lower()
