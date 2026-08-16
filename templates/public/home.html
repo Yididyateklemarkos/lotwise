@@ -101,6 +101,25 @@
   </div>
 </div>
 
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:60px;">
+  <div class="lux-panel lux-tilt">
+    <div class="lux-photo"></div>
+    <div class="lux-panel-content">
+      <div class="eyebrow">Discretion, by design</div>
+      <h3>Nothing here is public.</h3>
+      <p>No open listings, no scraping, no cold outreach. What happens inside the circle stays inside it.</p>
+    </div>
+  </div>
+  <div class="lux-panel lux-tilt" style="animation-delay:0.08s;">
+    <div class="lux-photo"></div>
+    <div class="lux-panel-content">
+      <div class="eyebrow">Standing, not scale</div>
+      <h3>We admit people, not accounts.</h3>
+      <p>Every member is reviewed by hand. Volume doesn't buy your way in — legitimacy does.</p>
+    </div>
+  </div>
+</div>
+
 <h2 style="margin-bottom:18px;">How admission works</h2>
 <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:60px;">
   <div class="card">
@@ -175,6 +194,21 @@
     requestAnimationFrame(tick);
   }
   tick();
+
+  // Subtle tilt-on-hover for the luxury image panels
+  document.querySelectorAll('.lux-tilt').forEach((panel) => {
+    panel.style.transition = 'transform 0.4s var(--ease, ease)';
+    panel.style.transformStyle = 'preserve-3d';
+    panel.addEventListener('mousemove', (e) => {
+      const rect = panel.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      panel.style.transform = `perspective(800px) rotateY(${px * 6}deg) rotateX(${-py * 6}deg) scale(1.015)`;
+    });
+    panel.addEventListener('mouseleave', () => {
+      panel.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) scale(1)';
+    });
+  });
 })();
 </script>
 <script src="{{ url_for('static', filename='js/three.min.js') }}"></script>
@@ -202,6 +236,7 @@
 
   const globeGroup = new THREE.Group();
   scene.add(globeGroup);
+  const pulseRings = [];
 
   // Wireframe sphere — silver, low opacity
   const wireGeo = new THREE.SphereGeometry(1.6, 28, 20);
@@ -235,11 +270,47 @@
   }
   const markerGeo = new THREE.SphereGeometry(0.028, 8, 8);
   const markerMat = new THREE.MeshBasicMaterial({ color: 0xE4C766 });
+  const markerPositions = [];
   markerLatLng.forEach(([lat, lng]) => {
     const pos = latLngToVec3(lat, lng, 1.63);
+    markerPositions.push(pos);
     const dot = new THREE.Mesh(markerGeo, markerMat);
     dot.position.copy(pos);
     globeGroup.add(dot);
+    // soft pulsing ring under each marker, staggered, to suggest live activity
+    const ringGeo = new THREE.RingGeometry(0.03, 0.045, 20);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xE4C766, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.position.copy(pos.clone().multiplyScalar(1.002));
+    ring.lookAt(pos.clone().multiplyScalar(2));
+    ring.userData.pulsePhase = Math.random() * Math.PI * 2;
+    globeGroup.add(ring);
+    pulseRings.push(ring);
+  });
+
+  // Network arcs: a handful of connections between trade points, each arcing
+  // outward off the sphere surface (like a flight path), with a small glowing
+  // dot continuously traveling along it — "a deal/connection forming" motif.
+  const connections = [
+    [0, 1], [0, 3], [1, 4], [2, 3], [3, 5], [4, 6], [5, 7], [6, 2], [7, 0],
+  ];
+  const arcTravelers = [];
+  connections.forEach(([aIdx, bIdx], i) => {
+    const a = markerPositions[aIdx], b = markerPositions[bIdx];
+    const mid = a.clone().add(b).multiplyScalar(0.5);
+    const liftFactor = 1 + a.distanceTo(b) * 0.35; // bigger hops arc higher
+    mid.normalize().multiplyScalar(1.63 * liftFactor);
+    const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+    const points = curve.getPoints(48);
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMat = new THREE.LineBasicMaterial({ color: 0xC9C9D4, transparent: true, opacity: 0.22 });
+    globeGroup.add(new THREE.Line(lineGeo, lineMat));
+
+    const travelerGeo = new THREE.SphereGeometry(0.02, 6, 6);
+    const travelerMat = new THREE.MeshBasicMaterial({ color: 0xF5EFD8, transparent: true });
+    const traveler = new THREE.Mesh(travelerGeo, travelerMat);
+    globeGroup.add(traveler);
+    arcTravelers.push({ curve, mesh: traveler, offset: i * 0.37, speed: 0.15 });
   });
 
   // Drag to rotate, gentle auto-rotate otherwise
@@ -266,6 +337,8 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  const clock = new THREE.Clock();
+
   function animate() {
     requestAnimationFrame(animate);
     if (!isDragging) {
@@ -278,6 +351,23 @@
     const targetZ = 4.4 + scrollProgress * 2.2; // zooms out as you scroll
     camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.08);
     canvas.style.opacity = String(1 - scrollProgress * 0.85);
+
+    const t = clock.getElapsedTime();
+    // Send a glowing dot traveling along each network arc, looping — this is
+    // the "connections forming" motion between trade points.
+    arcTravelers.forEach(({ curve, mesh, offset, speed }) => {
+      const progress = ((t * speed + offset) % 1);
+      const pos = curve.getPoint(progress);
+      mesh.position.copy(pos);
+      mesh.material.opacity = Math.sin(progress * Math.PI); // fades in/out at each end
+    });
+    // Soft breathing pulse under each marker
+    pulseRings.forEach((ring) => {
+      const s = 1 + Math.sin(t * 1.4 + ring.userData.pulsePhase) * 0.35;
+      ring.scale.set(s, s, s);
+      ring.material.opacity = 0.25 + Math.sin(t * 1.4 + ring.userData.pulsePhase) * 0.2;
+    });
+
     renderer.render(scene, camera);
   }
   animate();

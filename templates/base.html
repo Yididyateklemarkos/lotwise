@@ -157,6 +157,25 @@
   .price-row .mark-no { color: #55555c; flex-shrink:0; font-weight:800; }
   .price-row .mark-val { color: var(--ink-soft); flex-shrink:0; font-weight:700; font-size:12px; min-width:60px; }
 
+  /* Luxury image panel — texture placeholder until real photography is supplied.
+     Drop a real photo in via inline style="background-image: url(...)" on
+     .lux-photo and this treatment (dark gradient + grain + vignette) will
+     make it sit naturally inside the black/silver theme rather than looking
+     like a pasted-in stock image block. */
+  .lux-panel { position:relative; border-radius: var(--radius); overflow:hidden; min-height:340px; display:flex; align-items:flex-end; box-shadow: var(--shadow-lift); border: 1px solid var(--glass-border); }
+  .lux-photo { position:absolute; inset:0; background-size:cover; background-position:center;
+    background-image:
+      radial-gradient(140% 100% at 15% 0%, rgba(201,162,39,0.10), transparent 55%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 6px),
+      linear-gradient(160deg, #1c1c20 0%, #0c0c0e 55%, #050506 100%);
+  }
+  .lux-photo::after { content:''; position:absolute; inset:0; background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.05) 100%); }
+  .lux-photo::before { content:''; position:absolute; inset:0; box-shadow: inset 0 0 120px rgba(0,0,0,0.7); z-index:2; }
+  .lux-panel-content { position:relative; z-index:3; padding:32px; }
+  .lux-panel-content .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--gold); font-weight:700; margin-bottom:8px; }
+  .lux-panel-content h3 { font-size:20px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .lux-panel-content p { font-size:13px; color: var(--ink-soft); max-width:340px; }
+
   @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 
   .account-avatar { width:28px; height:28px; border-radius:50%; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; background: var(--silver); flex-shrink:0; box-shadow: 0 0 0 1px rgba(255,255,255,0.15); }
