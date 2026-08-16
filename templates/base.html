@@ -176,6 +176,20 @@
   .lux-panel-content h3 { font-size:20px; font-weight:700; color:#fff; margin-bottom:6px; }
   .lux-panel-content p { font-size:13px; color: var(--ink-soft); max-width:340px; }
 
+  /* Full-page photo background for public marketing pages (home, about, faq,
+     pricing, login, signup) — real photography at high visibility, with just
+     enough gradient to keep text and cards legible on top. */
+  .page-photo-bg { position:fixed; inset:0; z-index:-2; overflow:hidden; }
+  .page-photo-bg .photo-layer { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.55; }
+  .page-photo-bg::after { content:''; position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(6,6,7,0.88) 0%, rgba(6,6,7,0.55) 22%, rgba(6,6,7,0.6) 78%, rgba(6,6,7,0.92) 100%),
+      radial-gradient(120% 90% at 50% 0%, transparent 0%, rgba(6,6,7,0.35) 100%);
+  }
+  @media (max-width: 700px) {
+    .page-photo-bg .photo-layer { opacity:0.35; }
+  }
+
   @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 
   .account-avatar { width:28px; height:28px; border-radius:50%; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; background: var(--silver); flex-shrink:0; box-shadow: 0 0 0 1px rgba(255,255,255,0.15); }
@@ -199,6 +213,8 @@
 {% block extra_head %}{% endblock %}
 </head>
 <body>
+
+{% block page_bg %}{% endblock %}
 
 <header>
   <div class="header-inner">

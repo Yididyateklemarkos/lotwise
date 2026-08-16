@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Lotwise — Bulk Trade Registry{% endblock %}
+
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-home.jpg') }}');"></div></div>
+{% endblock %}
+
 {% block content %}
 
 <div id="parallax-field" style="position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:-1;">
@@ -102,21 +107,13 @@
 </div>
 
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:60px;">
-  <div class="lux-panel lux-tilt">
-    <div class="lux-photo"></div>
-    <div class="lux-panel-content">
-      <div class="eyebrow">Discretion, by design</div>
-      <h3>Nothing here is public.</h3>
-      <p>No open listings, no scraping, no cold outreach. What happens inside the circle stays inside it.</p>
-    </div>
+  <div class="card">
+    <h2 style="margin-bottom:10px;">Your inventory, in front of people who actually buy.</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">No public listings, no tire-kickers. What you're moving goes straight in front of buyers already sourcing at container scale. List it, get discovered by the circle, negotiate directly — every dollar you close stays yours.</p>
   </div>
-  <div class="lux-panel lux-tilt" style="animation-delay:0.08s;">
-    <div class="lux-photo"></div>
-    <div class="lux-panel-content">
-      <div class="eyebrow">Standing, not scale</div>
-      <h3>We admit people, not accounts.</h3>
-      <p>Every member is reviewed by hand. Volume doesn't buy your way in — legitimacy does.</p>
-    </div>
+  <div class="card" style="animation-delay:0.08s;">
+    <h2 style="margin-bottom:10px;">Real supply, not another dead lead.</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Every member you meet here has already been reviewed by hand. Post what you need or browse live inventory, and reach a counterparty who's exactly who they say they are.</p>
   </div>
 </div>
 

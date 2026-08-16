@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block title %}About — Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-about.jpg') }}');"></div></div>
+{% endblock %}
 {% block content %}
 <div style="max-width:640px;">
   <h1>A closed registry for people who actually move volume.</h1>
