@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Connection #{{ connection.id }} — Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-about.jpg') }}');"></div></div>
+{% endblock %}
 {% block content %}
 <h1>Connection #{{ connection.id }}</h1>
 <p class="muted" style="margin-bottom:16px;">Status: <strong>{{ connection.status.replace('_',' ')|capitalize }}</strong></p>
