@@ -632,7 +632,6 @@ def billing_pay(tier):
         tier=tier,
         amount=prices[tier],
         crypto_configured=nowpayments.is_nowpayments_configured(),
-        paypal_configured=paypal.is_paypal_configured(),
     )
 
 
