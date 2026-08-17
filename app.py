@@ -1141,6 +1141,8 @@ def setup_migrate():
          "ALTER TABLE payment_orders ADD COLUMN IF NOT EXISTS provider_order_id VARCHAR(128)"),
         ("payment_orders.amount_received column",
          "ALTER TABLE payment_orders ADD COLUMN IF NOT EXISTS amount_received DOUBLE PRECISION"),
+        ("users.address column",
+         "ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT"),
     ]
 
     results = []
