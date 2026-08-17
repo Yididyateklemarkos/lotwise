@@ -9,18 +9,29 @@
 <p class="muted" style="margin-bottom:24px;">Every listing and sourcing request from verified traders across the platform, in one place.</p>
 
 <form method="GET" action="{{ url_for('browse') }}" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px;">
-  <input type="text" name="q" value="{{ q }}" placeholder="Search titles and descriptions..." style="flex:1; min-width:220px; padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg);">
-  <select name="category" style="padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg);">
-    <option value="">All categories</option>
-    {% for cat in categories %}
-    <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>
-    {% endfor %}
-  </select>
-  <select name="type" style="padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg);">
-    <option value="all" {% if item_type == 'all' %}selected{% endif %}>All</option>
-    <option value="listings" {% if item_type == 'listings' %}selected{% endif %}>Listings only</option>
-    <option value="requests" {% if item_type == 'requests' %}selected{% endif %}>Requests only</option>
-  </select>
+  <input type="text" name="q" value="{{ q }}" placeholder="Search titles and descriptions..." style="flex:1; min-width:220px; padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink);">
+
+  <div class="cdd">
+    <button type="button" class="cdd-trigger"><span class="cdd-label">{{ category if category else "All categories" }}</span><span class="cdd-arrow"></span></button>
+    <div class="cdd-menu">
+      <div class="cdd-option {% if not category %}selected{% endif %}" data-value="">All categories</div>
+      {% for cat in categories %}
+      <div class="cdd-option {% if cat == category %}selected{% endif %}" data-value="{{ cat }}">{{ cat }}</div>
+      {% endfor %}
+    </div>
+    <input type="hidden" name="category" value="{{ category }}">
+  </div>
+
+  <div class="cdd">
+    <button type="button" class="cdd-trigger"><span class="cdd-label">{{ "Listings only" if item_type == "listings" else "Requests only" if item_type == "requests" else "All" }}</span><span class="cdd-arrow"></span></button>
+    <div class="cdd-menu">
+      <div class="cdd-option {% if item_type == 'all' %}selected{% endif %}" data-value="all">All</div>
+      <div class="cdd-option {% if item_type == 'listings' %}selected{% endif %}" data-value="listings">Listings only</div>
+      <div class="cdd-option {% if item_type == 'requests' %}selected{% endif %}" data-value="requests">Requests only</div>
+    </div>
+    <input type="hidden" name="type" value="{{ item_type }}">
+  </div>
+
   <button type="submit" class="btn btn-solid btn-sm">Search</button>
   {% if q or category or item_type != 'all' %}
   <a href="{{ url_for('browse') }}" class="btn btn-sm">Clear</a>

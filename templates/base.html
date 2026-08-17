@@ -157,6 +157,19 @@
   .price-row .mark-no { color: #55555c; flex-shrink:0; font-weight:800; }
   .price-row .mark-val { color: var(--ink-soft); flex-shrink:0; font-weight:700; font-size:12px; min-width:60px; }
 
+  /* Custom dropdown — replaces native <select>, since browsers render the
+     native option list in system colors that can't be themed. */
+  .cdd { position:relative; min-width:170px; }
+  .cdd-trigger { width:100%; text-align:left; padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); backdrop-filter: blur(10px); color:var(--ink); font-size:14px; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:8px; transition: all 0.25s var(--ease); }
+  .cdd-trigger:hover { border-color: rgba(255,255,255,0.25); }
+  .cdd-trigger .cdd-arrow { width:9px; height:9px; border-right:1.5px solid var(--gray); border-bottom:1.5px solid var(--gray); transform: rotate(45deg); transition: transform 0.25s var(--ease); flex-shrink:0; }
+  .cdd.open .cdd-trigger .cdd-arrow { transform: rotate(-135deg); }
+  .cdd-menu { position:absolute; top:calc(100% + 8px); left:0; right:0; background:#131316; border:1px solid var(--glass-border); border-radius:12px; box-shadow: var(--shadow-lift); padding:6px; z-index:60; display:none; max-height:280px; overflow-y:auto; }
+  .cdd.open .cdd-menu { display:block; animation: riseIn 0.2s var(--ease); }
+  .cdd-option { padding:9px 12px; border-radius:8px; font-size:14px; color:var(--ink-soft); cursor:pointer; transition: all 0.15s var(--ease); }
+  .cdd-option:hover { background: rgba(255,255,255,0.07); color:#fff; }
+  .cdd-option.selected { background: var(--silver); color:#0A0A0A; font-weight:600; }
+
   /* Luxury image panel — texture placeholder until real photography is supplied.
      Drop a real photo in via inline style="background-image: url(...)" on
      .lux-photo and this treatment (dark gradient + grain + vignette) will
@@ -291,6 +304,39 @@
   </div>
 </footer>
 
+<script>
+(function() {
+  function closeAll(except) {
+    document.querySelectorAll('.cdd.open').forEach(function(o) { if (o !== except) o.classList.remove('open'); });
+  }
+  document.querySelectorAll('.cdd').forEach(function(dd) {
+    var trigger = dd.querySelector('.cdd-trigger');
+    var hidden = dd.querySelector('input[type=hidden]');
+    var label = dd.querySelector('.cdd-label');
+    if (!trigger) return;
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var willOpen = !dd.classList.contains('open');
+      closeAll(dd);
+      dd.classList.toggle('open', willOpen);
+    });
+    dd.querySelectorAll('.cdd-option').forEach(function(opt) {
+      opt.addEventListener('click', function() {
+        dd.querySelectorAll('.cdd-option').forEach(function(o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        if (hidden) hidden.value = opt.dataset.value;
+        if (label) label.textContent = opt.textContent;
+        dd.classList.remove('open');
+        if (dd.dataset.autosubmit === 'true') {
+          var form = dd.closest('form');
+          if (form) form.submit();
+        }
+      });
+    });
+  });
+  document.addEventListener('click', function() { closeAll(null); });
+})();
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>
