@@ -7,10 +7,10 @@
 
 <div class="dash-nav">
   <a href="{{ url_for('browse') }}">Marketplace</a>
-  {% if current_user.account_type == 'supplier' or current_user.is_admin %}
+  {% if current_user.account_type == 'supplier' or current_user.has_dual_access() %}
     <a href="{{ url_for('new_listing') }}">New listing</a>
   {% endif %}
-  {% if current_user.account_type == 'buyer' or current_user.is_admin %}
+  {% if current_user.account_type == 'buyer' or current_user.has_dual_access() %}
     <a href="{{ url_for('new_sourcing_request') }}">New sourcing request</a>
   {% endif %}
   <a href="{{ url_for('track_record') }}">Track record</a>
@@ -79,14 +79,14 @@
 {% endif %}
 
 <div class="card">
-  <h2>{{ 'Your listings' if current_user.account_type == 'supplier' else 'Your sourcing requests' if current_user.account_type == 'buyer' else 'Your listings & requests' }}</h2>
+  <h2>{{ 'Your listings & requests' if current_user.has_dual_access() else 'Your listings' if current_user.account_type == 'supplier' else 'Your sourcing requests' }}</h2>
   <p class="muted" style="margin:6px 0 16px;">
-    {% if current_user.account_type == 'supplier' %}
+    {% if current_user.has_dual_access() %}
+      {{ items|length }} posted{% if current_user.subscription_tier != 'premium' %} — up to {{ current_user.listing_limit() }} listings and {{ current_user.listing_limit() }} requests on your {{ current_user.subscription_tier|capitalize }} plan{% endif %}.
+    {% elif current_user.account_type == 'supplier' %}
       {{ items|length }} of {{ current_user.listing_limit() }} used on your {{ current_user.subscription_tier|capitalize }} plan.
-    {% elif current_user.account_type == 'buyer' %}
-      {{ items|length }} active requests.
     {% else %}
-      {{ items|length }} posted.
+      {{ items|length }} active requests.
     {% endif %}
   </p>
   {% if items %}

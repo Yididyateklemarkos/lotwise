@@ -23,23 +23,27 @@ CONNECTION_STATUSES = ("open", "reported_closed", "reported_no_deal")
 TIER_LISTING_LIMITS = {"standard": 3, "plus": 7, "premium": 999}
 TIER_PRICE_USD = {"standard": 39, "plus": 79, "premium": 139}
 BUYER_TIER_PRICE_USD = {"standard": 39, "plus": 79, "premium": 139}
+STANDARD_CONTACT_LIMIT = 7  # Standard tier
+PLUS_CONTACT_LIMIT = 21     # Plus tier — Premium has no cap
 
 SUPPLIER_TIER_FEATURES = {
     "standard": [
         "Up to 3 active listings",
         "Full marketplace access — browse every listing and sourcing request",
-        "Direct contact info exchange on every matched connection",
+        f"Capped at {STANDARD_CONTACT_LIMIT} total contacts",
         "Track record profile",
     ],
     "plus": [
         "Up to 7 active listings",
-        "Everything in Standard",
+        "Both roles unlocked — list products AND post sourcing requests",
+        f"Capped at {PLUS_CONTACT_LIMIT} total contacts",
         "Urgent-sale flag on your listings (priority placement)",
         "Priority tier grade eligibility (B and above)",
     ],
     "premium": [
         "Unlimited active listings",
-        "Everything in Plus",
+        "Both roles unlocked — list products AND post sourcing requests",
+        "Unlimited contacts — no cap",
         "Top placement across the marketplace",
         "Priority tier grade eligibility (A)",
     ],
@@ -49,18 +53,20 @@ BUYER_TIER_FEATURES = {
     "standard": [
         "Up to 3 active sourcing requests",
         "Full marketplace access — browse every listing and sourcing request",
-        "Direct contact info exchange on every matched connection",
+        f"Capped at {STANDARD_CONTACT_LIMIT} total contacts",
         "Track record profile",
     ],
     "plus": [
         "Up to 7 active sourcing requests",
-        "Everything in Standard",
+        "Both roles unlocked — list products AND post sourcing requests",
+        f"Capped at {PLUS_CONTACT_LIMIT} total contacts",
         "Urgent-need flag on your requests (priority placement)",
         "Priority tier grade eligibility (B and above)",
     ],
     "premium": [
         "Unlimited active sourcing requests",
-        "Everything in Plus",
+        "Both roles unlocked — list products AND post sourcing requests",
+        "Unlimited contacts — no cap",
         "Top placement across the marketplace",
         "Priority tier grade eligibility (A)",
     ],
@@ -78,6 +84,7 @@ class User(UserMixin, db.Model):
     company_name = db.Column(db.String(255), nullable=False)
     account_type = db.Column(db.String(20), nullable=False)  # supplier / buyer
     country = db.Column(db.String(100))
+    address = db.Column(db.Text)  # full residential/business address, verified against National ID
     contact_name = db.Column(db.String(255))
     phone = db.Column(db.String(50))
     contact_method = db.Column(db.String(20))  # whatsapp / telegram / phone
@@ -129,6 +136,31 @@ class User(UserMixin, db.Model):
     def can_create_request(self):
         active_count = SourcingRequest.query.filter_by(user_id=self.id, is_active=True).count()
         return active_count < self.listing_limit()
+
+    def has_dual_access(self):
+        """Plus and Premium let an account act as both supplier and buyer —
+        list products AND post sourcing requests — regardless of which role
+        they originally registered as. Standard stays single-role."""
+        if self.is_admin:
+            return True
+        return self.subscription_tier in ("plus", "premium") and self.is_active_member()
+
+    def contact_count(self):
+        return Connection.query.filter(
+            (Connection.supplier_id == self.id) | (Connection.buyer_id == self.id)
+        ).count()
+
+    def contact_limit(self):
+        """None means unlimited (Premium, admin)."""
+        if self.is_admin:
+            return None
+        return {"standard": STANDARD_CONTACT_LIMIT, "plus": PLUS_CONTACT_LIMIT}.get(self.subscription_tier)
+
+    def can_contact_new_person(self):
+        limit = self.contact_limit()
+        if limit is None:
+            return True
+        return self.contact_count() < limit
 
     def is_verified(self):
         if self.is_admin:

@@ -39,6 +39,14 @@
     <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
       <a href="{{ url_for('admin_user_detail', user_id=u.id) }}" class="btn btn-sm">Review</a>
       {% if not u.is_admin %}
+      <form method="POST" action="{{ url_for('admin_set_tier', user_id=u.id) }}" style="display:flex; gap:6px;">
+        <select name="tier" style="padding:6px 10px; border-radius:100px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:12px; color:var(--ink);">
+          <option value="standard" {% if u.subscription_tier == 'standard' %}selected{% endif %}>Standard</option>
+          <option value="plus" {% if u.subscription_tier == 'plus' %}selected{% endif %}>Plus</option>
+          <option value="premium" {% if u.subscription_tier == 'premium' %}selected{% endif %}>Premium</option>
+        </select>
+        <button type="submit" class="btn btn-sm">Set &amp; bypass</button>
+      </form>
       <form method="POST" action="{{ url_for('admin_toggle_payment_exempt', user_id=u.id) }}">
         <button type="submit" class="btn btn-sm">{{ 'Remove payment bypass' if u.payment_exempt else 'Bypass payment' }}</button>
       </form>

@@ -13,6 +13,7 @@ from werkzeug.utils import secure_filename
 from models import (db, User, VerificationDocument, Listing, ListingPhoto, SourcingRequest,
                      SourcingRequestPhoto, Inquiry, Connection, Message, TrackRecordEntry, PaymentOrder,
                      ContactMessage, TIER_LISTING_LIMITS, TIER_PRICE_USD, BUYER_TIER_PRICE_USD,
+                     STANDARD_CONTACT_LIMIT,
                      SUPPLIER_TIER_FEATURES, BUYER_TIER_FEATURES)
 import nowpayments
 import paypal
@@ -257,28 +258,38 @@ def logout():
 @login_required
 def verification_upload():
     if request.method == "POST":
-        doc_type = request.form.get("doc_type")
-        file = request.files.get("document")
+        address = request.form.get("address", "").strip()
+        national_id_file = request.files.get("national_id")
+        passport_file = request.files.get("passport")
         agree_terms = request.form.get("agree_terms")
 
         if not agree_terms:
-            flash("Please confirm the document is accurate and agree to the Terms of Service before submitting.", "error")
+            flash("Please confirm the documents are accurate and agree to the Terms of Service before submitting.", "error")
             return redirect(url_for("verification_upload"))
 
-        if not file or not allowed_file(file.filename):
-            flash("Please upload a valid PDF or image file.", "error")
+        if not address:
+            flash("Please enter your full address — this should match the address on your National ID.", "error")
             return redirect(url_for("verification_upload"))
 
-        filename = secure_filename(f"{current_user.id}_{doc_type}_{file.filename}")
-        path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(path)
+        if not national_id_file or not allowed_file(national_id_file.filename):
+            flash("Please upload a valid National ID (PDF or image).", "error")
+            return redirect(url_for("verification_upload"))
 
-        doc = VerificationDocument(user_id=current_user.id, doc_type=doc_type,
-                                    file_path=filename)
-        db.session.add(doc)
+        if not passport_file or not allowed_file(passport_file.filename):
+            flash("Please upload a valid Passport (PDF or image).", "error")
+            return redirect(url_for("verification_upload"))
+
+        current_user.address = address
+
+        for doc_type, file in (("national_id", national_id_file), ("passport", passport_file)):
+            filename = secure_filename(f"{current_user.id}_{doc_type}_{uuid.uuid4().hex[:8]}_{file.filename}")
+            path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            file.save(path)
+            db.session.add(VerificationDocument(user_id=current_user.id, doc_type=doc_type, file_path=filename))
+
         current_user.verification_status = "pending"
         db.session.commit()
-        flash("Document uploaded. Our team will review your application shortly.", "success")
+        flash("Documents uploaded. Our team will review your application shortly.", "success")
         return redirect(url_for("dashboard"))
 
     return render_template("dashboard/verification_upload.html")
@@ -291,7 +302,7 @@ def verification_upload():
 @login_required
 def dashboard():
     current_user.sync_expiry()
-    if current_user.is_admin:
+    if current_user.has_dual_access():
         items = (Listing.query.filter_by(user_id=current_user.id).all() +
                  SourcingRequest.query.filter_by(user_id=current_user.id).all())
         items.sort(key=lambda x: x.created_at, reverse=True)
@@ -334,7 +345,7 @@ def update_profile_photo():
 @app.route("/dashboard/listings/new", methods=["GET", "POST"])
 @member_required
 def new_listing():
-    if current_user.account_type != "supplier" and not current_user.is_admin:
+    if current_user.account_type != "supplier" and not current_user.is_admin and not current_user.has_dual_access():
         abort(403)
     if not current_user.can_create_listing():
         flash(f"You've reached your plan's limit of {current_user.listing_limit()} listings. Upgrade to add more.", "warning")
@@ -415,7 +426,7 @@ def track_record():
 @app.route("/dashboard/requests/new", methods=["GET", "POST"])
 @member_required
 def new_sourcing_request():
-    if current_user.account_type != "buyer" and not current_user.is_admin:
+    if current_user.account_type != "buyer" and not current_user.is_admin and not current_user.has_dual_access():
         abort(403)
 
     if not current_user.can_create_request() and not current_user.is_admin:
@@ -505,6 +516,10 @@ def inquire(listing_id):
     if listing.user_id == current_user.id:
         abort(403)  # can't inquire on your own listing
 
+    if not current_user.can_contact_new_person():
+        flash(f"Your {current_user.subscription_tier.capitalize()} plan is capped at {current_user.contact_limit()} contacts. Upgrade to reach more people.", "warning")
+        return redirect(url_for("billing_upgrade"))
+
     inquiry = Inquiry(listing_id=listing.id, buyer_id=current_user.id,
                        message=request.form.get("message", ""))
     db.session.add(inquiry)
@@ -528,6 +543,10 @@ def respond_to_request(request_id):
     req = SourcingRequest.query.get_or_404(request_id)
     if req.user_id == current_user.id:
         abort(403)  # can't respond to your own request
+
+    if not current_user.can_contact_new_person():
+        flash(f"Your {current_user.subscription_tier.capitalize()} plan is capped at {current_user.contact_limit()} contacts. Upgrade to reach more people.", "warning")
+        return redirect(url_for("billing_upgrade"))
 
     inquiry = Inquiry(sourcing_request_id=req.id, buyer_id=current_user.id,
                        message=request.form.get("message", ""))
@@ -935,6 +954,25 @@ def admin_toggle_payment_exempt(user_id):
     user.payment_exempt = not user.payment_exempt
     db.session.commit()
     flash(f"{user.company_name} {'now bypasses payment' if user.payment_exempt else 'no longer bypasses payment'}.", "info")
+    return redirect(request.referrer or url_for("admin_users"))
+
+
+@app.route("/admin/user/<int:user_id>/set-tier", methods=["POST"])
+@admin_required
+def admin_set_tier(user_id):
+    """Lets admin assign any tier to a user and auto-bypasses payment — the
+    fastest way to test how Standard/Plus/Premium actually behave without
+    running a real payment for each one."""
+    user = User.query.get_or_404(user_id)
+    tier = request.form.get("tier", "")
+    if tier not in ("standard", "plus", "premium"):
+        flash("Invalid tier.", "error")
+        return redirect(request.referrer or url_for("admin_users"))
+
+    user.subscription_tier = tier
+    user.payment_exempt = True
+    db.session.commit()
+    flash(f"{user.company_name} set to {tier.capitalize()} (payment bypassed).", "info")
     return redirect(request.referrer or url_for("admin_users"))
 
 
