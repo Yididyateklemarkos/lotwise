@@ -509,6 +509,20 @@ def browse():
     )
 
 
+@app.route("/listing/<int:listing_id>")
+@member_required
+def listing_detail(listing_id):
+    listing = Listing.query.get_or_404(listing_id)
+    return render_template("dashboard/listing_detail.html", listing=listing)
+
+
+@app.route("/request/<int:request_id>")
+@member_required
+def request_detail(request_id):
+    req = SourcingRequest.query.get_or_404(request_id)
+    return render_template("dashboard/request_detail.html", req=req)
+
+
 @app.route("/listing/<int:listing_id>/inquire", methods=["POST"])
 @member_required
 def inquire(listing_id):

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ req.title }} — Lotwise{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('browse') }}" class="muted" style="text-decoration:underline; font-size:13px;">← Back to Browse</a>
+
+<div style="display:grid; grid-template-columns:1.3fr 0.7fr; gap:32px; margin-top:16px; align-items:start;">
+  <div>
+    {% if req.photos %}
+    <div class="card" style="padding:0; overflow:hidden;">
+      <img id="main-photo" src="{{ url_for('static', filename='uploads/' + req.photos[0].file_path) }}" style="width:100%; aspect-ratio:16/10; object-fit:cover; display:block;" alt="{{ req.title }}">
+    </div>
+    {% if req.photos|length > 1 %}
+    <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+      {% for photo in req.photos %}
+      <img src="{{ url_for('static', filename='uploads/' + photo.file_path) }}" class="thumb-select" data-full="{{ url_for('static', filename='uploads/' + photo.file_path) }}" style="width:76px; height:76px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid {% if loop.first %}var(--gold){% else %}transparent{% endif %};" alt="">
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="card browse-thumb-empty" style="height:280px; border-radius:var(--radius);">
+      <span>No reference photos provided</span>
+    </div>
+    {% endif %}
+
+    <div class="card" style="margin-top:20px;">
+      <h2 style="margin-bottom:10px;">Description</h2>
+      {% if req.description %}
+      <p style="white-space:pre-wrap; line-height:1.7;">{{ req.description }}</p>
+      {% else %}
+      <p class="muted">No description provided.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="muted" style="font-size:12px; margin-bottom:6px;">
+        <span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Sourcing request</span>
+        &nbsp;{{ req.category }}{% if req.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}
+      </div>
+      <h1 style="font-size:24px;">{{ req.title }}</h1>
+      <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px; font-size:14px;">
+        <div class="card-row"><span class="muted">Quantity</span><strong>{{ req.quantity_fcl }} FCL</strong></div>
+        {% if req.target_price_note %}<div class="card-row"><span class="muted">Target price</span><strong>{{ req.target_price_note }}</strong></div>{% endif %}
+        <div class="card-row"><span class="muted">Buyer</span><strong>{{ req.owner.company_name }}</strong></div>
+      </div>
+
+      {% if req.user_id != current_user.id %}
+      <form method="POST" action="{{ url_for('respond_to_request', request_id=req.id) }}" style="margin-top:20px;">
+        <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">Message (optional)</label>
+        <textarea name="message" rows="3" placeholder="Let them know what you can offer..." style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink); font-family:inherit; font-size:13px; resize:vertical;"></textarea>
+        <button type="submit" class="btn btn-solid" style="width:100%; margin-top:12px; padding:12px;">I can supply this</button>
+      </form>
+      {% else %}
+      <div class="hint" style="margin-top:16px;">This is your own request.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.thumb-select').forEach(function(t) {
+  t.addEventListener('click', function() {
+    document.getElementById('main-photo').src = t.dataset.full;
+    document.querySelectorAll('.thumb-select').forEach(function(o) { o.style.borderColor = 'transparent'; });
+    t.style.borderColor = 'var(--gold)';
+  });
+});
+</script>
+{% endblock %}

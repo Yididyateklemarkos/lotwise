@@ -92,6 +92,8 @@
   .browse-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.4s var(--ease); }
   .browse-card:hover .browse-thumb img { transform: scale(1.05); }
   .browse-thumb-empty { display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #1a1a1d, #101012); color: var(--gray); font-size:13px; font-weight:600; }
+  .browse-thumb { position:relative; }
+  .photo-count-badge { position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.7); backdrop-filter: blur(6px); color:#fff; font-size:11px; font-weight:700; padding:3px 8px; border-radius:100px; }
   @media (max-width: 900px) { .browse-grid { grid-template-columns:repeat(2,1fr); } }
   @media (max-width: 600px) { .browse-grid { grid-template-columns:1fr; } }
   .card-row { display:flex; justify-content: space-between; align-items:center; }

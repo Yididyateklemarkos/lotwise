@@ -41,23 +41,27 @@
 <div class="browse-grid">
 {% for entry in feed %}
 {% set item = entry.item %}
+{% set detail_url = url_for('listing_detail', listing_id=item.id) if entry.kind == 'listing' else url_for('request_detail', request_id=item.id) %}
 <div class="card browse-card">
+  <a href="{{ detail_url }}" style="display:block; color:inherit; text-decoration:none;">
   {% if item.photos %}
   <div class="browse-thumb">
     <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" alt="{{ item.title }}">
+    {% if item.photos|length > 1 %}<div class="photo-count-badge">+{{ item.photos|length - 1 }}</div>{% endif %}
   </div>
   {% else %}
   <div class="browse-thumb browse-thumb-empty">
     <span>{{ item.category }}</span>
   </div>
   {% endif %}
+  </a>
 
   <div style="padding:16px;">
     <div class="muted" style="font-size:12px; margin-bottom:6px;">
       {% if entry.kind == 'listing' %}<span class="pill" style="background:rgba(30,132,73,0.14); color:var(--ok);">Listing</span>{% else %}<span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Sourcing request</span>{% endif %}
       &nbsp;{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}
     </div>
-    <h2 style="font-size:17px; margin:0 0 6px;">{{ item.title }}</h2>
+    <a href="{{ detail_url }}" style="text-decoration:none; color:inherit;"><h2 style="font-size:17px; margin:0 0 6px;">{{ item.title }}</h2></a>
     {% if item.description %}<p class="muted" style="font-size:13px; margin-bottom:10px;">{{ item.description[:110] }}{% if item.description|length > 110 %}…{% endif %}</p>{% endif %}
     <div class="muted" style="font-size:12px; margin-bottom:12px;">
       {{ item.quantity_fcl }} FCL
@@ -66,16 +70,8 @@
       · {{ item.owner.company_name }}
     </div>
 
-    {% if entry.kind == 'listing' and item.user_id != current_user.id %}
-    <form method="POST" action="{{ url_for('inquire', listing_id=item.id) }}" style="display:flex; gap:8px;">
-      <input type="text" name="message" placeholder="Optional message..." style="flex:1; min-width:0; padding:8px 10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:12px;">
-      <button type="submit" class="btn btn-solid btn-sm">Inquire</button>
-    </form>
-    {% elif entry.kind == 'request' and item.user_id != current_user.id %}
-    <form method="POST" action="{{ url_for('respond_to_request', request_id=item.id) }}" style="display:flex; gap:8px;">
-      <input type="text" name="message" placeholder="Optional message..." style="flex:1; min-width:0; padding:8px 10px; border-radius:8px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:12px;">
-      <button type="submit" class="btn btn-solid btn-sm">I can supply</button>
-    </form>
+    {% if item.user_id != current_user.id %}
+    <a href="{{ detail_url }}" class="btn btn-solid btn-sm" style="display:block; text-align:center;">View details &amp; {{ 'inquire' if entry.kind == 'listing' else 'respond' }}</a>
     {% else %}
     <div class="hint">This is your own {{ 'listing' if entry.kind == 'listing' else 'request' }}.</div>
     {% endif %}
