@@ -15,7 +15,7 @@
   <svg class="ring-accent ring-2" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="98" fill="none" stroke="url(#ringGrad2)" stroke-width="0.6"/><defs><linearGradient id="ringGrad2" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#C9A227" stop-opacity="0.4"/><stop offset="100%" stop-color="#C9A227" stop-opacity="0"/></linearGradient></defs></svg>
 </div>
 
-<div style="display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center; padding: 30px 0 20px;">
+<div class="hero-grid" style="padding: 30px 0 20px;">
   <div>
     <div class="pill" style="margin-bottom:20px; background: var(--gold-soft); color: var(--gold);">Invitation-grade access, by application only</div>
     <h1 style="font-size:52px; line-height:1.06;">A private circle for traders who move real volume.</h1>
@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:56px 0 60px;">
+<div class="grid-3" style="margin:56px 0 60px;">
   <div class="card" style="text-align:center;">
     <div style="font-size:38px; font-weight:800;">${{ stats.volume_usd }}</div>
     <div class="muted">Moved between members to date</div>
@@ -47,7 +47,7 @@
 
 <h2 style="margin-bottom:6px;">Inside the circle right now</h2>
 <p class="muted" style="margin-bottom:18px;">Full detail, pricing, and a direct line to the counterparty unlock the moment you're admitted.</p>
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:60px;">
+<div class="grid-3" style="margin-bottom:60px;">
   {% if listings and listings|length > 0 %}
     {% for listing in listings %}
     <div class="card" style="position:relative; overflow:hidden;">
@@ -95,7 +95,7 @@
   {% endif %}
 </div>
 
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:60px;">
+<div class="grid-2" style="margin-bottom:60px;">
   <div class="card">
     <h2 style="margin-bottom:10px;">Your inventory, in front of people who actually buy.</h2>
     <p class="muted" style="font-size:14px; line-height:1.6;">No public listings, no tire-kickers. What you're moving goes straight in front of buyers already sourcing at container scale. List it, get discovered by the circle, negotiate directly — every dollar you close stays yours.</p>
@@ -106,7 +106,7 @@
   </div>
 </div>
 
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:60px;">
+<div class="grid-2" style="margin-bottom:60px;">
   <div class="card">
     <h2 style="margin-bottom:10px;">Your inventory, in front of people who actually buy.</h2>
     <p class="muted" style="font-size:14px; line-height:1.6;">No public listings, no tire-kickers. What you're moving goes straight in front of buyers already sourcing at container scale. List it, get discovered by the circle, negotiate directly — every dollar you close stays yours.</p>
@@ -118,7 +118,7 @@
 </div>
 
 <h2 style="margin-bottom:18px;">How admission works</h2>
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:60px;">
+<div class="grid-4" style="margin-bottom:60px;">
   <div class="card">
     <div class="badge-grade" style="margin-bottom:14px;">1</div>
     <strong style="font-size:14px;">Apply</strong>
@@ -154,8 +154,8 @@
 
 {% block scripts %}
 <style>
-  @media (max-width: 800px) {
-    #globe-wrap { display:none; }
+  @media (max-width: 640px) {
+    #globe-wrap { position:static; max-height:280px; margin:20px auto 0; }
     #parallax-field { display:none; }
   }
   .orb { position:absolute; border-radius:50%; filter: blur(60px); opacity:0.35; will-change: transform; }

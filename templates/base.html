@@ -159,6 +159,21 @@
   .price-row .mark-no { color: #55555c; flex-shrink:0; font-weight:800; }
   .price-row .mark-val { color: var(--ink-soft); flex-shrink:0; font-weight:700; font-size:12px; min-width:60px; }
 
+  /* Responsive grid utilities — replace ad-hoc inline grid-template-columns
+     so every multi-column section actually collapses on mobile instead of
+     overflowing or getting cut off. */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .hero-grid { display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center; }
+  @media (max-width: 860px) {
+    .grid-3, .grid-4 { grid-template-columns:repeat(2,1fr); }
+  }
+  @media (max-width: 640px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+    .hero-grid { grid-template-columns:1fr; }
+  }
+
   /* Custom dropdown — replaces native <select>, since browsers render the
      native option list in system colors that can't be themed. */
   .cdd { position:relative; min-width:170px; }
@@ -224,6 +239,23 @@
   .account-dd-photo-btn { font-size:12px; font-weight:600; color: var(--gold); cursor:pointer; text-decoration:underline; }
   .account-dd-menu a { padding:9px 8px; border-radius:8px; text-decoration:none; color:var(--ink-soft); font-size:14px; font-weight:500; transition: all 0.2s var(--ease); }
   .account-dd-menu a:hover { background: rgba(255,255,255,0.06); color:#fff; }
+
+  .mobile-hamburger { display:none; }
+  .hamburger-trigger { list-style:none; cursor:pointer; width:36px; height:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border:1px solid var(--glass-border); border-radius:10px; background: var(--glass-bg); }
+  .hamburger-trigger::-webkit-details-marker { display:none; }
+  .hamburger-trigger span { width:16px; height:1.5px; background:var(--ink); display:block; }
+  .mobile-only-link { display:none; }
+
+  @media (max-width: 700px) {
+    .header-inner { padding:14px 16px; gap:10px; }
+    .logo { font-size:16px; white-space:nowrap; }
+    nav { gap:10px; }
+    .nav-link { display:none; }
+    .mobile-hamburger { display:block; }
+    .account-dd-label { display:none; }
+    .mobile-only-link { display:block; }
+    .btn-sm { padding:8px 12px; font-size:12px; white-space:nowrap; }
+  }
 </style>
 {% block extra_head %}{% endblock %}
 </head>
@@ -248,7 +280,7 @@
                 <span class="account-avatar-fallback">{{ current_user.company_name[0]|upper }}</span>
               {% endif %}
             </span>
-            My Account
+            <span class="account-dd-label">My Account</span>
           </summary>
           <div class="account-dd-menu">
             <div class="account-dd-photo-row">
@@ -266,6 +298,9 @@
                 </label>
               </form>
             </div>
+            <a href="{{ url_for('browse') }}" class="mobile-only-link">Browse</a>
+            <a href="{{ url_for('contact') }}" class="mobile-only-link">Contact us</a>
+            {% if current_user.is_admin %}<a href="{{ url_for('admin_dashboard') }}" class="mobile-only-link">Admin</a>{% endif %}
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
             <a href="{{ url_for('billing_upgrade') }}">Pricing</a>
           </div>
@@ -277,6 +312,16 @@
         <a href="{{ url_for('faq') }}" class="nav-link">FAQ</a>
         <a href="{{ url_for('login') }}" class="btn btn-sm">Log in</a>
         <a href="{{ url_for('signup') }}" class="btn btn-solid btn-sm">Get started</a>
+        <details class="account-dd mobile-hamburger">
+          <summary class="hamburger-trigger" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </summary>
+          <div class="account-dd-menu">
+            <a href="{{ url_for('about') }}">About</a>
+            <a href="{{ url_for('pricing') }}">Pricing</a>
+            <a href="{{ url_for('faq') }}">FAQ</a>
+          </div>
+        </details>
       {% endif %}
     </nav>
   </div>
