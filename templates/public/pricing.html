@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Pricing — Lotwise{% endblock %}
+{% block title %}Pricing | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-pricing.jpg') }}');"></div></div>
 {% endblock %}
 {% block content %}
 <h1>Simple pricing. Zero commission, ever.</h1>
-<p class="muted" style="margin-bottom:28px; max-width:520px;">Billed monthly in USD, cancel any time. Whatever you close on Lotwise is entirely yours — no cut, no hidden fee, no matter the deal size.</p>
+<p class="muted" style="margin-bottom:28px; max-width:520px;">Billed monthly in USD, cancel any time. Whatever you close on Lotwise is entirely yours: no cut, no hidden fee, no matter the deal size.</p>
 
 <div class="role-toggle" id="role-toggle">
   <button type="button" class="active" data-role="supplier">For suppliers</button>
@@ -22,7 +22,7 @@
       <div class="price-row"><span class="mark-val">Up to 7</span> Total contacts</div>
       <div class="price-row"><span class="mark-no">✕</span> Post as both buyer &amp; supplier</div>
       <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
-      <div class="price-row"><span class="mark-no">✕</span> Urgent-sale flag</div>
+      <div class="price-row"><span class="mark-no">✕</span> Urgent sale flag</div>
       <div class="price-row"><span class="mark-no">✕</span> Priority tier grading</div>
     </div>
     <div class="card price-card featured">
@@ -33,7 +33,7 @@
       <div class="price-row"><span class="mark-val">Up to 21</span> Total contacts</div>
       <div class="price-row"><span class="mark-yes">✓</span> Post as both buyer &amp; supplier</div>
       <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
-      <div class="price-row"><span class="mark-yes">✓</span> Urgent-sale flag</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Urgent sale flag</div>
       <div class="price-row"><span class="mark-val">B+</span> Priority tier grading</div>
     </div>
     <div class="card price-card">
@@ -44,7 +44,7 @@
       <div class="price-row"><span class="mark-val">Unlimited</span> Total contacts</div>
       <div class="price-row"><span class="mark-yes">✓</span> Post as both buyer &amp; supplier</div>
       <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
-      <div class="price-row"><span class="mark-yes">✓</span> Urgent-sale flag</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Urgent sale flag</div>
       <div class="price-row"><span class="mark-val">A</span> Priority tier grading</div>
     </div>
   </div>
@@ -60,7 +60,7 @@
       <div class="price-row"><span class="mark-val">Up to 7</span> Total contacts</div>
       <div class="price-row"><span class="mark-no">✕</span> Post as both buyer &amp; supplier</div>
       <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
-      <div class="price-row"><span class="mark-no">✕</span> Urgent-need flag</div>
+      <div class="price-row"><span class="mark-no">✕</span> Urgent need flag</div>
       <div class="price-row"><span class="mark-no">✕</span> Priority tier grading</div>
     </div>
     <div class="card price-card featured">
@@ -71,7 +71,7 @@
       <div class="price-row"><span class="mark-val">Up to 21</span> Total contacts</div>
       <div class="price-row"><span class="mark-yes">✓</span> Post as both buyer &amp; supplier</div>
       <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
-      <div class="price-row"><span class="mark-yes">✓</span> Urgent-need flag</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Urgent need flag</div>
       <div class="price-row"><span class="mark-val">B+</span> Priority tier grading</div>
     </div>
     <div class="card price-card">
@@ -82,7 +82,7 @@
       <div class="price-row"><span class="mark-val">Unlimited</span> Total contacts</div>
       <div class="price-row"><span class="mark-yes">✓</span> Post as both buyer &amp; supplier</div>
       <div class="price-row"><span class="mark-yes">✓</span> Track record profile</div>
-      <div class="price-row"><span class="mark-yes">✓</span> Urgent-need flag</div>
+      <div class="price-row"><span class="mark-yes">✓</span> Urgent need flag</div>
       <div class="price-row"><span class="mark-val">A</span> Priority tier grading</div>
     </div>
   </div>
@@ -93,7 +93,7 @@
   <p class="muted" style="max-width:480px; margin:0 auto 20px; font-size:14px;">The subscription is the only thing you ever pay Lotwise. What you negotiate and close with another verified member is 100% between the two of you.</p>
   <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Apply now</a>
 </div>
-<p class="muted" style="text-align:center; font-size:12px; margin-top:16px;">Subscriptions begin only after your account is verified. Fees are non-refundable — cancel any time and you'll keep access until the end of your current billing period. See our <a href="{{ url_for('refunds') }}">Refund Policy</a>.</p>
+<p class="muted" style="text-align:center; font-size:12px; margin-top:16px;">Subscriptions begin only after your account is verified. Fees are nonrefundable. Cancel any time and you'll keep access until the end of your current billing period. See our <a href="{{ url_for('refunds') }}">Refund Policy</a>.</p>
 {% endblock %}
 
 {% block scripts %}

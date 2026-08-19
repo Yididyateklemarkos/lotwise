@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Payment incomplete — Lotwise{% endblock %}
+{% block title %}Payment incomplete | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-tarmac.jpg') }}');"></div></div>
 {% endblock %}
@@ -9,14 +9,14 @@
   <div style="width:56px; height:56px; border-radius:50%; background:#B8860B; color:#fff; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 20px;">!</div>
   <h1 style="font-size:24px; margin-bottom:8px;">Payment incomplete</h1>
   <p class="muted" style="margin-bottom:8px;">
-    We received part of your payment, but not the full amount — this plan hasn't been activated.
+    We received part of your payment, but not the full amount. This plan hasn't been activated.
   </p>
 
   {% if order %}
   <div style="background: rgba(184,134,11,0.08); border: 1px solid rgba(184,134,11,0.25); border-radius: 12px; padding: 16px; margin: 20px 0; text-align:left;">
     <div class="card-row" style="margin-bottom:6px;">
       <span class="muted" style="font-size:13px;">Plan</span>
-      <strong>{{ order.tier|capitalize }} — ${{ order.amount_usd }}/mo</strong>
+      <strong>{{ order.tier|capitalize }} · ${{ order.amount_usd }}/mo</strong>
     </div>
     {% if order.amount_received %}
     <div class="card-row">
@@ -32,8 +32,7 @@
   {% endif %}
 
   <p class="muted" style="margin-bottom:24px; font-size:13px;">
-    This can happen if network fees were taken out of what you sent. We've kept the funds received —
-    contact us with your order reference and we can either apply it toward a top-up or arrange a refund.
+    This can happen if network fees were taken out of what you sent. We've kept the funds received. Contact us with your order reference and we can either apply it toward a top-up or arrange a refund.
   </p>
 
   <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">

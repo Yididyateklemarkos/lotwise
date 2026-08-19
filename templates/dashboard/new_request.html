@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}New sourcing request — Lotwise{% endblock %}
+{% block title %}New sourcing request | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-yacht-aerial.jpg') }}');"></div></div>
 {% endblock %}
@@ -26,7 +26,7 @@
     <input type="text" name="target_price_note" placeholder="e.g. Budget range, per-unit target">
     <label>Reference photos (optional)</label>
     <input type="file" name="photos" accept=".png,.jpg,.jpeg" multiple>
-    <div class="hint">Up to 6 photos — a sample or reference of exactly what you're after.</div>
+    <div class="hint">Up to 6 photos: a sample or reference of exactly what you're after.</div>
     <div class="checkbox-row">
       <input type="checkbox" name="is_urgent" id="urgent" {% if current_user.subscription_tier == 'standard' %}disabled{% endif %}>
       <label for="urgent">Flag as urgent {% if current_user.subscription_tier == 'standard' %}(Plus/Premium only){% endif %}</label>

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Connection #{{ connection.id }} — Lotwise{% endblock %}
+{% block title %}Connection #{{ connection.id }} | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-about.jpg') }}');"></div></div>
 {% endblock %}
@@ -27,7 +27,7 @@
     <div style="font-size:14px;">{{ m.body }}</div>
   </div>
   {% else %}
-  <p class="muted">No messages yet — say hello.</p>
+  <p class="muted">No messages yet. Say hello.</p>
   {% endfor %}
 </div>
 
@@ -39,7 +39,7 @@
 
 <div class="card" style="margin-top:24px;">
   <h2>Report outcome</h2>
-  <p class="muted" style="margin:6px 0 16px;">This is how tier standing is earned — let us know how this connection went.</p>
+  <p class="muted" style="margin:6px 0 16px;">This is how tier standing is earned. Let us know how this connection went.</p>
   <form method="POST" action="{{ url_for('report_connection', connection_id=connection.id) }}" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
     <select name="outcome" style="padding:10px 12px; border:1px solid var(--line); border-radius:5px;">
       <option value="closed">Deal closed</option>

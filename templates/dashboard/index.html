@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Dashboard — Lotwise{% endblock %}
+{% block title %}Dashboard | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-tarmac.jpg') }}');"></div></div>
 {% endblock %}
@@ -20,7 +20,7 @@
 <div class="card-row" style="margin-bottom:28px;">
   <div>
     <h1>{{ current_user.company_name }}</h1>
-    <p class="muted">{{ current_user.account_type|capitalize }} account · {{ current_user.country or "—" }}</p>
+    <p class="muted">{{ current_user.account_type|capitalize }} account · {{ current_user.country or "Not provided" }}</p>
   </div>
   <div style="text-align:right;">
     {% if current_user.verification_status == 'approved' %}
@@ -45,10 +45,10 @@
 </div>
 {% elif not current_user.is_active_member() %}
 <div class="card">
-  <h2>{% if current_user.subscription_renews_at %}Your plan has expired{% else %}You're verified — activate your plan{% endif %}</h2>
+  <h2>{% if current_user.subscription_renews_at %}Your plan has expired{% else %}You're verified. Activate your plan{% endif %}</h2>
   <p class="muted" style="margin:8px 0 16px;">
     {% if current_user.subscription_renews_at %}
-      Crypto payments don't auto-renew — your plan lapsed. Renew to get back full access to listings, browsing, and connections.
+      Crypto payments don't automatically renew. Your plan lapsed. Renew to get back full access to listings, browsing, and connections.
     {% else %}
       You're approved to trade on Lotwise. Choose a plan to unlock listings, browsing, and connections.
     {% endif %}
@@ -58,7 +58,7 @@
 {% elif current_user.is_expiring_soon() %}
 <div class="card" style="border: 1px solid rgba(192,57,43,0.35);">
   <h2>Your plan renews in {{ current_user.days_until_expiry() }} day{{ 's' if current_user.days_until_expiry() != 1 else '' }}</h2>
-  <p class="muted" style="margin:8px 0 16px;">Crypto payments don't auto-renew — pay again before it lapses to keep uninterrupted access.</p>
+  <p class="muted" style="margin:8px 0 16px;">Crypto payments don't automatically renew. Pay again before it lapses to keep uninterrupted access.</p>
   <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Renew now</a>
 </div>
 {% endif %}
@@ -82,7 +82,7 @@
   <h2>{{ 'Your listings & requests' if current_user.has_dual_access() else 'Your listings' if current_user.account_type == 'supplier' else 'Your sourcing requests' }}</h2>
   <p class="muted" style="margin:6px 0 16px;">
     {% if current_user.has_dual_access() %}
-      {{ items|length }} posted{% if current_user.subscription_tier != 'premium' %} — up to {{ current_user.listing_limit() }} listings and {{ current_user.listing_limit() }} requests on your {{ current_user.subscription_tier|capitalize }} plan{% endif %}.
+      {{ items|length }} posted{% if current_user.subscription_tier != 'premium' %} (up to {{ current_user.listing_limit() }} listings and {{ current_user.listing_limit() }} requests on your {{ current_user.subscription_tier|capitalize }} plan){% endif %}.
     {% elif current_user.account_type == 'supplier' %}
       {{ items|length }} of {{ current_user.listing_limit() }} used on your {{ current_user.subscription_tier|capitalize }} plan.
     {% else %}
@@ -130,7 +130,7 @@
     <tr><th>Connection</th><th>Status</th><th></th></tr>
     {% for c in connections %}
     <tr>
-      <td>#{{ c.id }} — {{ c.status.replace('_',' ')|capitalize }}</td>
+      <td>#{{ c.id }} · {{ c.status.replace('_',' ')|capitalize }}</td>
       <td>{{ c.created_at.strftime('%b %d, %Y') }}</td>
       <td><a href="{{ url_for('connection_thread', connection_id=c.id) }}" class="btn btn-sm">Open</a></td>
     </tr>

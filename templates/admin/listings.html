@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Admin — Listings{% endblock %}
+{% block title %}Admin | Listings{% endblock %}
 {% block content %}
 <div class="dash-nav">
   <a href="{{ url_for('admin_users') }}">All users</a>
@@ -24,7 +24,7 @@
       <div>
         <div class="muted" style="font-size:12px;">{{ item.category }}{% if item.is_urgent %} · Urgent{% endif %}{% if item.is_sold %} · Sold{% endif %}</div>
         <strong>{{ item.title }}</strong>
-        <div class="muted" style="font-size:13px; margin-top:4px;">{{ item.owner.company_name }} · {{ item.origin_country or "—" }} · {{ item.quantity_fcl }} FCL · {{ item.photos|length }} photo(s) · {{ item.inquiries|length }} inquiries</div>
+        <div class="muted" style="font-size:13px; margin-top:4px;">{{ item.owner.company_name }} · {{ item.origin_country or "Not provided" }} · {{ item.quantity_fcl }} FCL · {{ item.photos|length }} photo(s) · {{ item.inquiries|length }} inquiries</div>
       </div>
     </div>
     <form method="POST" action="{{ url_for('admin_delete_listing', listing_id=item.id) }}" onsubmit="return confirm('Remove this listing?');">

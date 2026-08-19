@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Review {{ user.company_name }} — Lotwise Admin{% endblock %}
+{% block title %}Review {{ user.company_name }} | Lotwise Admin{% endblock %}
 {% block content %}
 <a href="{{ url_for('admin_dashboard') }}" class="muted" style="text-decoration:underline; font-size:13px;">← Back to queue</a>
 <h1 style="margin-top:12px;">{{ user.company_name }}</h1>
-<p class="muted" style="margin-bottom:24px;">{{ user.account_type|capitalize }} · {{ user.country or '—' }} · {{ user.email }} · Applied {{ user.created_at.strftime('%b %d, %Y') }}</p>
+<p class="muted" style="margin-bottom:24px;">{{ user.account_type|capitalize }} · {{ user.country or 'Not provided' }} · {{ user.email }} · Applied {{ user.created_at.strftime('%b %d, %Y') }}</p>
 
 <div class="card">
   <h2>Contact &amp; plan</h2>
-  <p class="muted" style="margin-top:8px;">Contact: {{ user.contact_method|capitalize if user.contact_method else "—" }} {{ user.contact_value or "" }}</p>
+  <p class="muted" style="margin-top:8px;">Contact: {{ user.contact_method|capitalize if user.contact_method else "Not provided" }} {{ user.contact_value or "" }}</p>
   <p class="muted" style="margin-top:4px;">Plan: {{ user.subscription_tier|capitalize }} · {{ user.subscription_status }}{% if user.subscription_renews_at %} · renews {{ user.subscription_renews_at.strftime('%b %-d, %Y') }}{% endif %}</p>
-  <p class="muted" style="margin-top:4px;">Address: {{ user.address or "— not provided —" }}</p>
+  <p class="muted" style="margin-top:4px;">Address: {{ user.address or "Not provided" }}</p>
   {% if not user.is_admin %}
   <form method="POST" action="{{ url_for('admin_set_tier', user_id=user.id) }}" style="margin-top:12px; display:flex; gap:8px; align-items:center;">
     <select name="tier" style="padding:8px 12px; border-radius:100px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:13px; color:var(--ink);">
@@ -29,7 +29,7 @@
   <h2>Identity documents</h2>
   {% set doc_types = user.documents|map(attribute='doc_type')|list %}
   {% if 'national_id' not in doc_types or 'passport' not in doc_types %}
-  <p style="color:var(--danger); font-size:13px; margin:8px 0 4px;">⚠ Missing required document(s) — {% if 'national_id' not in doc_types %}National ID{% endif %}{% if 'national_id' not in doc_types and 'passport' not in doc_types %} and {% endif %}{% if 'passport' not in doc_types %}Passport{% endif %} not yet submitted.</p>
+  <p style="color:var(--danger); font-size:13px; margin:8px 0 4px;">⚠ Missing required document(s): {% if 'national_id' not in doc_types %}National ID{% endif %}{% if 'national_id' not in doc_types and 'passport' not in doc_types %} and {% endif %}{% if 'passport' not in doc_types %}Passport{% endif %} not yet submitted.</p>
   {% endif %}
   {% for doc in user.documents %}
   <div style="display:flex; justify-content:space-between; padding:10px 0; border-top:1px solid var(--line);">

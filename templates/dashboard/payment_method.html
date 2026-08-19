@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Pay — Lotwise{% endblock %}
+{% block title %}Pay | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-pricing.jpg') }}');"></div></div>
 {% endblock %}
@@ -17,7 +17,7 @@
     <a href="{{ url_for('billing_pay_crypto', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">Pay with crypto</a>
     {% else %}
     <button class="btn btn-sm" style="width:100%;" disabled>Not available yet</button>
-    <p class="hint" style="margin-top:8px;">Crypto payments are being connected — check back shortly.</p>
+    <p class="hint" style="margin-top:8px;">Crypto payments are being connected. Check back shortly.</p>
     {% endif %}
   </div>
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Lotwise — Registry{% endblock %}
+{% block title %}Lotwise | Registry{% endblock %}
 {% block content %}
 <div class="dash-nav">
   <a href="{{ url_for('home') }}" class="active">Trending</a>
@@ -20,14 +20,14 @@
     {% endif %}
     <div class="muted" style="font-size:12px;">{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}</div>
     <h2 style="font-size:18px; margin:6px 0;">{{ item.title }}</h2>
-    <p class="muted" style="font-size:13px; margin-bottom:12px;">{{ item.origin_country or "—" }} · {{ item.quantity_fcl }} FCL</p>
+    <p class="muted" style="font-size:13px; margin-bottom:12px;">{{ item.origin_country or "Not provided" }} · {{ item.quantity_fcl }} FCL</p>
     <form method="POST" action="{{ url_for('inquire', listing_id=item.id) }}">
       <input type="hidden" name="message" value="Interested in this listing.">
       <button type="submit" class="btn btn-solid btn-sm">Send inquiry</button>
     </form>
   </div>
   {% else %}
-  <p class="muted">Nothing listed yet — check back soon.</p>
+  <p class="muted">Nothing listed yet. Check back soon.</p>
   {% endfor %}
 </div>
 {% else %}
@@ -40,7 +40,7 @@
     <p class="muted" style="font-size:13px;">{{ item.quantity_fcl }} FCL · {{ item.target_price_note or "" }}</p>
   </div>
   {% else %}
-  <p class="muted">No open sourcing requests yet — check back soon.</p>
+  <p class="muted">No open sourcing requests yet. Check back soon.</p>
   {% endfor %}
 </div>
 {% endif %}

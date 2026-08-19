@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Admin — All users{% endblock %}
+{% block title %}Admin | All users{% endblock %}
 {% block content %}
 <div class="dash-nav">
   <a href="{{ url_for('admin_dashboard') }}">Verification queue</a>
@@ -11,7 +11,7 @@
 </div>
 
 <h1>All users ({{ users|length }})</h1>
-<p class="muted" style="margin-bottom:24px;">Contact info is normally only revealed to matched connections — visible here for admin support purposes.</p>
+<p class="muted" style="margin-bottom:24px;">Contact info is normally only revealed to matched connections. Visible here for admin support purposes.</p>
 
 {% for u in users %}
 <div class="card">
@@ -26,10 +26,10 @@
         {% if u.payment_exempt %}<span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Payment exempt</span>{% endif %}
       </div>
       <div class="muted" style="font-size:13px; margin-top:6px;">
-        {{ u.account_type|capitalize }} · {{ u.country or "—" }} · {{ u.email }}
+        {{ u.account_type|capitalize }} · {{ u.country or "Not provided" }} · {{ u.email }}
       </div>
       <div class="muted" style="font-size:13px; margin-top:2px;">
-        Contact: {{ u.contact_method|capitalize if u.contact_method else "—" }} {{ u.contact_value or "" }}
+        Contact: {{ u.contact_method|capitalize if u.contact_method else "Not provided" }} {{ u.contact_value or "" }}
       </div>
       <div class="muted" style="font-size:13px; margin-top:2px;">
         Plan: {{ u.subscription_tier|capitalize }} · {{ u.subscription_status }}

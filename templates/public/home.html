@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Lotwise — Bulk Trade Registry{% endblock %}
+{% block title %}Lotwise | Bulk Trade Registry{% endblock %}
 
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-home.jpg') }}');"></div></div>
@@ -17,9 +17,9 @@
 
 <div class="hero-grid" style="padding: 30px 0 20px;">
   <div>
-    <div class="pill" style="margin-bottom:20px; background: var(--gold-soft); color: var(--gold);">Invitation-grade access, by application only</div>
+    <div class="pill" style="margin-bottom:20px; background: var(--gold-soft); color: var(--gold);">Invitation grade access, by application only</div>
     <h1 style="font-size:52px; line-height:1.06;">A private circle for traders who move real volume.</h1>
-    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Lotwise isn't an open marketplace — it's a vetted circle of suppliers and buyers who trade container-scale volume with people they can actually trust. Every member is reviewed before they're let in. Every connection you make is real. Every deal you close stays entirely yours.</p>
+    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Lotwise isn't an open marketplace. It's a vetted circle of suppliers and buyers who trade container scale volume with people they can actually trust. Every member is reviewed before they're let in. Every connection you make is real. Every deal you close stays entirely yours.</p>
     <div style="display:flex; gap:14px; flex-wrap:wrap;">
       <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Request access</a>
       <a href="{{ url_for('about') }}" class="btn" style="padding:14px 28px; font-size:15px;">Learn more</a>
@@ -32,15 +32,15 @@
 
 <div class="grid-3" style="margin:56px 0 60px;">
   <div class="card" style="text-align:center;">
-    <div style="font-size:38px; font-weight:800;">${{ stats.volume_usd }}</div>
+    <div style="font-size:38px; font-weight:600; font-family:var(--font-mono);">${{ stats.volume_usd }}</div>
     <div class="muted">Moved between members to date</div>
   </div>
   <div class="card" style="text-align:center; animation-delay:0.08s;">
-    <div style="font-size:38px; font-weight:800;">{{ stats.active_suppliers }}+</div>
+    <div style="font-size:38px; font-weight:600; font-family:var(--font-mono);">{{ stats.active_suppliers }}+</div>
     <div class="muted">Suppliers admitted to the circle</div>
   </div>
   <div class="card" style="text-align:center; animation-delay:0.16s;">
-    <div style="font-size:38px; font-weight:800;">{{ stats.active_buyers }}+</div>
+    <div style="font-size:38px; font-weight:600; font-family:var(--font-mono);">{{ stats.active_buyers }}+</div>
     <div class="muted">Buyers admitted to the circle</div>
   </div>
 </div>
@@ -54,7 +54,7 @@
       <div style="filter:blur(5px); user-select:none; pointer-events:none;">
         <div class="muted" style="margin-bottom:4px;">{{ listing.category }}{% if listing.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}</div>
         <h2 style="font-size:19px;">{{ listing.title }}</h2>
-        <p class="muted" style="margin-top:6px; font-size:13px;">{{ listing.origin_country or "—" }} · {{ listing.quantity_fcl }} FCL · {{ listing.grade_spec or "" }}</p>
+        <p class="muted" style="margin-top:6px; font-size:13px;">{{ listing.origin_country or "Not provided" }} · {{ listing.quantity_fcl }} FCL · {{ listing.grade_spec or "" }}</p>
       </div>
       <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
         <span class="pill pill-pending">Circle members only</span>
@@ -98,18 +98,7 @@
 <div class="grid-2" style="margin-bottom:60px;">
   <div class="card">
     <h2 style="margin-bottom:10px;">Your inventory, in front of people who actually buy.</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">No public listings, no tire-kickers. What you're moving goes straight in front of buyers already sourcing at container scale. List it, get discovered by the circle, negotiate directly — every dollar you close stays yours.</p>
-  </div>
-  <div class="card" style="animation-delay:0.08s;">
-    <h2 style="margin-bottom:10px;">Real supply, not another dead lead.</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">Every member you meet here has already been reviewed by hand. Post what you need or browse live inventory, and reach a counterparty who's exactly who they say they are.</p>
-  </div>
-</div>
-
-<div class="grid-2" style="margin-bottom:60px;">
-  <div class="card">
-    <h2 style="margin-bottom:10px;">Your inventory, in front of people who actually buy.</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">No public listings, no tire-kickers. What you're moving goes straight in front of buyers already sourcing at container scale. List it, get discovered by the circle, negotiate directly — every dollar you close stays yours.</p>
+    <p class="muted" style="font-size:14px; line-height:1.6;">No public listings, no tire kickers. What you're moving goes straight in front of buyers already sourcing at container scale. List it, get discovered by the circle, negotiate directly. Every dollar you close stays yours.</p>
   </div>
   <div class="card" style="animation-delay:0.08s;">
     <h2 style="margin-bottom:10px;">Real supply, not another dead lead.</h2>
@@ -127,7 +116,7 @@
   <div class="card" style="animation-delay:0.05s;">
     <div class="badge-grade" style="margin-bottom:14px;">2</div>
     <strong style="font-size:14px;">Get reviewed</strong>
-    <p class="muted" style="font-size:13px; margin-top:6px;">Our team reviews every application by hand — no exceptions.</p>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Our team reviews every application by hand. No exceptions.</p>
   </div>
   <div class="card" style="animation-delay:0.1s;">
     <div class="badge-grade" style="margin-bottom:14px;">3</div>
@@ -143,7 +132,7 @@
 
 <div class="card" style="text-align:center; padding:44px 32px;">
   <h2 style="font-size:26px; margin-bottom:10px;">Membership starts at $39/month.</h2>
-  <p class="muted" style="max-width:480px; margin:0 auto 24px;">No commission, no per-deal fees, no lock-in — leave the circle any time.</p>
+  <p class="muted" style="max-width:480px; margin:0 auto 24px;">No commission, no per deal fees, no long term contract. Leave the circle any time.</p>
   <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
     <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Request access</a>
     <a href="{{ url_for('pricing') }}" class="btn" style="padding:13px 26px;">See full pricing</a>
@@ -237,12 +226,12 @@
 
   // Wireframe sphere — silver, low opacity
   const wireGeo = new THREE.SphereGeometry(1.6, 28, 20);
-  const wireMat = new THREE.MeshBasicMaterial({ color: 0xC9C9D4, wireframe: true, transparent: true, opacity: 0.28 });
+  const wireMat = new THREE.MeshBasicMaterial({ color: 0x9FB3A6, wireframe: true, transparent: true, opacity: 0.28 });
   globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
 
   // Solid inner sphere — near-black with faint silver rim
   const coreGeo = new THREE.SphereGeometry(1.56, 32, 24);
-  const coreMat = new THREE.MeshBasicMaterial({ color: 0x0A0A0C, transparent: true, opacity: 0.85 });
+  const coreMat = new THREE.MeshBasicMaterial({ color: 0x0A1B15, transparent: true, opacity: 0.85 });
   globeGroup.add(new THREE.Mesh(coreGeo, coreMat));
 
   // Glowing marker dots at a handful of resource-origin-style coordinates (decorative)
@@ -266,7 +255,7 @@
     );
   }
   const markerGeo = new THREE.SphereGeometry(0.028, 8, 8);
-  const markerMat = new THREE.MeshBasicMaterial({ color: 0xE4C766 });
+  const markerMat = new THREE.MeshBasicMaterial({ color: 0xE8B23D });
   const markerPositions = [];
   markerLatLng.forEach(([lat, lng]) => {
     const pos = latLngToVec3(lat, lng, 1.63);
@@ -276,7 +265,7 @@
     globeGroup.add(dot);
     // soft pulsing ring under each marker, staggered, to suggest live activity
     const ringGeo = new THREE.RingGeometry(0.03, 0.045, 20);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xE4C766, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xE8B23D, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.position.copy(pos.clone().multiplyScalar(1.002));
     ring.lookAt(pos.clone().multiplyScalar(2));
@@ -300,11 +289,11 @@
     const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
     const points = curve.getPoints(48);
     const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-    const lineMat = new THREE.LineBasicMaterial({ color: 0xC9C9D4, transparent: true, opacity: 0.22 });
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x9FB3A6, transparent: true, opacity: 0.22 });
     globeGroup.add(new THREE.Line(lineGeo, lineMat));
 
     const travelerGeo = new THREE.SphereGeometry(0.02, 6, 6);
-    const travelerMat = new THREE.MeshBasicMaterial({ color: 0xF5EFD8, transparent: true });
+    const travelerMat = new THREE.MeshBasicMaterial({ color: 0xF2EFE6, transparent: true });
     const traveler = new THREE.Mesh(travelerGeo, travelerMat);
     globeGroup.add(traveler);
     arcTravelers.push({ curve, mesh: traveler, offset: i * 0.37, speed: 0.15 });

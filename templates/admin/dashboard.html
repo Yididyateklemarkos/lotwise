@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Admin — Lotwise{% endblock %}
+{% block title %}Admin | Lotwise{% endblock %}
 {% block content %}
 <div class="dash-nav">
   <a href="{{ url_for('admin_users') }}">All users</a>
@@ -23,7 +23,7 @@
 <div class="card">
   <div class="card-row">
     <div>
-      <strong>{{ user.company_name }}</strong> <span class="muted">— {{ user.account_type|capitalize }} · {{ user.country or '—' }} · {{ user.email }}</span>
+      <strong>{{ user.company_name }}</strong> <span class="muted">· {{ user.account_type|capitalize }} · {{ user.country or 'Not provided' }} · {{ user.email }}</span>
       <div class="muted" style="margin-top:4px; font-size:13px;">{{ user.documents|length }} document(s) submitted · Applied {{ user.created_at.strftime('%b %d, %Y') }}</div>
     </div>
     <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" class="btn btn-sm">Review</a>

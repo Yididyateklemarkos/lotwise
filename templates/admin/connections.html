@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Connections — Lotwise Admin{% endblock %}
+{% block title %}Connections | Lotwise Admin{% endblock %}
 {% block content %}
 <div class="dash-nav">
   <a href="{{ url_for('admin_users') }}">All users</a>
@@ -17,7 +17,7 @@
     <td>{{ c.supplier_id }}</td>
     <td>{{ c.buyer_id }}</td>
     <td>{{ c.status.replace('_',' ')|capitalize }}</td>
-    <td>{{ c.reported_volume_fcl or '—' }}</td>
+    <td>{{ c.reported_volume_fcl or 'Not provided' }}</td>
     <td>{{ c.created_at.strftime('%b %d, %Y') }}</td>
   </tr>
   {% else %}

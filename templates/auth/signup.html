@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Sign up — Lotwise{% endblock %}
+{% block title %}Sign up | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-signup.jpg') }}');"></div></div>
 {% endblock %}
@@ -23,7 +23,7 @@
 
     <label>Email</label>
     <input type="email" name="email" required>
-    <p class="hint">⚠️ There is no email verification step and no password reset by email — double-check this is correct. It's the only way we can reach you about your account, verification, or payments.</p>
+    <p class="hint">⚠️ There is no email verification step and no password reset by email. Double check this is correct. It's the only way we can reach you about your account, verification, or payments.</p>
 
     <label>Password</label>
     <input type="password" name="password" required minlength="8">

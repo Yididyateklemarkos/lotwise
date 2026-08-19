@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Verification — Lotwise{% endblock %}
+{% block title %}Verification | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-jetcabin2.jpg') }}');"></div></div>
 {% endblock %}
 {% block content %}
 <div style="max-width:480px;">
   <h1>Verify your identity</h1>
-  <p class="muted" style="margin-bottom:24px;">Every account is reviewed by hand. You'll need to submit all three items below in one go — your address, a National ID, and a Passport. If your application is disapproved, you'll need to reapply from scratch with corrected documents.</p>
+  <p class="muted" style="margin-bottom:24px;">Every account is reviewed by hand. You'll need to submit all three items below in one go: your address, a National ID, and a Passport. If your application is disapproved, you'll need to reapply from scratch with corrected documents.</p>
   <form class="stacked" method="POST" enctype="multipart/form-data">
     <label>Full address</label>
     <textarea name="address" placeholder="Street, city, region, postal code, country" required>{{ current_user.address or '' }}</textarea>

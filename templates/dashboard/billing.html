@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Upgrade — Lotwise{% endblock %}
+{% block title %}Upgrade | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-faq.jpg') }}');"></div></div>
 {% endblock %}
@@ -12,7 +12,7 @@
     · Renews by {{ current_user.subscription_renews_at.strftime('%b %-d, %Y') }}
   {% endif %}
 </p>
-<p class="hint" style="margin-bottom:20px;">Crypto payments are one-time — plans run 30 days per payment and don't auto-renew. Pay again anytime to extend.</p>
+<p class="hint" style="margin-bottom:20px;">Crypto payments are one time: plans run 30 days per payment and don't automatically renew. Pay again anytime to extend.</p>
 
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px;">
   {% for tier, price in prices.items() %}
@@ -28,7 +28,7 @@
       {% endfor %}
     </ul>
     <a href="{{ url_for('billing_pay', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">
-      {% if current_user.subscription_tier == tier and current_user.subscription_status == 'active' %}Current plan — renew{% else %}Choose {{ tier|capitalize }}{% endif %}
+      {% if current_user.subscription_tier == tier and current_user.subscription_status == 'active' %}Current plan (renew){% else %}Choose {{ tier|capitalize }}{% endif %}
     </a>
   </div>
   {% endfor %}

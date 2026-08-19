@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Track record — Lotwise{% endblock %}
+{% block title %}Track record | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-yacht-sunset.jpg') }}');"></div></div>
 {% endblock %}
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <label>Proof document (optional — BL, invoice, cert, etc.)</label>
+    <label>Proof document (optional: BL, invoice, cert, etc.)</label>
     <input type="file" name="proof_file" accept=".pdf,.png,.jpg,.jpeg">
 
     <button type="submit" class="btn btn-solid" style="margin-top:16px; padding:12px;">Add to track record</button>
@@ -57,6 +57,6 @@
 </div>
 {% endfor %}
 {% else %}
-<p class="muted">No entries yet — add your first deal above.</p>
+<p class="muted">No entries yet. Add your first deal above.</p>
 {% endif %}
 {% endblock %}
