@@ -17,6 +17,7 @@ from models import (db, User, VerificationDocument, Listing, ListingPhoto, Sourc
                      SUPPLIER_TIER_FEATURES, BUYER_TIER_FEATURES)
 import nowpayments
 import paypal
+import whop
 import uuid
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -665,6 +666,7 @@ def billing_pay(tier):
         tier=tier,
         amount=prices[tier],
         crypto_configured=nowpayments.is_nowpayments_configured(),
+        whop_configured=whop.is_whop_configured(),
     )
 
 
@@ -716,6 +718,82 @@ def billing_pay_crypto(tier):
         return redirect(url_for("billing_pay", tier=tier))
 
     return redirect(invoice_url)
+
+
+@app.route("/billing/pay/<tier>/whop")
+@verified_required
+def billing_pay_whop(tier):
+    """Creates a Whop checkout and redirects the user to Whop's hosted
+    checkout page (card, Apple Pay and local methods)."""
+    prices = TIER_PRICE_USD if current_user.account_type == "supplier" else BUYER_TIER_PRICE_USD
+    if tier not in prices:
+        abort(404)
+    if not whop.is_whop_configured():
+        flash("Card payment isn't connected yet — check back shortly.", "warning")
+        return redirect(url_for("billing_pay", tier=tier))
+
+    amount = prices[tier]
+    order_id = f"lw-{current_user.id}-{tier}-{uuid.uuid4().hex[:10]}"
+
+    order = PaymentOrder(
+        order_id=order_id,
+        user_id=current_user.id,
+        tier=tier,
+        amount_usd=amount,
+        provider="whop",
+        status="pending",
+    )
+    db.session.add(order)
+    db.session.commit()
+
+    try:
+        checkout = whop.create_checkout(
+            amount_usd=amount,
+            order_id=order_id,
+            redirect_url=url_for("billing_success", order_id=order_id, _external=True),
+        )
+        purchase_url = whop.get_purchase_url(checkout)
+    except Exception:
+        purchase_url = ""
+        checkout = {}
+
+    if not purchase_url:
+        order.status = "failed"
+        db.session.commit()
+        flash("Couldn't start the card payment — please try again.", "error")
+        return redirect(url_for("billing_pay", tier=tier))
+
+    # Whop's own checkout session ID, kept for support/reconciliation.
+    order.provider_order_id = checkout.get("id", "")
+    db.session.commit()
+
+    return redirect(purchase_url)
+
+
+@app.route("/billing/webhook/whop", methods=["POST"])
+def billing_webhook_whop():
+    """Whop calls this on payment events. The signature is verified over the
+    raw body before anything in the payload is trusted."""
+    raw_body = request.get_data()
+    if not whop.verify_webhook_signature(raw_body, request.headers):
+        return jsonify({"error": "invalid signature"}), 401
+
+    payload = request.get_json(force=True, silent=True) or {}
+    event_type = payload.get("type", "")
+    data = payload.get("data", {})
+    metadata = data.get("metadata") or {}
+    order = PaymentOrder.query.filter_by(order_id=metadata.get("order_id", "")).first()
+
+    if order:
+        if event_type == "payment.succeeded":
+            if order.status != "finished":
+                _activate_paid_order(order)
+        elif event_type in ("payment.failed", "payment.canceled"):
+            if order.status != "finished":
+                order.status = "failed"
+                db.session.commit()
+
+    return jsonify({"received": True}), 200
 
 
 @app.route("/billing/pay/<tier>/paypal")
