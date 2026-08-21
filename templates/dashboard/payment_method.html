@@ -8,27 +8,19 @@
 <h1>{{ tier|capitalize }} plan</h1>
 <p class="muted" style="margin-bottom:28px;">${{ amount }}/mo · Choose how you'd like to pay</p>
 
-<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 340px)); gap:20px; max-width:720px;">
+<div style="max-width:340px;">
 
   <div class="card">
-    <div style="font-weight:700; font-size:18px; margin-bottom:6px;">Crypto</div>
-    <p class="muted" style="font-size:13px; margin-bottom:20px;">Pay with USDT, BTC, ETH, and other major coins via a secure hosted checkout.</p>
-    {% if crypto_configured %}
-    <a href="{{ url_for('billing_pay_crypto', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">Pay with crypto</a>
-    {% else %}
-    <button class="btn btn-sm" style="width:100%;" disabled>Not available yet</button>
-    <p class="hint" style="margin-top:8px;">Crypto payments are being connected. Check back shortly.</p>
-    {% endif %}
-  </div>
-
-  <div class="card">
-    <div style="font-weight:700; font-size:18px; margin-bottom:6px;">Card &amp; local methods</div>
-    <p class="muted" style="font-size:13px; margin-bottom:20px;">Pay by card, Apple Pay, Google Pay or a local method via Whop's secure checkout.</p>
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+      <div style="font-weight:700; font-size:18px;">Card, crypto &amp; local methods</div>
+      <span style="font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:3px 8px; border-radius:999px; background:rgba(80,200,120,.15); color:#4ec27a;">Recommended</span>
+    </div>
+    <p class="muted" style="font-size:13px; margin-bottom:20px;">Pay by card, Apple Pay, Google Pay, crypto or a local method via a secure hosted checkout.</p>
     {% if whop_configured %}
-    <a href="{{ url_for('billing_pay_whop', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">Pay with card</a>
+    <a href="{{ url_for('billing_pay_whop', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">Continue to payment</a>
     {% else %}
     <button class="btn btn-sm" style="width:100%;" disabled>Not available yet</button>
-    <p class="hint" style="margin-top:8px;">Card payments are being connected. Check back shortly.</p>
+    <p class="hint" style="margin-top:8px;">Payments are being connected. Check back shortly.</p>
     {% endif %}
   </div>
 
