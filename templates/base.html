@@ -5,43 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% block title %}Lotwise{% endblock %}</title>
 <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/favicon.svg') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  @font-face { font-family:'Fraunces'; src: url('{{ url_for("static", filename="fonts/fraunces-400.woff2") }}') format('woff2'); font-weight:400; font-display:swap; }
-  @font-face { font-family:'Fraunces'; src: url('{{ url_for("static", filename="fonts/fraunces-600.woff2") }}') format('woff2'); font-weight:600; font-display:swap; }
-  @font-face { font-family:'Fraunces'; src: url('{{ url_for("static", filename="fonts/fraunces-700.woff2") }}') format('woff2'); font-weight:700; font-display:swap; }
-  @font-face { font-family:'JetBrains Mono'; src: url('{{ url_for("static", filename="fonts/jbmono-400.woff2") }}') format('woff2'); font-weight:400; font-display:swap; }
-  @font-face { font-family:'JetBrains Mono'; src: url('{{ url_for("static", filename="fonts/jbmono-600.woff2") }}') format('woff2'); font-weight:600; font-display:swap; }
-
   :root {
-    --bg:#0A1B15; --bg-2:#0D2018;
-    --ink:#F2EFE6; --ink-soft:#C9D1C7; --gray:#7C8C82; --line: rgba(242,239,230,0.09);
+    --bg:#08080A; --bg-2:#0F0F12;
+    --ink:#F3F3F6; --ink-soft:#C9C9D2; --gray:#8A8A95; --line: rgba(255,255,255,0.09);
     --panel:#F4F2EC; --panel-ink:#0A0A0A;
-    --glass-bg: rgba(242,239,230,0.04);
-    --glass-border: rgba(242,239,230,0.11);
-    --silver: linear-gradient(135deg, #F0DFA0 0%, #E8B23D 45%, #C99530 55%, #F0DFA0 100%);
-    --silver-text: linear-gradient(90deg, #F2EFE6, #C9D1C7, #F2EFE6);
-    --gold:#E8B23D; --gold-soft: rgba(232,178,61,0.16);
+    --glass-bg: rgba(255,255,255,0.045);
+    --glass-border: rgba(255,255,255,0.11);
+    --silver: linear-gradient(135deg, #E8E8ED 0%, #B8B8C2 45%, #8E8E98 55%, #DEDEE4 100%);
+    --silver-text: linear-gradient(90deg, #F5F5F8, #ABABB6, #F5F5F8);
+    --gold:#C9A227; --gold-soft: rgba(201,162,39,0.16);
     --shadow-soft: 0 8px 30px rgba(0,0,0,0.45);
     --shadow-lift: 0 24px 70px rgba(0,0,0,0.6);
-    --shadow-glow: 0 0 0 1px rgba(242,239,230,0.08), 0 20px 60px rgba(0,0,0,0.55);
+    --shadow-glow: 0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.55);
     --ease: cubic-bezier(0.16,1,0.3,1);
-    --radius: 10px;
-    --danger:#C24F3D; --ok:#6FA87A;
-    --font-display: 'Fraunces', Georgia, serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    --radius: 20px;
+    --danger:#E5564A; --ok:#3FBE7A;
+    --font-mono: 'SF Mono', Menlo, monospace;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html { scroll-behavior: smooth; }
   body {
     color: var(--ink);
-    font-family: var(--font-body);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
     background:
-      radial-gradient(1100px 550px at 12% -10%, rgba(232,178,61,0.06) 0%, transparent 55%),
-      radial-gradient(900px 500px at 100% 0%, rgba(111,168,122,0.05) 0%, transparent 50%),
-      radial-gradient(1000px 700px at 50% 110%, rgba(232,178,61,0.04) 0%, transparent 55%),
+      radial-gradient(1100px 550px at 12% -10%, rgba(180,180,200,0.10) 0%, transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, rgba(201,162,39,0.07) 0%, transparent 50%),
+      radial-gradient(1000px 700px at 50% 110%, rgba(150,150,175,0.08) 0%, transparent 55%),
       var(--bg);
     background-attachment: fixed;
     animation: bodyIn 0.5s var(--ease);
@@ -49,22 +43,13 @@
   @keyframes bodyIn { from { opacity:0; } to { opacity:1; } }
   a { color: inherit; }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
-  .glass { background: var(--glass-bg); border: 1px solid var(--glass-border); }
+  .glass { background: var(--glass-bg); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid var(--glass-border); }
   .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
-  /* Ticker tape — the signature element: a persistent scrolling strip of
-     live-feeling trade data, standing in for the trading-floor board motif
-     across every page, not just the homepage. */
-  .ticker-bar { background:#081611; border-bottom:1px solid var(--line); overflow:hidden; white-space:nowrap; position:relative; }
-  .ticker-track { display:inline-flex; gap:48px; padding:8px 0; animation: tickerScroll 32s linear infinite; }
-  .ticker-item { font-family:var(--font-mono); font-size:12px; color:var(--gray); display:inline-flex; align-items:center; gap:8px; }
-  .ticker-item strong { color:var(--gold); font-weight:600; }
-  @keyframes tickerScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-  header { position: sticky; top: 0; z-index: 50; background: rgba(10,27,21,0.82); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--line); }
+  header { position: sticky; top: 0; z-index: 50; background: rgba(8,8,10,0.72); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--line); }
   .header-inner { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; max-width:1080px; margin:0 auto; }
-  .logo { font-family: var(--font-display); font-size:20px; font-weight:700; letter-spacing:-0.01em; display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink); }
-  .logo-mark { width:9px; height:9px; border-radius:50%; background: var(--silver); box-shadow: 0 0 12px rgba(232,178,61,0.5); }
+  .logo { font-size:19px; font-weight:800; letter-spacing:-0.02em; display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink); }
+  .logo-mark { width:9px; height:9px; border-radius:50%; background: var(--silver); box-shadow: 0 0 12px rgba(220,220,230,0.5); }
   nav { display:flex; gap:24px; align-items:center; }
   nav a.nav-link { color:var(--ink-soft); text-decoration:none; font-size:14px; font-weight:500; opacity:0.85; transition: opacity 0.25s var(--ease), color 0.25s var(--ease); position:relative; }
   nav a.nav-link:hover { opacity:1; color:#fff; }
@@ -85,7 +70,7 @@
   .badge-grade { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background: var(--silver); color:#0A0A0A; font-size:11px; font-weight:800; }
 
   main { min-height: 60vh; padding: 56px 0 100px; }
-  h1 { font-family: var(--font-display); font-size: 38px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 8px; animation: riseIn 0.7s var(--ease); }
+  h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; animation: riseIn 0.7s var(--ease); }
   h1, .shine-text {
     background: linear-gradient(100deg, #8E8E98 0%, #FFFFFF 22%, #C9C9D4 42%, #FFFFFF 62%, #8E8E98 85%);
     background-size: 220% auto;
@@ -99,7 +84,7 @@
   .muted { color: var(--gray); font-size: 14px; }
   @keyframes riseIn { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
 
-  .card { background: #0D231B; border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 26px; margin-bottom: 16px; box-shadow: var(--shadow-soft); transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease); opacity: 0; transform: translateY(16px); animation: cardIn 0.6s var(--ease) forwards; position:relative; overflow:hidden; }
+  .card { background: var(--glass-bg); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 26px; margin-bottom: 16px; box-shadow: var(--shadow-soft); transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease); opacity: 0; transform: translateY(16px); animation: cardIn 0.6s var(--ease) forwards; position:relative; overflow:hidden; }
   .card::before { content:''; position:absolute; inset:0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.06) 50%, transparent 70%); transform: translateX(-100%); transition: transform 0.9s var(--ease); pointer-events:none; }
   .card:hover::before { transform: translateX(100%); }
   .card:hover { box-shadow: var(--shadow-glow); transform: translateY(-3px); border-color: rgba(255,255,255,0.22); }
@@ -169,7 +154,7 @@
 
   .price-card { position:relative; }
   .price-card.featured { border-color: rgba(201,162,39,0.5); box-shadow: 0 0 0 1px rgba(201,162,39,0.3), var(--shadow-soft); }
-  .price-card .price-num { font-family:var(--font-mono); font-size:32px; font-weight:600; margin:10px 0 18px; }
+  .price-card .price-num { font-size:32px; font-weight:800; margin:10px 0 18px; }
   .price-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px; }
   .price-row:last-child { border-bottom:none; }
   .price-row .mark-yes { color: var(--ok); flex-shrink:0; font-weight:800; }
@@ -341,13 +326,6 @@
         </details>
       {% endif %}
     </nav>
-  </div>
-  <div class="ticker-bar">
-    <div class="ticker-track">
-      {% for i in range(2) %}
-      <span class="ticker-item">MINERALS <strong>&middot;</strong> AGRICULTURE <strong>&middot;</strong> CHEMICALS <strong>&middot;</strong> CONSTRUCTION MATERIALS <strong>&middot;</strong> OTHER BULK GOODS <strong>&middot;</strong> VERIFIED SUPPLIERS ONLY <strong>&middot;</strong> VERIFIED BUYERS ONLY <strong>&middot;</strong> ZERO COMMISSION, EVER <strong>&middot;</strong> {{ ticker_extra|default('CLOSED REGISTRY') }} <strong>&middot;</strong></span>
-      {% endfor %}
-    </div>
   </div>
 </header>
 

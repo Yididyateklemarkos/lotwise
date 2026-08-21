@@ -117,8 +117,7 @@ def home():
 
     sample_listings = Listing.query.filter_by(is_active=True, is_sold=False).order_by(
         Listing.created_at.desc()).limit(3).all()
-    ticker_extra = f"${stats['volume_usd']} MOVED · {stats['active_suppliers']} SUPPLIERS · {stats['active_buyers']} BUYERS"
-    return render_template("public/home.html", stats=stats, listings=sample_listings, ticker_extra=ticker_extra)
+    return render_template("public/home.html", stats=stats, listings=sample_listings)
 
 
 @app.route("/about")
