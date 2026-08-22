@@ -4,50 +4,39 @@
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-signup.jpg') }}');"></div></div>
 {% endblock %}
 {% block content %}
-<div style="max-width:480px; margin:0 auto;">
-  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-    <span class="pill pill-pending">Step 1 of 2: Account Details</span>
-    <span class="muted" style="font-size:12px;">Step 2: ID & Passport</span>
-  </div>
+<div style="max-width:440px; margin:0 auto;">
   <h1>Join the registry</h1>
-  <p class="muted" style="margin-bottom:24px;">Create your account credentials, then submit your National ID &amp; Passport to enter the verification queue.</p>
+  <p class="muted" style="margin-bottom:28px;">A short application, then you're in.</p>
 
   <form class="stacked" method="POST">
     <div class="grid-2">
       <div>
         <label>First name</label>
-        <input type="text" name="first_name" autocomplete="given-name" required placeholder="Given name">
+        <input type="text" name="first_name" autocomplete="given-name" required>
       </div>
       <div>
         <label>Last name</label>
-        <input type="text" name="last_name" autocomplete="family-name" required placeholder="Family name">
+        <input type="text" name="last_name" autocomplete="family-name" required>
       </div>
     </div>
 
-    <label>I am joining as...</label>
-    <select name="account_type" required style="padding:11px 14px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink);">
-      <option value="broker">Broker / Deal Maker (Find &amp; broker bulk deals)</option>
-      <option value="supplier">Supplier / Producer (Sell bulk commodities)</option>
-      <option value="buyer">Buyer / Importer (Source bulk commodities)</option>
-    </select>
-    <p class="hint">Brokers can find deals, source requests, and structure supply without needing to be the direct producer.</p>
-
-    <label>Country of operation / residence</label>
-    <select name="country" required style="padding:11px 14px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink);">
-      <option value="" disabled selected>-- Select your country --</option>
-      {% for c in countries %}
-      <option value="{{ c.name }}">{{ c.flag }} {{ c.name }}</option>
-      {% endfor %}
+    <label>I am a...</label>
+    <select name="account_type" required>
+      <option value="supplier">Supplier</option>
+      <option value="buyer">Buyer</option>
     </select>
 
-    <label>Email address</label>
-    <input type="email" name="email" required placeholder="name@company.com">
-    <p class="hint">⚠️ Double check this is accurate. It is the primary way we reach you regarding deal notifications and verification.</p>
+    <label>Country</label>
+    <input type="text" name="country">
+
+    <label>Email</label>
+    <input type="email" name="email" required>
+    <p class="hint">⚠️ There is no email verification step and no password reset by email. Double check this is correct. It's the only way we can reach you about your account, verification, or payments.</p>
 
     <label>Password</label>
-    <input type="password" name="password" required minlength="8" placeholder="At least 8 characters">
+    <input type="password" name="password" required minlength="8">
 
-    <label>WhatsApp or Telegram contact</label>
+    <label>WhatsApp or Telegram</label>
     <div class="contact-row">
       <select name="contact_method" required class="contact-method">
         <option value="whatsapp">WhatsApp</option>
@@ -55,14 +44,14 @@
       </select>
       <input type="text" name="contact_value" placeholder="Number or @handle" required class="contact-value">
     </div>
-    <p class="hint">Direct contact info is only released to counterparties once you connect on a verified deal.</p>
+    <p class="hint">Only shared with a match after you've both connected on a listing.</p>
 
     <label style="display:flex; align-items:flex-start; gap:8px; margin-top:16px; font-weight:400;">
       <input type="checkbox" name="agree_terms" required style="margin-top:3px;">
-      <span style="font-size:13px; line-height:1.5;">I agree to the <a href="{{ url_for('terms') }}" target="_blank" style="text-decoration:underline;">Terms of Service</a>, understand that verification requires valid National ID and Passport, and confirm my details are accurate.</span>
+      <span>I confirm the email above is correct and understand there's no way to recover or verify it later, and I agree to the <a href="{{ url_for('terms') }}" target="_blank" style="text-decoration:underline;">Terms of Service</a> and <a href="{{ url_for('refunds') }}" target="_blank" style="text-decoration:underline;">Refund Policy</a>.</span>
     </label>
 
-    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Continue to Verification Step 2 →</button>
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Create account</button>
   </form>
   <p class="muted" style="margin-top:20px; text-align:center;">Already have an account? <a href="{{ url_for('login') }}" style="text-decoration:underline;">Log in</a></p>
 </div>

@@ -2,51 +2,35 @@
 {% block title %}Admin | Lotwise{% endblock %}
 {% block content %}
 <div class="dash-nav">
-  <a href="{{ url_for('admin_dashboard') }}" class="active">Review queue</a>
-  <a href="{{ url_for('admin_users') }}">Users</a>
+  <a href="{{ url_for('admin_users') }}">All users</a>
+  <a href="{{ url_for('admin_dashboard') }}" class="active">Verification queue</a>
   <a href="{{ url_for('admin_listings') }}">Listings</a>
-  <a href="{{ url_for('admin_deals') }}">Deals</a>
-  <a href="{{ url_for('admin_export') }}">Export data</a>
+  <a href="{{ url_for('admin_requests') }}">Sourcing requests</a>
+  <a href="{{ url_for('admin_connections') }}">Connections</a>
+  <a href="{{ url_for('admin_messages') }}">Contact messages</a>
+  <a href="{{ url_for('admin_events') }}">Events</a>
 </div>
 
 <h1>Admin</h1>
-<div style="display:flex; gap:16px; margin:20px 0 32px; flex-wrap:wrap;">
-  <div class="card" style="flex:1; min-width:140px; margin:0;"><div class="muted" style="font-size:12px;">Ready for review</div><div style="font-size:28px; font-weight:700; color:#E8C34A;">{{ stats.pending_count }}</div></div>
-  <div class="card" style="flex:1; min-width:140px; margin:0;"><div class="muted" style="font-size:12px;">Approved</div><div style="font-size:28px; font-weight:700; color:var(--ok);">{{ stats.approved_count }}</div></div>
-  <div class="card" style="flex:1; min-width:140px; margin:0;"><div class="muted" style="font-size:12px;">Total listings</div><div style="font-size:28px; font-weight:700;">{{ stats.total_listings }}</div></div>
-  <div class="card" style="flex:1; min-width:140px; margin:0;"><div class="muted" style="font-size:12px;">Connections made</div><div style="font-size:28px; font-weight:700;">{{ stats.total_connections }}</div></div>
+<div style="display:flex; gap:16px; margin:20px 0 32px;">
+  <div class="card" style="flex:1; margin:0;"><div class="muted" style="font-size:12px;">Pending</div><div style="font-size:28px; font-weight:700;">{{ stats.pending_count }}</div></div>
+  <div class="card" style="flex:1; margin:0;"><div class="muted" style="font-size:12px;">Approved</div><div style="font-size:28px; font-weight:700;">{{ stats.approved_count }}</div></div>
+  <div class="card" style="flex:1; margin:0;"><div class="muted" style="font-size:12px;">Total listings</div><div style="font-size:28px; font-weight:700;">{{ stats.total_listings }}</div></div>
+  <div class="card" style="flex:1; margin:0;"><div class="muted" style="font-size:12px;">Connections made</div><div style="font-size:28px; font-weight:700;">{{ stats.total_connections }}</div></div>
 </div>
 
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-  <h2>Verification queue (Docs submitted)</h2>
-  {% if stats.unsubmitted_count > 0 %}
-  <span class="muted" style="font-size:13px;">{{ stats.unsubmitted_count }} account(s) awaiting user doc upload (hidden from queue)</span>
-  {% endif %}
-</div>
-
+<h2 style="margin-bottom:14px;">Pending review</h2>
 {% for user in pending %}
 <div class="card">
   <div class="card-row">
     <div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <strong>{{ user.display_name }}</strong>
-        <span class="pill pill-pending">{{ user.account_type|capitalize }}</span>
-        {% if user.country %}
-        <span style="font-size:14px;">{{ user.country_flag }} {{ user.country }}</span>
-        {% endif %}
-      </div>
-      <div class="muted" style="margin-top:6px; font-size:13px;">
-        <span style="color:var(--ok); font-weight:600;">✓ Required docs submitted: National ID &amp; Passport</span>
-        · {{ user.email }}
-        · Registered {{ user.created_at.strftime('%b %d, %Y') }}
-      </div>
+      <strong>{{ user.company_name }}</strong> <span class="muted">· {{ user.account_type|capitalize }} · {{ user.country or 'Not provided' }} · {{ user.email }}</span>
+      <div class="muted" style="margin-top:4px; font-size:13px;">{{ user.documents|length }} document(s) submitted · Applied {{ user.created_at.strftime('%b %d, %Y') }}</div>
     </div>
-    <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" class="btn btn-solid btn-sm">Review &amp; verify →</a>
+    <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" class="btn btn-sm">Review</a>
   </div>
 </div>
 {% else %}
-<div class="card" style="text-align:center; padding:32px;">
-  <p class="muted">Queue is clear — no pending applicants with submitted documents.</p>
-</div>
+<p class="muted">Nothing pending.</p>
 {% endfor %}
 {% endblock %}
