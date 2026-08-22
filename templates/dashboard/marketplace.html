@@ -1,104 +1,132 @@
 {% extends "base.html" %}
-{% block title %}Browse | Lotwise{% endblock %}
+{% block title %}Find deals | Lotwise{% endblock %}
 {% block page_bg %}
 <div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-home.jpg') }}');"></div></div>
 {% endblock %}
-
 {% block content %}
-<h1>Browse</h1>
-<p class="muted" style="margin-bottom:24px;">Every listing and sourcing request from verified traders across the platform, in one place.</p>
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap; gap:16px;">
+  <div>
+    <h1>Find deals</h1>
+    <p class="muted" style="margin-top:4px;">Bulk commodity supply lots, buyer sourcing requests, and broker opportunities from verified global counterparties.</p>
+  </div>
+  {% if current_user.is_authenticated %}
+  <div style="display:flex; gap:10px;">
+    {% if current_user.account_type == 'supplier' or current_user.has_dual_access() %}
+    <a href="{{ url_for('new_listing') }}" class="btn btn-sm">+ Post listing</a>
+    {% endif %}
+    {% if current_user.account_type == 'buyer' or current_user.has_dual_access() %}
+    <a href="{{ url_for('new_sourcing_request') }}" class="btn btn-sm">+ Post request</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
 
 {% if not access_unlocked %}
 <div class="card marketplace-gate">
   <div>
     <div class="pill pill-pending">Limited preview</div>
     <h2 style="margin-top:10px;">Your marketplace access is waiting</h2>
-    <p class="muted" style="margin-top:6px;">{% if current_user.verification_status != 'approved' %}Submit your documents and wait for verification. {% endif %}Once approved, pay for a plan to reveal full listings, requests, and connections.</p>
+    <p class="muted" style="margin-top:6px;">{% if current_user.verification_status != 'approved' %}Submit your documents and wait for verification. {% endif %}Once approved, activate a plan to reveal full listings, requests, and direct counterparty connections.</p>
   </div>
   {% if current_user.verification_status != 'approved' %}
     <a href="{{ url_for('verification_upload') }}" class="btn btn-solid btn-sm">Submit documents</a>
   {% else %}
-    <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Choose a plan</a>
+    <a href="{{ url_for('pricing') }}" class="btn btn-solid btn-sm">Choose a plan</a>
   {% endif %}
 </div>
 {% endif %}
 
 <div class="{% if current_user.verification_status != 'approved' %}verification-wait-blur{% endif %}">
 <form method="GET" action="{{ url_for('browse') }}" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px;">
-  <input type="text" name="q" value="{{ q }}" placeholder="Search titles and descriptions..." style="flex:1; min-width:220px; padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink);">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search titles, commodities, specs..." style="flex:1; min-width:220px; padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink);">
 
   <div class="cdd">
-    <button type="button" class="cdd-trigger"><span class="cdd-label">{{ category if category else "All categories" }}</span><span class="cdd-arrow"></span></button>
+    <button type="button" class="cdd-trigger"><span class="cdd-label">{% if category %}{{ category }}{% else %}All categories{% endif %}</span><span class="cdd-arrow"></span></button>
     <div class="cdd-menu">
       <div class="cdd-option {% if not category %}selected{% endif %}" data-value="">All categories</div>
       {% for cat in categories %}
-      <div class="cdd-option {% if cat == category %}selected{% endif %}" data-value="{{ cat }}">{{ cat }}</div>
+      <div class="cdd-option {% if category == cat %}selected{% endif %}" data-value="{{ cat }}">{{ cat }}</div>
       {% endfor %}
     </div>
     <input type="hidden" name="category" value="{{ category }}">
   </div>
 
   <div class="cdd">
-    <button type="button" class="cdd-trigger"><span class="cdd-label">{{ "Listings only" if item_type == "listings" else "Requests only" if item_type == "requests" else "All" }}</span><span class="cdd-arrow"></span></button>
+    <button type="button" class="cdd-trigger"><span class="cdd-label">{% if item_type == 'listings' %}Supply lots only{% elif item_type == 'requests' %}Buyer requests only{% else %}All opportunities{% endif %}</span><span class="cdd-arrow"></span></button>
     <div class="cdd-menu">
-      <div class="cdd-option {% if item_type == 'all' %}selected{% endif %}" data-value="all">All</div>
-      <div class="cdd-option {% if item_type == 'listings' %}selected{% endif %}" data-value="listings">Listings only</div>
-      <div class="cdd-option {% if item_type == 'requests' %}selected{% endif %}" data-value="requests">Requests only</div>
+      <div class="cdd-option {% if item_type == 'all' %}selected{% endif %}" data-value="all">All opportunities</div>
+      <div class="cdd-option {% if item_type == 'listings' %}selected{% endif %}" data-value="listings">Supply lots only</div>
+      <div class="cdd-option {% if item_type == 'requests' %}selected{% endif %}" data-value="requests">Buyer requests only</div>
     </div>
     <input type="hidden" name="type" value="{{ item_type }}">
   </div>
 
-  <button type="submit" class="btn btn-solid btn-sm">Search</button>
+  <button type="submit" class="btn btn-solid btn-sm">Search deals</button>
   {% if q or category or item_type != 'all' %}
   <a href="{{ url_for('browse') }}" class="btn btn-sm">Clear</a>
   {% endif %}
 </form>
 
-<div class="browse-grid">
+<div class="marketplace-grid">
 {% for entry in feed %}
 {% set item = entry.item %}
-{% set detail_url = url_for('listing_detail', listing_id=item.id) if entry.kind == 'listing' else url_for('request_detail', request_id=item.id) %}
-<div class="card browse-card {% if not access_unlocked %}marketplace-locked{% endif %}">
-  {% if access_unlocked %}<a href="{{ detail_url }}" style="display:block; color:inherit; text-decoration:none;">{% else %}<div style="display:block; color:inherit; text-decoration:none;">{% endif %}
-  {% if item.photos %}
-  <div class="browse-thumb">
-    <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" alt="{{ item.title }}">
-    {% if item.photos|length > 1 %}<div class="photo-count-badge">+{{ item.photos|length - 1 }}</div>{% endif %}
-  </div>
+{% if entry.kind == 'listing' %}
+  {% set detail_url = url_for('listing_detail', listing_id=item.id) %}
+{% else %}
+  {% set detail_url = url_for('request_detail', request_id=item.id) %}
+{% endif %}
+
+<div class="card" style="padding:0; overflow:hidden;">
+  {% if access_unlocked %}<a href="{{ detail_url }}" style="display:block; text-decoration:none;">{% else %}<div style="display:block;">{% endif %}
+  {% if item.photos and item.photos|length > 0 %}
+    <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" style="width:100%; height:160px; object-fit:cover; display:block;" alt="{{ item.title }}">
   {% else %}
-  <div class="browse-thumb browse-thumb-empty">
-    <span>{{ item.category }}</span>
-  </div>
+    <div class="deal-placeholder-box" style="height:140px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);">
+      <span class="muted" style="font-size:12px; letter-spacing:0.04em;">{{ item.category }}</span>
+    </div>
   {% endif %}
   {% if access_unlocked %}</a>{% else %}</div>{% endif %}
 
-  <div style="padding:16px;">
-    <div class="muted" style="font-size:12px; margin-bottom:6px;">
-      {% if entry.kind == 'listing' %}<span class="pill" style="background:rgba(30,132,73,0.14); color:var(--ok);">Listing</span>{% else %}<span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Sourcing request</span>{% endif %}
-      &nbsp;{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}
+  <div style="padding:18px;">
+    <div class="muted" style="font-size:12px; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        {% if entry.kind == 'listing' %}<span class="pill" style="background:rgba(30,132,73,0.14); color:var(--ok);">Supply Lot</span>{% else %}<span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Buyer Request</span>{% endif %}
+        &nbsp;{{ item.category }}
+      </div>
+      {% if item.is_urgent %}<span class="pill" style="background:rgba(229,86,74,0.15); color:#E5564A; font-size:11px;">Urgent</span>{% endif %}
     </div>
-    {% if access_unlocked %}<a href="{{ detail_url }}" style="text-decoration:none; color:inherit;"><h2 style="font-size:17px; margin:0 0 6px;">{{ item.title }}</h2></a>
-    {% else %}<h2 style="font-size:17px; margin:0 0 6px;">Marketplace opportunity</h2>{% endif %}
-    {% if access_unlocked and item.description %}<p class="muted" style="font-size:13px; margin-bottom:10px;">{{ item.description[:110] }}{% if item.description|length > 110 %}…{% endif %}</p>{% endif %}
-    <div class="muted" style="font-size:12px; margin-bottom:12px;">
-      {{ item.quantity_fcl }} FCL
-      {% if entry.kind == 'listing' and item.origin_country %} · {{ item.origin_country }}{% endif %}
+
+    {% if access_unlocked %}<a href="{{ detail_url }}" style="text-decoration:none; color:inherit;"><h2 style="font-size:17px; margin:4px 0 6px;">{{ item.title }}</h2></a>
+    {% else %}<h2 style="font-size:17px; margin:4px 0 6px;">Marketplace opportunity</h2>{% endif %}
+
+    <!-- Deal Country & Flag badge -->
+    <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:100px; margin:4px 0 8px; font-size:12px; font-weight:600; color:var(--ink); border:1px solid var(--glass-border);">
+      <span style="font-size:15px; line-height:1;">{{ item.country_flag }}</span>
+      <span>{{ item.deal_country }}</span>
+      <span class="muted" style="font-size:11px; font-weight:400;">({% if entry.kind == 'listing' %}Origin{% else %}Buyer Market{% endif %})</span>
+    </div>
+
+    {% if access_unlocked and item.description %}<p class="muted" style="font-size:13px; margin-bottom:10px; line-height:1.5;">{{ item.description.slice(0, 110) }}{% if item.description|length > 110 %}…{% endif %}</p>{% endif %}
+
+    <div class="muted" style="font-size:12px; margin-bottom:14px;">
+      <strong>{{ item.quantity_fcl }} FCL</strong>
       {% if entry.kind == 'request' and item.target_price_note %} · {{ item.target_price_note }}{% endif %}
+      {% if entry.kind == 'listing' and item.grade_spec %} · {{ item.grade_spec }}{% endif %}
        · {{ item.owner.display_name }}
     </div>
 
-     {% if not access_unlocked %}
-     <div class="hint">Details unlock after verification and payment.</div>
-     {% elif item.user_id != current_user.id %}
-    <a href="{{ detail_url }}" class="btn btn-solid btn-sm" style="display:block; text-align:center;">View details &amp; {{ 'inquire' if entry.kind == 'listing' else 'respond' }}</a>
+    {% if not access_unlocked %}
+    <div class="hint">Details unlock after verification and payment.</div>
+    {% elif item.user_id != current_user.id %}
+    <a href="{{ detail_url }}" class="btn btn-solid btn-sm" style="display:block; text-align:center;">View details &amp; {% if entry.kind == 'listing' %}inquire{% else %}respond{% endif %}</a>
     {% else %}
-    <div class="hint">This is your own {{ 'listing' if entry.kind == 'listing' else 'request' }}.</div>
+    <div class="hint">This is your own {% if entry.kind == 'listing' %}listing{% else %}request{% endif %}.</div>
     {% endif %}
   </div>
 </div>
 {% else %}
 <div class="card" style="text-align:center; padding:40px; grid-column: 1 / -1;">
-  <p class="muted">No results match your search.</p>
+  <p class="muted">No deals match your search criteria.</p>
 </div>
 {% endfor %}
 </div>

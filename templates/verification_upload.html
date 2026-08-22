@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Verification Documents | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-jetcabin2.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<div style="max-width:520px; margin:0 auto;">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+    <span class="muted" style="font-size:12px;">✓ Step 1: Account Created</span>
+    <span class="pill pill-pending">Step 2 of 2: Submit Documents</span>
+  </div>
+  <h1>Verify your identity</h1>
+  <p class="muted" style="margin-bottom:24px;">To protect all counterparties and prevent fraudulent deals, accounts are manually vetted. <strong>Both a National ID and a Passport are strictly required</strong> before your application enters the verification queue.</p>
+
+  <form class="stacked" method="POST" enctype="multipart/form-data">
+    <label>Full residential / business address</label>
+    <textarea name="address" placeholder="Street, building/suite, city, postal code, country" required style="padding:12px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink); min-height:80px;">{{ current_user.address or '' }}</textarea>
+    <div class="hint">This address must match the details shown on your National ID / proof of residence.</div>
+
+    <label style="margin-top:16px;">1. National ID card (or government residency ID)</label>
+    <input type="file" name="national_id" accept=".pdf,.png,.jpg,.jpeg" required style="padding:10px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink); width:100%;">
+    <div class="hint">Front and back (or clear single-page scan). Serves as proof of address &amp; nationality.</div>
+
+    <label style="margin-top:16px;">2. International Passport</label>
+    <input type="file" name="passport" accept=".pdf,.png,.jpg,.jpeg" required style="padding:10px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink); width:100%;">
+    <div class="hint">Clear photo page scan. PDF, PNG, or JPG up to 10MB.</div>
+
+    <label style="display:flex; align-items:flex-start; gap:8px; margin-top:20px; font-weight:400;">
+      <input type="checkbox" name="agree_terms" required style="margin-top:3px;">
+      <span style="font-size:13px; line-height:1.5;">I confirm these documents are genuine, current, and belong to me. I understand my account enters the verification queue upon upload, and I agree to the <a href="{{ url_for('terms') }}" target="_blank" style="text-decoration:underline;">Terms of Service</a>.</span>
+    </label>
+
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Submit Documents &amp; Enter Queue →</button>
+  </form>
+  <p class="muted" style="margin-top:20px; text-align:center;"><a href="{{ url_for('browse') }}" style="text-decoration:underline;">Browse preview marketplace</a> · <a href="{{ url_for('dashboard') }}" style="text-decoration:underline;">Dashboard</a></p>
+</div>
+{% endblock %}
