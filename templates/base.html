@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Lotwise{% endblock %}</title>
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/favicon.svg') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#08080A; --bg-2:#0F0F12;
+    --ink:#F3F3F6; --ink-soft:#C9C9D2; --gray:#8A8A95; --line: rgba(255,255,255,0.09);
+    --panel:#F4F2EC; --panel-ink:#0A0A0A;
+    --glass-bg: rgba(255,255,255,0.045);
+    --glass-border: rgba(255,255,255,0.11);
+    --silver: linear-gradient(135deg, #E8E8ED 0%, #B8B8C2 45%, #8E8E98 55%, #DEDEE4 100%);
+    --silver-text: linear-gradient(90deg, #F5F5F8, #ABABB6, #F5F5F8);
+    --gold:#C9A227; --gold-soft: rgba(201,162,39,0.16);
+    --shadow-soft: 0 8px 30px rgba(0,0,0,0.45);
+    --shadow-lift: 0 24px 70px rgba(0,0,0,0.6);
+    --shadow-glow: 0 0 0 1px rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.55);
+    --ease: cubic-bezier(0.16,1,0.3,1);
+    --radius: 20px;
+    --danger:#E5564A; --ok:#3FBE7A;
+    --font-mono: 'SF Mono', Menlo, monospace;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    background:
+      radial-gradient(1100px 550px at 12% -10%, rgba(180,180,200,0.10) 0%, transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, rgba(201,162,39,0.07) 0%, transparent 50%),
+      radial-gradient(1000px 700px at 50% 110%, rgba(150,150,175,0.08) 0%, transparent 55%),
+      var(--bg);
+    background-attachment: fixed;
+    animation: bodyIn 0.5s var(--ease);
+  }
+  @keyframes bodyIn { from { opacity:0; } to { opacity:1; } }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
+  .glass { background: var(--glass-bg); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid var(--glass-border); }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  header { position: sticky; top: 0; z-index: 50; background: rgba(8,8,10,0.72); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--line); }
+  .header-inner { display:flex; align-items:center; justify-content:space-between; padding:16px 40px; max-width:1080px; margin:0 auto; }
+  .logo { font-size:19px; font-weight:800; letter-spacing:-0.02em; display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink); }
+  .logo-mark { width:9px; height:9px; border-radius:50%; background: var(--silver); box-shadow: 0 0 12px rgba(220,220,230,0.5); }
+  nav { display:flex; gap:24px; align-items:center; }
+  nav a.nav-link { color:var(--ink-soft); text-decoration:none; font-size:14px; font-weight:500; opacity:0.85; transition: opacity 0.25s var(--ease), color 0.25s var(--ease); position:relative; }
+  nav a.nav-link:hover { opacity:1; color:#fff; }
+
+  .btn { font-size:14px; font-weight:600; padding:10px 20px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.045); backdrop-filter: blur(10px); color:var(--ink); cursor:pointer; text-decoration:none; display:inline-block; border-radius: 100px; transition: all 0.3s var(--ease); font-family: inherit; }
+  .btn:hover { background: rgba(255,255,255,0.09); box-shadow: var(--shadow-soft); transform: translateY(-1px); border-color: rgba(255,255,255,0.2); }
+  .btn-solid { background: var(--silver); background-size:200% 100%; color:#0A0A0A; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 4px 20px rgba(0,0,0,0.4); font-weight:700; position:relative; overflow:hidden; }
+  .btn-solid:hover { transform: translateY(-1px); box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset, 0 10px 30px rgba(0,0,0,0.5); background-position: 100% 0; }
+  .btn-sm { padding: 7px 16px; font-size: 13px; }
+  .btn-danger { border-color: rgba(229,86,74,0.4); color: var(--danger); background: rgba(229,86,74,0.06); }
+  .btn-danger:hover { background: rgba(229,86,74,0.14); }
+  .btn-gold { background: linear-gradient(135deg, #E4C766, var(--gold) 60%, #E4C766); color:#1a1400; border:1px solid rgba(255,224,140,0.5); font-weight:700; }
+
+  .pill { display:inline-block; font-size:12px; font-weight:700; padding:5px 12px; border-radius:100px; letter-spacing:0.01em; }
+  .pill-pending { background:rgba(255,196,0,0.14); color:#E8C34A; }
+  .pill-approved { background:rgba(63,190,122,0.14); color:var(--ok); }
+  .pill-disapproved { background:rgba(229,86,74,0.14); color:var(--danger); }
+  .badge-grade { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background: var(--silver); color:#0A0A0A; font-size:11px; font-weight:800; }
+
+  main { min-height: 60vh; padding: 56px 0 100px; }
+  h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; animation: riseIn 0.7s var(--ease); }
+  h1, .shine-text {
+    background: linear-gradient(100deg, #8E8E98 0%, #FFFFFF 22%, #C9C9D4 42%, #FFFFFF 62%, #8E8E98 85%);
+    background-size: 220% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: riseIn 0.7s var(--ease), shine 7s linear infinite;
+  }
+  @keyframes shine { to { background-position: -220% center; } }
+  h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color:#fff; }
+  p { line-height: 1.6; }
+  .muted { color: var(--gray); font-size: 14px; }
+  @keyframes riseIn { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
+
+  .card { background: var(--glass-bg); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 26px; margin-bottom: 16px; box-shadow: var(--shadow-soft); transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease); opacity: 0; transform: translateY(16px); animation: cardIn 0.6s var(--ease) forwards; position:relative; overflow:hidden; }
+  .card::before { content:''; position:absolute; inset:0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.06) 50%, transparent 70%); transform: translateX(-100%); transition: transform 0.9s var(--ease); pointer-events:none; }
+  .card:hover::before { transform: translateX(100%); }
+  .card:hover { box-shadow: var(--shadow-glow); transform: translateY(-3px); border-color: rgba(255,255,255,0.22); }
+  .browse-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  .browse-card { padding:0; overflow:hidden; }
+  .browse-thumb { width:100%; aspect-ratio: 16/10; background:#1a1a1d; overflow:hidden; }
+  .browse-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.4s var(--ease); }
+  .browse-card:hover .browse-thumb img { transform: scale(1.05); }
+  .browse-thumb-empty { display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg, #1a1a1d, #101012); color: var(--gray); font-size:13px; font-weight:600; }
+  .browse-thumb { position:relative; }
+  .photo-count-badge { position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.7); backdrop-filter: blur(6px); color:#fff; font-size:11px; font-weight:700; padding:3px 8px; border-radius:100px; }
+  @media (max-width: 900px) { .browse-grid { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width: 600px) { .browse-grid { grid-template-columns:1fr; } }
+  .card-row { display:flex; justify-content: space-between; align-items:center; }
+  @keyframes cardIn { to { opacity:1; transform: translateY(0); } }
+
+  /* Premium light panel — for hero/feature sections that need the dark-shell/cream-panel contrast */
+  .panel-light { background: var(--panel); color: var(--panel-ink); border-radius: var(--radius); box-shadow: var(--shadow-lift); }
+  .panel-light h1, .panel-light h2, .panel-light p { color: var(--panel-ink); }
+  .panel-light .muted { color: #6b6b6b; }
+
+  form.stacked label { display:block; font-size:13px; font-weight:600; margin: 18px 0 6px; color:var(--ink-soft); }
+  form.stacked label:first-child { margin-top: 0; }
+  form.stacked input, form.stacked select, form.stacked textarea { width: 100%; padding: 12px 16px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); border-radius: 12px; font-family: inherit; font-size: 14px; color: var(--ink); transition: border-color 0.25s var(--ease), background 0.25s var(--ease); }
+  form.stacked input:focus, form.stacked select:focus, form.stacked textarea:focus { outline: none; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.07); }
+  form.stacked select option { background:#111; color:#fff; }
+  form.stacked textarea { resize: vertical; min-height: 90px; }
+  form.stacked .hint { font-size:12px; color: var(--gray); margin-top: 4px; }
+  form.stacked .checkbox-row { display:flex; align-items:center; gap:8px; margin-top:18px; }
+  form.stacked .checkbox-row input { width:auto; }
+  form.stacked .checkbox-row label { margin:0; font-weight:500; }
+
+  .contact-row { display:flex; gap:10px; }
+  .contact-row .contact-method { flex:0 0 140px; }
+  .contact-row .contact-value { flex:1; min-width:0; }
+  @media (max-width: 480px) {
+    .contact-row { flex-direction:column; gap:10px; }
+    .contact-row .contact-method { flex:1 1 auto; width:100%; }
+    .wrap, .header-inner { padding-left:20px; padding-right:20px; }
+    h1 { font-size:30px !important; }
+    main { padding: 32px 0 60px; }
+  }
+
+  .flash { padding: 13px 18px; border-radius: 14px; font-size: 14px; margin-bottom: 16px; backdrop-filter: blur(10px); animation: riseIn 0.4s var(--ease); }
+  .flash-success { background:rgba(63,190,122,0.1); color:var(--ok); border:1px solid rgba(63,190,122,0.25); }
+  .flash-error { background:rgba(229,86,74,0.1); color:var(--danger); border:1px solid rgba(229,86,74,0.25); }
+  .flash-warning { background:rgba(255,196,0,0.1); color:#E8C34A; border:1px solid rgba(255,196,0,0.25); }
+  .flash-info { background:rgba(255,255,255,0.04); color:var(--gray); border:1px solid var(--glass-border); }
+
+  table { width:100%; border-collapse: collapse; }
+  th, td { text-align:left; padding: 13px 16px; border-bottom:1px solid var(--line); font-size:14px; }
+  th { font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--gray); font-weight:700; }
+
+  .dash-nav { display:flex; gap:6px; margin-bottom: 32px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 100px; padding: 6px; width: fit-content; box-shadow: var(--shadow-soft); flex-wrap:wrap; }
+  .dash-nav a { font-size:13px; font-weight:600; padding:9px 18px; border-radius:100px; text-decoration:none; color:var(--gray); transition: all 0.3s var(--ease); }
+  .dash-nav a.active { background: var(--silver); color:#0A0A0A; }
+  .dash-nav a:not(.active):hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+  footer { border-top:1px solid var(--line); padding:28px 0; }
+  .footer-inner { display:flex; justify-content:space-between; align-items:center; }
+  .footer-text { font-size:13px; color:var(--gray); }
+
+  /* Pricing: role toggle + comparison table */
+  .role-toggle { display:inline-flex; background: var(--glass-bg); border:1px solid var(--glass-border); border-radius:100px; padding:5px; margin-bottom:36px; }
+  .role-toggle button { border:none; background:transparent; color:var(--gray); font-family:inherit; font-size:14px; font-weight:600; padding:10px 26px; border-radius:100px; cursor:pointer; transition: all 0.3s var(--ease); }
+  .role-toggle button.active { background: var(--silver); color:#0A0A0A; }
+
+  .price-card { position:relative; }
+  .price-card.featured { border-color: rgba(201,162,39,0.5); box-shadow: 0 0 0 1px rgba(201,162,39,0.3), var(--shadow-soft); }
+  .price-card .price-num { font-size:32px; font-weight:800; margin:10px 0 18px; }
+  .price-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .price-row:last-child { border-bottom:none; }
+  .price-row .mark-yes { color: var(--ok); flex-shrink:0; font-weight:800; }
+  .price-row .mark-no { color: #55555c; flex-shrink:0; font-weight:800; }
+  .price-row .mark-val { color: var(--ink-soft); flex-shrink:0; font-weight:700; font-size:12px; min-width:60px; }
+
+  /* Responsive grid utilities — replace ad-hoc inline grid-template-columns
+     so every multi-column section actually collapses on mobile instead of
+     overflowing or getting cut off. */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .hero-grid { display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center; }
+  @media (max-width: 860px) {
+    .grid-3, .grid-4 { grid-template-columns:repeat(2,1fr); }
+  }
+  @media (max-width: 640px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+    .hero-grid { grid-template-columns:1fr; }
+  }
+
+  /* Custom dropdown — replaces native <select>, since browsers render the
+     native option list in system colors that can't be themed. */
+  .cdd { position:relative; min-width:170px; }
+  .cdd-trigger { width:100%; text-align:left; padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); backdrop-filter: blur(10px); color:var(--ink); font-size:14px; font-family:inherit; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:8px; transition: all 0.25s var(--ease); }
+  .cdd-trigger:hover { border-color: rgba(255,255,255,0.25); }
+  .cdd-trigger .cdd-arrow { width:9px; height:9px; border-right:1.5px solid var(--gray); border-bottom:1.5px solid var(--gray); transform: rotate(45deg); transition: transform 0.25s var(--ease); flex-shrink:0; }
+  .cdd.open .cdd-trigger .cdd-arrow { transform: rotate(-135deg); }
+  .cdd-menu { position:absolute; top:calc(100% + 8px); left:0; right:0; background:#131316; border:1px solid var(--glass-border); border-radius:12px; box-shadow: var(--shadow-lift); padding:6px; z-index:60; display:none; max-height:280px; overflow-y:auto; }
+  .cdd.open .cdd-menu { display:block; animation: riseIn 0.2s var(--ease); }
+  .cdd-option { padding:9px 12px; border-radius:8px; font-size:14px; color:var(--ink-soft); cursor:pointer; transition: all 0.15s var(--ease); }
+  .cdd-option:hover { background: rgba(255,255,255,0.07); color:#fff; }
+  .cdd-option.selected { background: var(--silver); color:#0A0A0A; font-weight:600; }
+
+  /* Luxury image panel — texture placeholder until real photography is supplied.
+     Drop a real photo in via inline style="background-image: url(...)" on
+     .lux-photo and this treatment (dark gradient + grain + vignette) will
+     make it sit naturally inside the black/silver theme rather than looking
+     like a pasted-in stock image block. */
+  .lux-panel { position:relative; border-radius: var(--radius); overflow:hidden; min-height:340px; display:flex; align-items:flex-end; box-shadow: var(--shadow-lift); border: 1px solid var(--glass-border); }
+  .lux-photo { position:absolute; inset:0; background-size:cover; background-position:center;
+    background-image:
+      radial-gradient(140% 100% at 15% 0%, rgba(201,162,39,0.10), transparent 55%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 6px),
+      linear-gradient(160deg, #1c1c20 0%, #0c0c0e 55%, #050506 100%);
+  }
+  .lux-photo::after { content:''; position:absolute; inset:0; background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.05) 100%); }
+  .lux-photo::before { content:''; position:absolute; inset:0; box-shadow: inset 0 0 120px rgba(0,0,0,0.7); z-index:2; }
+  .lux-panel-content { position:relative; z-index:3; padding:32px; }
+  .lux-panel-content .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--gold); font-weight:700; margin-bottom:8px; }
+  .lux-panel-content h3 { font-size:20px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .lux-panel-content p { font-size:13px; color: var(--ink-soft); max-width:340px; }
+
+  /* Full-page photo background for public marketing pages (home, about, faq,
+     pricing, login, signup) — real photography at high visibility, with just
+     enough gradient to keep text and cards legible on top. */
+  .page-photo-bg { position:fixed; inset:0; z-index:-2; overflow:hidden; }
+  .page-photo-bg .photo-layer { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.42; }
+  .page-photo-bg::after { content:''; position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(4,4,5,0.94) 0%, rgba(4,4,5,0.74) 22%, rgba(4,4,5,0.78) 78%, rgba(4,4,5,0.96) 100%),
+      radial-gradient(120% 90% at 50% 0%, transparent 0%, rgba(4,4,5,0.55) 100%);
+  }
+  @media (max-width: 700px) {
+    .page-photo-bg .photo-layer { opacity:0.25; }
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+  .account-avatar { width:28px; height:28px; border-radius:50%; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; background: var(--silver); flex-shrink:0; box-shadow: 0 0 0 1px rgba(255,255,255,0.15); }
+  .account-avatar img { width:100%; height:100%; object-fit:cover; }
+  .account-avatar-fallback { color:#0A0A0A; font-size:13px; font-weight:800; }
+  .account-avatar-lg { width:52px; height:52px; }
+  .account-avatar-lg .account-avatar-fallback { font-size:20px; }
+
+  .account-dd { position:relative; }
+  .account-dd summary { list-style:none; cursor:pointer; }
+  .account-dd summary::-webkit-details-marker { display:none; }
+  .account-dd-trigger { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:500; color:var(--ink); opacity:0.85; }
+  .account-dd-trigger:hover { opacity:1; }
+  .account-dd[open] .account-dd-trigger { opacity:1; }
+  .account-dd-menu { position:absolute; top:calc(100% + 10px); right:0; background:#131316; border:1px solid var(--glass-border); border-radius:14px; box-shadow: var(--shadow-lift); padding:14px; min-width:200px; z-index:50; display:flex; flex-direction:column; gap:4px; animation: riseIn 0.25s var(--ease); }
+  .account-dd-photo-row { display:flex; align-items:center; gap:10px; padding-bottom:12px; margin-bottom:8px; border-bottom:1px solid var(--line); }
+  .account-dd-photo-btn { font-size:12px; font-weight:600; color: var(--gold); cursor:pointer; text-decoration:underline; }
+  .account-dd-menu a { padding:9px 8px; border-radius:8px; text-decoration:none; color:var(--ink-soft); font-size:14px; font-weight:500; transition: all 0.2s var(--ease); }
+  .account-dd-menu a:hover { background: rgba(255,255,255,0.06); color:#fff; }
+  .account-name-editor { border-top:1px solid var(--line); margin-top:6px; padding:12px 8px 0; }
+  .account-editor-label { font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+  .account-name-form { display:grid; gap:7px; }
+  .account-name-form input { width:100%; padding:8px 9px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,.04); color:var(--ink); font:inherit; font-size:12px; }
+  .account-name-form .btn { width:100%; padding:7px 10px; font-size:12px; }
+  .marketplace-gate { display:flex; align-items:center; justify-content:space-between; gap:20px; border-color:rgba(201,162,39,.35); }
+  .marketplace-locked .browse-thumb, .marketplace-locked h2, .marketplace-locked .muted { filter:blur(7px); user-select:none; }
+  .marketplace-locked .browse-thumb img { transform:scale(1.04); }
+  .marketplace-locked { cursor:default; }
+   .verification-wait-blur { filter:blur(8px); pointer-events:none; user-select:none; }
+   .market-ticker { overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:rgba(10,10,12,.72); }
+   .market-ticker-track { display:flex; width:max-content; animation: ticker-scroll 42s linear infinite; }
+   .market-ticker-set { display:flex; flex-shrink:0; }
+   .market-ticker-item { display:flex; align-items:center; gap:9px; min-width:210px; padding:10px 20px; border-right:1px solid var(--line); font-size:12px; }
+   .market-ticker-name { color:var(--ink); font-weight:700; }
+   .market-ticker-price { color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+   .market-ticker-up { color:#43c77a; }
+   .market-ticker-down { color:#ef8a82; }
+   .market-ticker-chart { width:48px; height:18px; }
+   @keyframes ticker-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+
+  .mobile-hamburger { display:none; }
+  .hamburger-trigger { list-style:none; cursor:pointer; width:36px; height:36px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border:1px solid var(--glass-border); border-radius:10px; background: var(--glass-bg); }
+  .hamburger-trigger::-webkit-details-marker { display:none; }
+  .hamburger-trigger span { width:16px; height:1.5px; background:var(--ink); display:block; }
+  .mobile-only-link { display:none; }
+
+  @media (max-width: 700px) {
+    .header-inner { padding:14px 16px; gap:10px; }
+    .logo { font-size:16px; white-space:nowrap; }
+    nav { gap:10px; }
+    .nav-link { display:none; }
+    .mobile-hamburger { display:block; }
+    .account-dd-label { display:none; }
+    .mobile-only-link { display:block; }
+    .btn-sm { padding:8px 12px; font-size:12px; white-space:nowrap; }
+  }
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% block page_bg %}{% endblock %}
+
+<header>
+  <div class="header-inner">
+    <a href="{{ url_for('home') }}" class="logo"><span class="logo-mark"></span>Lotwise</a>
+    <nav>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('browse') }}" class="nav-link">Browse</a>
+        {% if current_user.account_type == 'supplier' or current_user.has_dual_access() %}
+          <a href="{{ url_for('new_listing') }}" class="nav-link">New listing</a>
+        {% endif %}
+        {% if current_user.account_type == 'buyer' or current_user.has_dual_access() %}
+          <a href="{{ url_for('new_sourcing_request') }}" class="nav-link">Request</a>
+        {% endif %}
+        <a href="{{ url_for('contact') }}" class="nav-link">Contact us</a>
+        <a href="{{ url_for('events') }}" class="nav-link">Events</a>
+        {% if current_user.is_admin %}<a href="{{ url_for('admin_dashboard') }}" class="nav-link">Admin</a>{% endif %}
+        <details class="account-dd">
+          <summary class="account-dd-trigger">
+            <span class="account-avatar">
+              {% if current_user.profile_photo_path %}
+                <img src="{{ url_for('static', filename='uploads/' + current_user.profile_photo_path) }}" alt="">
+              {% else %}
+                <span class="account-avatar-fallback">{{ current_user.display_name[0]|upper }}</span>
+              {% endif %}
+            </span>
+            <span class="account-dd-label">My Account</span>
+          </summary>
+          <div class="account-dd-menu">
+            <div class="account-dd-photo-row">
+              <span class="account-avatar account-avatar-lg">
+                {% if current_user.profile_photo_path %}
+                  <img src="{{ url_for('static', filename='uploads/' + current_user.profile_photo_path) }}" alt="">
+                {% else %}
+                  <span class="account-avatar-fallback">{{ current_user.display_name[0]|upper }}</span>
+                {% endif %}
+              </span>
+              <form method="POST" action="{{ url_for('update_profile_photo') }}" enctype="multipart/form-data">
+                <label class="account-dd-photo-btn">
+                  Change photo
+                  <input type="file" name="photo" accept=".png,.jpg,.jpeg" onchange="this.form.submit()" style="display:none;">
+                </label>
+              </form>
+            </div>
+            <a href="{{ url_for('browse') }}" class="mobile-only-link">Browse</a>
+            {% if current_user.account_type == 'supplier' or current_user.has_dual_access() %}
+              <a href="{{ url_for('new_listing') }}" class="mobile-only-link">New listing</a>
+            {% endif %}
+            {% if current_user.account_type == 'buyer' or current_user.has_dual_access() %}
+              <a href="{{ url_for('new_sourcing_request') }}" class="mobile-only-link">Request</a>
+            {% endif %}
+            <a href="{{ url_for('contact') }}" class="mobile-only-link">Contact us</a>
+            <a href="{{ url_for('events') }}" class="mobile-only-link">Events</a>
+            {% if current_user.is_admin %}<a href="{{ url_for('admin_dashboard') }}" class="mobile-only-link">Admin</a>{% endif %}
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('billing_upgrade') }}">Pricing</a>
+            <div class="account-name-editor">
+              <div class="muted account-editor-label">Edit name</div>
+              <form method="POST" action="{{ url_for('update_profile_name') }}" class="account-name-form">
+                <input type="text" name="first_name" value="{{ current_user.first_name or '' }}" placeholder="First name" required>
+                <input type="text" name="last_name" value="{{ current_user.last_name or '' }}" placeholder="Last name" required>
+                <button type="submit" class="btn btn-sm">Save name</button>
+              </form>
+            </div>
+          </div>
+        </details>
+        <a href="{{ url_for('logout') }}" class="btn btn-sm">Log out</a>
+      {% else %}
+        <a href="{{ url_for('about') }}" class="nav-link">About</a>
+        <a href="{{ url_for('pricing') }}" class="nav-link">Pricing</a>
+        <a href="{{ url_for('faq') }}" class="nav-link">FAQ</a>
+        <a href="{{ url_for('login') }}" class="btn btn-sm">Log in</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-solid btn-sm">Get started</a>
+        <details class="account-dd mobile-hamburger">
+          <summary class="hamburger-trigger" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </summary>
+          <div class="account-dd-menu">
+            <a href="{{ url_for('about') }}">About</a>
+            <a href="{{ url_for('pricing') }}">Pricing</a>
+            <a href="{{ url_for('faq') }}">FAQ</a>
+          </div>
+        </details>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+{% if current_user.is_authenticated and request.path != '/' %}
+<div class="market-ticker" aria-label="Indicative commodity market prices">
+  <div class="market-ticker-track">
+    {% for repeat in range(2) %}
+    <div class="market-ticker-set">
+      <div class="market-ticker-item"><span class="market-ticker-name">Arabica Coffee</span><span class="market-ticker-price">$4.18/lb</span><span class="market-ticker-up">▲ 1.8%</span><svg class="market-ticker-chart" viewBox="0 0 48 18" aria-hidden="true"><polyline points="0,14 8,11 15,13 23,7 31,9 40,3 48,5" fill="none" stroke="#43c77a" stroke-width="2"/></svg></div>
+      <div class="market-ticker-item"><span class="market-ticker-name">Robusta Coffee</span><span class="market-ticker-price">$2,460/t</span><span class="market-ticker-up">▲ 0.9%</span><svg class="market-ticker-chart" viewBox="0 0 48 18" aria-hidden="true"><polyline points="0,13 8,14 16,9 23,11 31,6 39,8 48,2" fill="none" stroke="#43c77a" stroke-width="2"/></svg></div>
+      <div class="market-ticker-item"><span class="market-ticker-name">Cocoa</span><span class="market-ticker-price">$7,820/t</span><span class="market-ticker-down">▼ 0.6%</span><svg class="market-ticker-chart" viewBox="0 0 48 18" aria-hidden="true"><polyline points="0,3 8,6 16,5 23,10 31,8 40,14 48,12" fill="none" stroke="#ef8a82" stroke-width="2"/></svg></div>
+      <div class="market-ticker-item"><span class="market-ticker-name">Copper</span><span class="market-ticker-price">$9,420/t</span><span class="market-ticker-up">▲ 1.2%</span><svg class="market-ticker-chart" viewBox="0 0 48 18" aria-hidden="true"><polyline points="0,14 8,10 16,12 23,8 31,9 40,4 48,3" fill="none" stroke="#43c77a" stroke-width="2"/></svg></div>
+      <div class="market-ticker-item"><span class="market-ticker-name">Urea</span><span class="market-ticker-price">$338/t</span><span class="market-ticker-down">▼ 0.3%</span><svg class="market-ticker-chart" viewBox="0 0 48 18" aria-hidden="true"><polyline points="0,4 8,5 16,8 23,7 31,12 40,11 48,15" fill="none" stroke="#ef8a82" stroke-width="2"/></svg></div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<main>
+  <div class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-text">© 2026 Lotwise. All rights reserved.</div>
+    <div class="footer-text">
+      <a href="{{ url_for('terms') }}" style="margin-right:16px;">Terms</a>
+      <a href="{{ url_for('privacy') }}" style="margin-right:16px;">Privacy</a>
+      <a href="{{ url_for('refunds') }}">Refunds</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  function closeAll(except) {
+    document.querySelectorAll('.cdd.open').forEach(function(o) { if (o !== except) o.classList.remove('open'); });
+  }
+  document.querySelectorAll('.cdd').forEach(function(dd) {
+    var trigger = dd.querySelector('.cdd-trigger');
+    var hidden = dd.querySelector('input[type=hidden]');
+    var label = dd.querySelector('.cdd-label');
+    if (!trigger) return;
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var willOpen = !dd.classList.contains('open');
+      closeAll(dd);
+      dd.classList.toggle('open', willOpen);
+    });
+    dd.querySelectorAll('.cdd-option').forEach(function(opt) {
+      opt.addEventListener('click', function() {
+        dd.querySelectorAll('.cdd-option').forEach(function(o) { o.classList.remove('selected'); });
+        opt.classList.add('selected');
+        if (hidden) hidden.value = opt.dataset.value;
+        if (label) label.textContent = opt.textContent;
+        dd.classList.remove('open');
+        if (dd.dataset.autosubmit === 'true') {
+          var form = dd.closest('form');
+          if (form) form.submit();
+        }
+      });
+    });
+  });
+  document.addEventListener('click', function() { closeAll(null); });
+})();
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

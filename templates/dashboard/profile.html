@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ profile.display_name }} | Lotwise{% endblock %}
+{% block content %}
+<a href="{{ url_for('browse') }}" class="muted" style="text-decoration:underline; font-size:13px;">← Back to Browse</a>
+
+<div class="card-row" style="margin:18px 0 28px;">
+  <div style="display:flex; align-items:center; gap:14px;">
+    <span class="account-avatar account-avatar-lg">
+      {% if profile.profile_photo_path %}
+        <img src="{{ url_for('static', filename='uploads/' + profile.profile_photo_path) }}" alt="">
+      {% else %}
+        <span class="account-avatar-fallback">{{ profile.display_name[0]|upper }}</span>
+      {% endif %}
+    </span>
+    <div>
+      <h1 style="margin:0;">{{ profile.display_name }}</h1>
+      <p class="muted">{{ profile.account_type|capitalize }} · {{ profile.country or "Country not provided" }}</p>
+    </div>
+  </div>
+  <div style="text-align:right;">
+    <span class="pill pill-approved">Verified member</span>
+    <div class="muted" style="margin-top:8px;">Tier standing: <span class="badge-grade">{{ profile.tier_grade }}</span></div>
+  </div>
+</div>
+
+{% if listings %}
+<h2 style="margin:0 0 14px;">{{ profile.display_name }}'s listings</h2>
+<div class="browse-grid" style="margin-bottom:32px;">
+  {% for item in listings %}
+  <div class="card browse-card">
+    <a href="{{ url_for('listing_detail', listing_id=item.id) }}" style="display:block; color:inherit; text-decoration:none;">
+      {% if item.photos %}
+      <div class="browse-thumb"><img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" alt="{{ item.title }}"></div>
+      {% else %}
+      <div class="browse-thumb browse-thumb-empty"><span>{{ item.category }}</span></div>
+      {% endif %}
+    </a>
+    <div style="padding:16px;">
+      <div class="muted" style="font-size:12px;">{{ item.category }} · {{ item.quantity_fcl }} FCL</div>
+      <h2 style="font-size:17px; margin-top:6px;">{{ item.title }}</h2>
+      <a href="{{ url_for('listing_detail', listing_id=item.id) }}" class="btn btn-solid btn-sm" style="display:block; text-align:center; margin-top:12px;">View listing</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if requests_list %}
+<h2 style="margin:0 0 14px;">{{ profile.display_name }}'s sourcing requests</h2>
+{% for item in requests_list %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <div class="muted" style="font-size:12px;">{{ item.category }} · {{ item.quantity_fcl }} FCL</div>
+      <h2 style="margin-top:6px;">{{ item.title }}</h2>
+      {% if item.description %}<p class="muted" style="margin-top:6px;">{{ item.description }}</p>{% endif %}
+    </div>
+    <a href="{{ url_for('request_detail', request_id=item.id) }}" class="btn btn-solid btn-sm">View request</a>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if not listings and not requests_list %}
+<div class="card"><p class="muted">This member has no active listings or sourcing requests yet.</p></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Events | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-about.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<h1>Events &amp; meetings</h1>
+<p class="muted" style="margin-bottom:28px;">Private meetings, supplier briefings, and events prepared by the Lotwise team.</p>
+{% if not access_unlocked %}
+<div class="card" style="max-width:640px;">
+  <span class="pill pill-pending">Members only</span>
+  <h2 style="margin-top:12px;">Unlock the Lotwise calendar</h2>
+  <p class="muted" style="margin:8px 0 18px;">Events and meeting scheduling are available after your account is verified and a plan is active.</p>
+  {% if current_user.verification_status != 'approved' %}
+  <a href="{{ url_for('verification_upload') }}" class="btn btn-solid btn-sm">Submit documents</a>
+  {% else %}
+  <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Choose a plan</a>
+  {% endif %}
+</div>
+{% else %}
+<div class="{% if current_user.verification_status != 'approved' %}verification-wait-blur{% endif %}">
+<div class="pill pill-approved">Member calendar</div>
+<h2 style="margin:12px 0 14px;">Your upcoming Lotwise events</h2>
+{% for event in event_list %}
+<div class="card">
+  <div class="card-row" style="align-items:flex-start; gap:18px;">
+    <div>
+      <div class="muted mono" style="font-size:12px;">
+        {{ event.starts_at.strftime('%a, %b %-d, %Y · %H:%M') }}
+        {% if event.ends_at %}–{{ event.ends_at.strftime('%H:%M') }}{% endif %}
+      </div>
+      <h2 style="margin-top:7px;">{{ event.title }}</h2>
+      {% if event.description %}<p class="muted" style="margin-top:7px; white-space:pre-wrap;">{{ event.description }}</p>{% endif %}
+      <div class="muted" style="font-size:13px; margin-top:12px;">
+        {{ event.location or "Location to be announced" }}
+        {% if event.capacity %} · {{ event.capacity }} places{% endif %}
+      </div>
+    </div>
+    {% if event.meeting_url %}
+    <a href="{{ event.meeting_url }}" target="_blank" rel="noopener" class="btn btn-solid btn-sm" style="white-space:nowrap;">Join meeting</a>
+    {% endif %}
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <p class="muted">No upcoming events have been published yet. Check back soon or <a href="{{ url_for('contact') }}" style="text-decoration:underline;">contact us</a> to schedule a conversation.</p>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

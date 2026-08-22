@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Admin | Events{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('admin_users') }}">All users</a>
+  <a href="{{ url_for('admin_dashboard') }}">Verification queue</a>
+  <a href="{{ url_for('admin_listings') }}">Listings</a>
+  <a href="{{ url_for('admin_requests') }}">Sourcing requests</a>
+  <a href="{{ url_for('admin_connections') }}">Connections</a>
+  <a href="{{ url_for('admin_messages') }}">Contact messages</a>
+  <a href="{{ url_for('admin_events') }}" class="active">Events</a>
+</div>
+
+<h1>Events</h1>
+<p class="muted" style="margin-bottom:24px;">Create the meetings and events shown to paid members on the Events page.</p>
+
+<div class="card" style="max-width:680px;">
+  <h2 style="margin-bottom:16px;">Add an event</h2>
+  <form class="stacked" method="POST">
+    <label>Event title</label>
+    <input type="text" name="title" placeholder="e.g. East Africa supplier briefing" required>
+    <label>Description</label>
+    <textarea name="description" placeholder="What should members know?"></textarea>
+    <div class="grid-2">
+      <div>
+        <label>Starts</label>
+        <input type="datetime-local" name="starts_at" required>
+      </div>
+      <div>
+        <label>Ends</label>
+        <input type="datetime-local" name="ends_at">
+      </div>
+    </div>
+    <label>Location</label>
+    <input type="text" name="location" placeholder="Venue or online">
+    <label>Meeting link (optional)</label>
+    <input type="url" name="meeting_url" placeholder="https://...">
+    <label>Capacity (optional)</label>
+    <input type="number" name="capacity" min="1">
+    <div class="checkbox-row">
+      <input type="checkbox" name="is_published" id="is-published" checked>
+      <label for="is-published">Publish to paid members</label>
+    </div>
+    <button type="submit" class="btn btn-solid" style="margin-top:20px;">Add event</button>
+  </form>
+</div>
+
+<h2 style="margin:28px 0 14px;">Scheduled events</h2>
+{% for event in events_list %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <div class="muted">{{ event.starts_at.strftime('%b %-d, %Y · %H:%M') }}{% if event.ends_at %}–{{ event.ends_at.strftime('%H:%M') }}{% endif %}</div>
+      <h2 style="margin-top:5px;">{{ event.title }}</h2>
+      <p class="muted" style="margin-top:5px;">{{ event.location or 'Location to be announced' }} · {{ 'Published' if event.is_published else 'Draft' }}</p>
+    </div>
+    <form method="POST" action="{{ url_for('admin_delete_event', event_id=event.id) }}" onsubmit="return confirm('Remove this event?');">
+      <button type="submit" class="btn btn-sm">Remove</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<p class="muted">No events scheduled yet.</p>
+{% endfor %}
+{% endblock %}

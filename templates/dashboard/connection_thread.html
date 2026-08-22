@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Connection #{{ connection.id }} | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-about.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<h1>Connection #{{ connection.id }}</h1>
+<p class="muted" style="margin-bottom:16px;">Status: <strong>{{ connection.status.replace('_',' ')|capitalize }}</strong></p>
+
+<div class="card" style="margin-bottom:20px; background:linear-gradient(180deg, rgba(52,199,89,0.08), rgba(52,199,89,0.02));">
+  <div class="card-row">
+    <div>
+       <strong>{{ other_user.display_name }} shared their contact</strong>
+       <p class="muted" style="font-size:13px; margin-top:4px;">Lotwise only connects you. Continue the conversation directly using the contact details below.</p>
+    </div>
+    <div style="text-align:right;">
+      <div class="pill pill-approved">{{ other_user.contact_method|capitalize }}</div>
+      <div style="font-weight:700; margin-top:6px;">{{ other_user.contact_value }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Related opportunity</h2>
+  {% if connection.inquiry.listing %}
+  <p style="margin-top:10px;"><strong>Listing:</strong> {{ connection.inquiry.listing.title }}</p>
+  <p class="muted" style="margin-top:4px;">{{ connection.inquiry.listing.category }} · {{ connection.inquiry.listing.quantity_fcl }} FCL</p>
+  {% elif connection.inquiry.sourcing_request %}
+  <p style="margin-top:10px;"><strong>Sourcing request:</strong> {{ connection.inquiry.sourcing_request.title }}</p>
+  <p class="muted" style="margin-top:4px;">{{ connection.inquiry.sourcing_request.category }} · {{ connection.inquiry.sourcing_request.quantity_fcl }} FCL</p>
+  {% endif %}
+</div>
+
+{% endblock %}

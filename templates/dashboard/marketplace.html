@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Browse | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-home.jpg') }}');"></div></div>
+{% endblock %}
+
+{% block content %}
+<h1>Browse</h1>
+<p class="muted" style="margin-bottom:24px;">Every listing and sourcing request from verified traders across the platform, in one place.</p>
+
+{% if not access_unlocked %}
+<div class="card marketplace-gate">
+  <div>
+    <div class="pill pill-pending">Limited preview</div>
+    <h2 style="margin-top:10px;">Your marketplace access is waiting</h2>
+    <p class="muted" style="margin-top:6px;">{% if current_user.verification_status != 'approved' %}Submit your documents and wait for verification. {% endif %}Once approved, pay for a plan to reveal full listings, requests, and connections.</p>
+  </div>
+  {% if current_user.verification_status != 'approved' %}
+    <a href="{{ url_for('verification_upload') }}" class="btn btn-solid btn-sm">Submit documents</a>
+  {% else %}
+    <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Choose a plan</a>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="{% if current_user.verification_status != 'approved' %}verification-wait-blur{% endif %}">
+<form method="GET" action="{{ url_for('browse') }}" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px;">
+  <input type="text" name="q" value="{{ q }}" placeholder="Search titles and descriptions..." style="flex:1; min-width:220px; padding:12px 16px; border-radius:12px; border:1px solid var(--glass-border); background:var(--glass-bg); color:var(--ink);">
+
+  <div class="cdd">
+    <button type="button" class="cdd-trigger"><span class="cdd-label">{{ category if category else "All categories" }}</span><span class="cdd-arrow"></span></button>
+    <div class="cdd-menu">
+      <div class="cdd-option {% if not category %}selected{% endif %}" data-value="">All categories</div>
+      {% for cat in categories %}
+      <div class="cdd-option {% if cat == category %}selected{% endif %}" data-value="{{ cat }}">{{ cat }}</div>
+      {% endfor %}
+    </div>
+    <input type="hidden" name="category" value="{{ category }}">
+  </div>
+
+  <div class="cdd">
+    <button type="button" class="cdd-trigger"><span class="cdd-label">{{ "Listings only" if item_type == "listings" else "Requests only" if item_type == "requests" else "All" }}</span><span class="cdd-arrow"></span></button>
+    <div class="cdd-menu">
+      <div class="cdd-option {% if item_type == 'all' %}selected{% endif %}" data-value="all">All</div>
+      <div class="cdd-option {% if item_type == 'listings' %}selected{% endif %}" data-value="listings">Listings only</div>
+      <div class="cdd-option {% if item_type == 'requests' %}selected{% endif %}" data-value="requests">Requests only</div>
+    </div>
+    <input type="hidden" name="type" value="{{ item_type }}">
+  </div>
+
+  <button type="submit" class="btn btn-solid btn-sm">Search</button>
+  {% if q or category or item_type != 'all' %}
+  <a href="{{ url_for('browse') }}" class="btn btn-sm">Clear</a>
+  {% endif %}
+</form>
+
+<div class="browse-grid">
+{% for entry in feed %}
+{% set item = entry.item %}
+{% set detail_url = url_for('listing_detail', listing_id=item.id) if entry.kind == 'listing' else url_for('request_detail', request_id=item.id) %}
+<div class="card browse-card {% if not access_unlocked %}marketplace-locked{% endif %}">
+  {% if access_unlocked %}<a href="{{ detail_url }}" style="display:block; color:inherit; text-decoration:none;">{% else %}<div style="display:block; color:inherit; text-decoration:none;">{% endif %}
+  {% if item.photos %}
+  <div class="browse-thumb">
+    <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" alt="{{ item.title }}">
+    {% if item.photos|length > 1 %}<div class="photo-count-badge">+{{ item.photos|length - 1 }}</div>{% endif %}
+  </div>
+  {% else %}
+  <div class="browse-thumb browse-thumb-empty">
+    <span>{{ item.category }}</span>
+  </div>
+  {% endif %}
+  {% if access_unlocked %}</a>{% else %}</div>{% endif %}
+
+  <div style="padding:16px;">
+    <div class="muted" style="font-size:12px; margin-bottom:6px;">
+      {% if entry.kind == 'listing' %}<span class="pill" style="background:rgba(30,132,73,0.14); color:var(--ok);">Listing</span>{% else %}<span class="pill" style="background:rgba(184,134,11,0.14); color:#8A6D00;">Sourcing request</span>{% endif %}
+      &nbsp;{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}
+    </div>
+    {% if access_unlocked %}<a href="{{ detail_url }}" style="text-decoration:none; color:inherit;"><h2 style="font-size:17px; margin:0 0 6px;">{{ item.title }}</h2></a>
+    {% else %}<h2 style="font-size:17px; margin:0 0 6px;">Marketplace opportunity</h2>{% endif %}
+    {% if access_unlocked and item.description %}<p class="muted" style="font-size:13px; margin-bottom:10px;">{{ item.description[:110] }}{% if item.description|length > 110 %}…{% endif %}</p>{% endif %}
+    <div class="muted" style="font-size:12px; margin-bottom:12px;">
+      {{ item.quantity_fcl }} FCL
+      {% if entry.kind == 'listing' and item.origin_country %} · {{ item.origin_country }}{% endif %}
+      {% if entry.kind == 'request' and item.target_price_note %} · {{ item.target_price_note }}{% endif %}
+       · {{ item.owner.display_name }}
+    </div>
+
+     {% if not access_unlocked %}
+     <div class="hint">Details unlock after verification and payment.</div>
+     {% elif item.user_id != current_user.id %}
+    <a href="{{ detail_url }}" class="btn btn-solid btn-sm" style="display:block; text-align:center;">View details &amp; {{ 'inquire' if entry.kind == 'listing' else 'respond' }}</a>
+    {% else %}
+    <div class="hint">This is your own {{ 'listing' if entry.kind == 'listing' else 'request' }}.</div>
+    {% endif %}
+  </div>
+</div>
+{% else %}
+<div class="card" style="text-align:center; padding:40px; grid-column: 1 / -1;">
+  <p class="muted">No results match your search.</p>
+</div>
+{% endfor %}
+</div>
+</div>
+{% endblock %}

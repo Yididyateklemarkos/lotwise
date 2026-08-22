@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}New listing | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-jetcabin2.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<div style="max-width:520px;">
+  <h1>New listing</h1>
+  <p class="muted" style="margin-bottom:24px;">Minimum quantity is 1 FCL (full container load). Bulk only.</p>
+  <form class="stacked" method="POST" enctype="multipart/form-data">
+    <label>Category</label>
+    <select name="category" required>
+      <option>Minerals</option>
+      <option>Agriculture</option>
+      <option>Chemicals</option>
+      <option>Construction materials</option>
+      <option>Other bulk goods</option>
+    </select>
+    <label>Title</label>
+    <input type="text" name="title" placeholder="e.g. Crushed limestone, Grade A" required>
+    <label>Description</label>
+    <textarea name="description" placeholder="Spec, packaging, delivery terms..."></textarea>
+    <label>Grade / spec</label>
+    <input type="text" name="grade_spec">
+    <label>Quantity (FCL)</label>
+    <input type="number" name="quantity_fcl" min="1" required>
+    <label>Origin country</label>
+    <input type="text" name="origin_country">
+    <label>Photos</label>
+    <input type="file" name="photos" accept=".png,.jpg,.jpeg" multiple>
+    <div class="hint">Up to 6 photos. PNG or JPG.</div>
+    <div class="checkbox-row">
+      <input type="checkbox" name="is_urgent" id="urgent" {% if current_user.subscription_tier == 'standard' %}disabled{% endif %}>
+      <label for="urgent">Flag as urgent sale {% if current_user.subscription_tier == 'standard' %}(Plus/Premium only){% endif %}</label>
+    </div>
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Create listing</button>
+  </form>
+</div>
+{% endblock %}

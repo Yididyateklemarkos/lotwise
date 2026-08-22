@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Admin | Listings{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('admin_users') }}">All users</a>
+  <a href="{{ url_for('admin_dashboard') }}">Verification queue</a>
+  <a href="{{ url_for('admin_listings') }}" class="active">Listings</a>
+  <a href="{{ url_for('admin_requests') }}">Sourcing requests</a>
+  <a href="{{ url_for('admin_connections') }}">Connections</a>
+  <a href="{{ url_for('admin_events') }}">Events</a>
+</div>
+
+<div class="card-row" style="margin-bottom:20px;">
+  <h1>Listings ({{ listings|length }})</h1>
+  <a href="{{ url_for('admin_new_listing') }}" class="btn btn-solid btn-sm">Add listing</a>
+</div>
+
+{% for item in listings %}
+<div class="card">
+  <div class="card-row">
+    <div style="display:flex; gap:14px;">
+      {% if item.photos %}
+      <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" style="width:56px; height:56px; object-fit:cover; border-radius:8px; flex-shrink:0;" alt="">
+      {% endif %}
+      <div>
+        <div class="muted" style="font-size:12px;">{{ item.category }}{% if item.is_urgent %} · Urgent{% endif %}{% if item.is_sold %} · Sold{% endif %}</div>
+        <strong>{{ item.title }}</strong>
+        <div class="muted" style="font-size:13px; margin-top:4px;">{{ item.owner.company_name }} · {{ item.origin_country or "Not provided" }} · {{ item.quantity_fcl }} FCL · {{ item.photos|length }} photo(s) · {{ item.inquiries|length }} inquiries</div>
+      </div>
+    </div>
+    <form method="POST" action="{{ url_for('admin_delete_listing', listing_id=item.id) }}" onsubmit="return confirm('Remove this listing?');">
+      <button type="submit" class="btn btn-sm">Remove</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<p class="muted">No listings yet.</p>
+{% endfor %}
+{% endblock %}
