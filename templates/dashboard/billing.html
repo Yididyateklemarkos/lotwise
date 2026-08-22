@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Upgrade | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-faq.jpg') }}');"></div></div>
+{% endblock %}
+
+{% block content %}
+<h1>Choose your plan</h1>
+<p class="muted" style="margin-bottom:24px;">
+  Current plan: <strong>{{ current_user.subscription_tier|capitalize }}</strong> · Status: {{ current_user.subscription_status }}
+  {% if current_user.subscription_renews_at and current_user.subscription_status == 'active' %}
+    · Renews by {{ current_user.subscription_renews_at.strftime('%b %-d, %Y') }}
+  {% endif %}
+</p>
+<p class="hint" style="margin-bottom:20px;">Choose a plan and you'll be taken straight to Whop's secure checkout. Plans run for 30 days per payment.</p>
+
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px;">
+  {% for tier, price in prices.items() %}
+  <div class="card" style="display:flex; flex-direction:column;">
+    <div class="muted">{{ tier|capitalize }}</div>
+    <div style="font-size:30px; font-weight:700; margin:8px 0;">${{ price }}<span style="font-size:15px; font-weight:400;">/mo</span></div>
+    <ul style="list-style:none; padding:0; margin:12px 0 20px; flex:1;">
+      {% for feature in features.get(tier, []) %}
+      <li style="display:flex; gap:8px; align-items:flex-start; margin-bottom:10px; font-size:13px;">
+        <span style="color:var(--ok); flex-shrink:0;">✓</span>
+        <span>{{ feature }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    <a href="{{ url_for('billing_pay_whop', tier=tier) }}" class="btn btn-solid btn-sm" style="width:100%; display:block; text-align:center;">
+      {% if current_user.subscription_tier == tier and current_user.subscription_status == 'active' %}Renew with Whop{% else %}Unlock now{% endif %}
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Track record | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-yacht-sunset.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('dashboard') }}">Overview</a>
+  <a href="{{ url_for('track_record') }}" class="active">Track record</a>
+</div>
+
+<h1>Your track record</h1>
+<p class="muted" style="margin:8px 0 28px;">Add past deals to build credibility with matches. Proof documents are optional but strengthen your profile.</p>
+
+<div class="card" style="margin-bottom:28px;">
+  <h2 style="margin-bottom:16px;">Add a past deal</h2>
+  <form class="stacked" method="POST" enctype="multipart/form-data">
+    <label>Title</label>
+    <input type="text" name="title" placeholder="e.g. 40 FCL robusta green coffee to Hamburg" required>
+
+    <label>Counterparty (no names needed)</label>
+    <input type="text" name="counterparty_note" placeholder="e.g. EU importer, mid-size roaster">
+
+    <div style="display:flex; gap:12px;">
+      <div style="flex:1;">
+        <label>Volume (FCL)</label>
+        <input type="number" name="volume_fcl" min="1">
+      </div>
+      <div style="flex:1;">
+        <label>Year</label>
+        <input type="number" name="year" min="2000" max="2100">
+      </div>
+    </div>
+
+    <label>Proof document (optional: BL, invoice, cert, etc.)</label>
+    <input type="file" name="proof_file" accept=".pdf,.png,.jpg,.jpeg">
+
+    <button type="submit" class="btn btn-solid" style="margin-top:16px; padding:12px;">Add to track record</button>
+  </form>
+</div>
+
+<h2 style="margin-bottom:14px;">Your entries</h2>
+{% if entries %}
+{% for e in entries %}
+<div class="card" style="margin-bottom:12px;">
+  <div class="card-row">
+    <div>
+      <strong>{{ e.title }}</strong>
+      <p class="muted" style="font-size:13px; margin-top:4px;">
+        {% if e.year %}{{ e.year }} · {% endif %}{% if e.volume_fcl %}{{ e.volume_fcl }} FCL · {% endif %}{{ e.counterparty_note or "" }}
+      </p>
+    </div>
+    {% if e.proof_file_path %}
+    <span class="pill pill-approved">Proof attached</span>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<p class="muted">No entries yet. Add your first deal above.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Payment not completed | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-signup.jpg') }}');"></div></div>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:520px; margin:40px auto; text-align:center; padding:40px;">
+  <div style="width:56px; height:56px; border-radius:50%; background: var(--danger); color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 20px;">✕</div>
+  <h1 style="font-size:24px; margin-bottom:8px;">Payment not completed</h1>
+  <p class="muted" style="margin-bottom:24px;">
+    Your payment was cancelled or didn't go through. No charge was made. You can try again anytime.
+  </p>
+  <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Try again</a>
+</div>
+{% endblock %}

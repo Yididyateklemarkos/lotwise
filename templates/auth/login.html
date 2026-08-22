@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Log in | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-login.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<div style="max-width:440px; margin:0 auto;">
+  <h1>Log in</h1>
+  <p class="muted" style="margin-bottom:28px;">Welcome back.</p>
+
+  <form class="stacked" method="POST">
+    <label>Email</label>
+    <input type="email" name="email" required>
+    <label>Password</label>
+    <input type="password" name="password" required>
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Log in</button>
+  </form>
+  <p class="muted" style="margin-top:20px; text-align:center;">No account yet? <a href="{{ url_for('signup') }}" style="text-decoration:underline;">Sign up</a></p>
+</div>
+{% endblock %}

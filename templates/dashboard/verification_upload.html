@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Verification | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-jetcabin2.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<div style="max-width:480px;">
+  <h1>Verify your identity</h1>
+  <p class="muted" style="margin-bottom:24px;">Every account is reviewed by hand. You'll need to submit all three items below in one go: your address, a National ID, and a Passport. If your application is disapproved, you'll need to reapply from scratch with corrected documents.</p>
+  <form class="stacked" method="POST" enctype="multipart/form-data">
+    <label>Full address</label>
+    <textarea name="address" placeholder="Street, city, region, postal code, country" required>{{ current_user.address or '' }}</textarea>
+    <div class="hint">This should match the address shown on your National ID.</div>
+
+    <label>National ID (country you reside in)</label>
+    <input type="file" name="national_id" accept=".pdf,.png,.jpg,.jpeg" required>
+    <div class="hint">Also serves as your proof of address.</div>
+
+    <label>Passport</label>
+    <input type="file" name="passport" accept=".pdf,.png,.jpg,.jpeg" required>
+    <div class="hint">Max 10MB per file. PDF, PNG, or JPG.</div>
+
+    <label style="display:flex; align-items:flex-start; gap:8px; margin-top:16px; font-weight:400;">
+      <input type="checkbox" name="agree_terms" required style="margin-top:3px;">
+      <span>I confirm these documents are accurate and belong to me, and I agree to the <a href="{{ url_for('terms') }}" target="_blank" style="text-decoration:underline;">Terms of Service</a>.</span>
+    </label>
+
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Submit for verification</button>
+  </form>
+  <p class="muted" style="margin-top:20px;"><a href="{{ url_for('dashboard') }}" style="text-decoration:underline;">Back to dashboard</a></p>
+</div>
+{% endblock %}

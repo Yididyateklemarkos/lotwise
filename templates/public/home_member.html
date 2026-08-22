@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Lotwise | Registry{% endblock %}
+{% block content %}
+<div class="dash-nav">
+  <a href="{{ url_for('home') }}" class="active">Trending</a>
+  <a href="{{ url_for('dashboard') }}">My dashboard</a>
+  <a href="{{ url_for('browse') }}">Browse all</a>
+</div>
+
+<h1 style="margin-bottom:6px;">Welcome back, {{ current_user.company_name }}.</h1>
+<p class="muted" style="margin-bottom:32px;">Here's what's moving in the registry right now.</p>
+
+{% if current_user.account_type == "buyer" %}
+<h2 style="margin-bottom:14px;">Trending listings</h2>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:44px;">
+  {% for item in trending_listings %}
+  <div class="card">
+    {% if item.photos %}
+    <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" style="width:100%; height:120px; object-fit:cover; border-radius:8px; margin-bottom:10px;" alt="{{ item.title }}">
+    {% endif %}
+    <div class="muted" style="font-size:12px;">{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}</div>
+    <h2 style="font-size:18px; margin:6px 0;">{{ item.title }}</h2>
+    <p class="muted" style="font-size:13px; margin-bottom:12px;">{{ item.origin_country or "Not provided" }} · {{ item.quantity_fcl }} FCL</p>
+    <form method="POST" action="{{ url_for('inquire', listing_id=item.id) }}">
+      <input type="hidden" name="message" value="Interested in this listing.">
+      <button type="submit" class="btn btn-solid btn-sm">Send inquiry</button>
+    </form>
+  </div>
+  {% else %}
+  <p class="muted">Nothing listed yet. Check back soon.</p>
+  {% endfor %}
+</div>
+{% else %}
+<h2 style="margin-bottom:14px;">Buyers actively sourcing</h2>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:44px;">
+  {% for item in trending_requests %}
+  <div class="card">
+    <div class="muted" style="font-size:12px;">{{ item.category }}{% if item.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}</div>
+    <h2 style="font-size:18px; margin:6px 0;">{{ item.title }}</h2>
+    <p class="muted" style="font-size:13px;">{{ item.quantity_fcl }} FCL · {{ item.target_price_note or "" }}</p>
+  </div>
+  {% else %}
+  <p class="muted">No open sourcing requests yet. Check back soon.</p>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="card" style="text-align:center; padding:30px;">
+  <p class="muted" style="margin-bottom:16px;">Looking for something specific?</p>
+  <a href="{{ url_for('browse') }}" class="btn btn-solid" style="padding:12px 24px;">Browse the full registry</a>
+</div>
+{% endblock %}

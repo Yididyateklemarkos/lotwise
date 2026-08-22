@@ -1,0 +1,459 @@
+{% extends "base.html" %}
+{% block title %}Lotwise | Bulk Trade Registry{% endblock %}
+
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-home.jpg') }}');"></div></div>
+{% endblock %}
+
+{% block content %}
+
+<div id="parallax-field" style="position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:-1;">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <svg class="ring-accent ring-1" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="98" fill="none" stroke="url(#ringGrad1)" stroke-width="0.6"/><defs><linearGradient id="ringGrad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#C9C9D4" stop-opacity="0.5"/><stop offset="100%" stop-color="#C9C9D4" stop-opacity="0"/></linearGradient></defs></svg>
+  <svg class="ring-accent ring-2" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="98" fill="none" stroke="url(#ringGrad2)" stroke-width="0.6"/><defs><linearGradient id="ringGrad2" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#C9A227" stop-opacity="0.4"/><stop offset="100%" stop-color="#C9A227" stop-opacity="0"/></linearGradient></defs></svg>
+</div>
+
+<div class="hero-grid" style="padding: 30px 0 20px;">
+  <div>
+    <div class="pill" style="margin-bottom:20px; background: var(--gold-soft); color: var(--gold);">Invitation grade access, by application only</div>
+    <h1 style="font-size:52px; line-height:1.06;">A private circle for traders who move real volume.</h1>
+    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Lotwise isn't an open marketplace. It's a vetted circle of suppliers and buyers who trade container scale volume with people they can actually trust. Every member is reviewed before they're let in. Every connection you make is real. Every deal you close stays entirely yours.</p>
+    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+      <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Request access</a>
+      <a href="{{ url_for('about') }}" class="btn" style="padding:14px 28px; font-size:15px;">Learn more</a>
+    </div>
+  </div>
+  <div id="globe-wrap" style="position:sticky; top:110px; align-self:start; aspect-ratio:1/1; max-height:460px;">
+    <canvas id="lotwise-globe" style="width:100%; height:100%; display:block; cursor:grab; transition: opacity 0.2s linear;"></canvas>
+  </div>
+</div>
+
+<div class="grid-3" style="margin:56px 0 60px;">
+  <div class="card" style="text-align:center;">
+    <div style="font-size:38px; font-weight:800;">${{ stats.volume_usd }}</div>
+    <div class="muted">Moved between members to date</div>
+  </div>
+  <div class="card" style="text-align:center; animation-delay:0.08s;">
+    <div style="font-size:38px; font-weight:800;">{{ stats.active_suppliers }}+</div>
+    <div class="muted">Suppliers admitted to the circle</div>
+  </div>
+  <div class="card" style="text-align:center; animation-delay:0.16s;">
+    <div style="font-size:38px; font-weight:800;">{{ stats.active_buyers }}+</div>
+    <div class="muted">Buyers admitted to the circle</div>
+  </div>
+</div>
+
+<h2 style="margin-bottom:6px;">Inside the circle right now</h2>
+<p class="muted" style="margin-bottom:18px;">Full detail, pricing, and a direct line to the counterparty unlock the moment you're admitted.</p>
+<div class="grid-3" style="margin-bottom:60px;">
+  {% if listings and listings|length > 0 %}
+    {% for listing in listings %}
+    <div class="card" style="position:relative; overflow:hidden;">
+      <div style="filter:blur(5px); user-select:none; pointer-events:none;">
+        <div class="muted" style="margin-bottom:4px;">{{ listing.category }}{% if listing.is_urgent %} · <strong style="color:#B3261E;">Urgent</strong>{% endif %}</div>
+        <h2 style="font-size:19px;">{{ listing.title }}</h2>
+        <p class="muted" style="margin-top:6px; font-size:13px;">{{ listing.origin_country or "Not provided" }} · {{ listing.quantity_fcl }} FCL · {{ listing.grade_spec or "" }}</p>
+      </div>
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+        <span class="pill pill-pending">Circle members only</span>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="card" style="position:relative; overflow:hidden;">
+      <div style="filter:blur(5px); user-select:none; pointer-events:none;">
+        <div class="muted" style="margin-bottom:4px;">Agriculture</div>
+        <h2 style="font-size:19px;">Robusta green coffee, grade 2</h2>
+        <p class="muted" style="margin-top:6px; font-size:13px;">Vietnam · 18 FCL · Grade 2, screen 16</p>
+      </div>
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+        <span class="pill pill-pending">Circle members only</span>
+      </div>
+    </div>
+    <div class="card" style="position:relative; overflow:hidden;">
+      <div style="filter:blur(5px); user-select:none; pointer-events:none;">
+        <div class="muted" style="margin-bottom:4px;">Construction</div>
+        <h2 style="font-size:19px;">Portland cement, bulk</h2>
+        <p class="muted" style="margin-top:6px; font-size:13px;">Ethiopia · 40 FCL · Type I/II</p>
+      </div>
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+        <span class="pill pill-pending">Circle members only</span>
+      </div>
+    </div>
+    <div class="card" style="position:relative; overflow:hidden;">
+      <div style="filter:blur(5px); user-select:none; pointer-events:none;">
+        <div class="muted" style="margin-bottom:4px;">Minerals</div>
+        <h2 style="font-size:19px;">Limestone aggregate</h2>
+        <p class="muted" style="margin-top:6px; font-size:13px;">Ethiopia · 25 FCL · Crushed, graded</p>
+      </div>
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+        <span class="pill pill-pending">Circle members only</span>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<div class="grid-2" style="margin-bottom:60px;">
+  <div class="card">
+    <h2 style="margin-bottom:10px;">Your inventory, in front of people who actually buy.</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">No public listings, no tire kickers. What you're moving goes straight in front of buyers already sourcing at container scale. List it, get discovered by the circle, negotiate directly. Every dollar you close stays yours.</p>
+  </div>
+  <div class="card" style="animation-delay:0.08s;">
+    <h2 style="margin-bottom:10px;">Real supply, not another dead lead.</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Every member you meet here has already been reviewed by hand. Post what you need or browse live inventory, and reach a counterparty who's exactly who they say they are.</p>
+  </div>
+</div>
+
+<h2 style="margin-bottom:18px;">How admission works</h2>
+<div class="grid-4" style="margin-bottom:60px;">
+  <div class="card">
+    <div class="badge-grade" style="margin-bottom:14px;">1</div>
+    <strong style="font-size:14px;">Apply</strong>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Submit your company details and trade documents.</p>
+  </div>
+  <div class="card" style="animation-delay:0.05s;">
+    <div class="badge-grade" style="margin-bottom:14px;">2</div>
+    <strong style="font-size:14px;">Get reviewed</strong>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Our team reviews every application by hand. No exceptions.</p>
+  </div>
+  <div class="card" style="animation-delay:0.1s;">
+    <div class="badge-grade" style="margin-bottom:14px;">3</div>
+    <strong style="font-size:14px;">Get admitted</strong>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Once approved, choose a plan and step into the circle.</p>
+  </div>
+  <div class="card" style="animation-delay:0.15s;">
+    <div class="badge-grade" style="margin-bottom:14px;">4</div>
+    <strong style="font-size:14px;">Connect and close</strong>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Get matched, exchange contact directly, and close the deal on your terms.</p>
+  </div>
+</div>
+
+<div class="card" style="text-align:center; padding:44px 32px;">
+  <h2 style="font-size:26px; margin-bottom:10px;">Membership starts at $39/month.</h2>
+  <p class="muted" style="max-width:480px; margin:0 auto 24px;">No commission, no per deal fees, no long term contract. Leave the circle any time.</p>
+  <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+    <a href="{{ url_for('signup') }}" class="btn btn-solid" style="padding:13px 26px;">Request access</a>
+    <a href="{{ url_for('pricing') }}" class="btn" style="padding:13px 26px;">See full pricing</a>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+  @media (max-width: 640px) {
+    #globe-wrap { position:static; max-height:280px; margin:20px auto 0; }
+    #parallax-field { display:none; }
+  }
+  .orb { position:absolute; border-radius:50%; filter: blur(60px); opacity:0.35; will-change: transform; }
+  .orb-1 { width:420px; height:420px; top:-10%; right:5%; background: radial-gradient(circle, rgba(200,200,210,0.5), transparent 70%); }
+  .orb-2 { width:340px; height:340px; bottom:0%; left:0%; background: radial-gradient(circle, rgba(201,162,39,0.35), transparent 70%); }
+  .orb-3 { width:260px; height:260px; top:40%; left:60%; background: radial-gradient(circle, rgba(150,150,175,0.4), transparent 70%); }
+  .ring-accent { position:absolute; width:280px; height:280px; will-change: transform; }
+  .ring-1 { top:8%; right:8%; }
+  .ring-2 { bottom:5%; left:2%; width:220px; height:220px; }
+</style>
+<script>
+(function() {
+  const field = document.getElementById('parallax-field');
+  if (!field) return;
+  const layers = [
+    { el: field.querySelector('.orb-1'), depth: 22 },
+    { el: field.querySelector('.orb-2'), depth: 14 },
+    { el: field.querySelector('.orb-3'), depth: 30 },
+    { el: field.querySelector('.ring-1'), depth: 10 },
+    { el: field.querySelector('.ring-2'), depth: 16 },
+  ];
+  let targetX = 0, targetY = 0, curX = 0, curY = 0;
+  window.addEventListener('mousemove', (e) => {
+    targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+    targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+  function tick() {
+    curX += (targetX - curX) * 0.04;
+    curY += (targetY - curY) * 0.04;
+    layers.forEach(({ el, depth }) => {
+      if (el) el.style.transform = `translate(${curX * depth}px, ${curY * depth}px)`;
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  // Subtle tilt-on-hover for the luxury image panels
+  document.querySelectorAll('.lux-tilt').forEach((panel) => {
+    panel.style.transition = 'transform 0.4s var(--ease, ease)';
+    panel.style.transformStyle = 'preserve-3d';
+    panel.addEventListener('mousemove', (e) => {
+      const rect = panel.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      panel.style.transform = `perspective(800px) rotateY(${px * 6}deg) rotateX(${-py * 6}deg) scale(1.015)`;
+    });
+    panel.addEventListener('mouseleave', () => {
+      panel.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) scale(1)';
+    });
+  });
+})();
+</script>
+<script src="{{ url_for('static', filename='js/three.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/world-land.js') }}"></script>
+<script>
+(function() {
+  const canvas = document.getElementById('lotwise-globe');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  const wrap = document.getElementById('globe-wrap');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.z = 4.4;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  function resize() {
+    const size = wrap.clientWidth;
+    renderer.setSize(size, size, false);
+    camera.aspect = 1;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const globeGroup = new THREE.Group();
+  scene.add(globeGroup);
+  const pulseRings = [];
+
+  // Wireframe sphere — silver, low opacity
+  const wireGeo = new THREE.SphereGeometry(1.6, 28, 20);
+  const wireMat = new THREE.MeshBasicMaterial({ color: 0xC9C9D4, wireframe: true, transparent: true, opacity: 0.09 });
+  globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
+
+  // Solid inner sphere — near-black with faint silver rim
+  const coreGeo = new THREE.SphereGeometry(1.56, 32, 24);
+  const coreMat = new THREE.MeshBasicMaterial({ color: 0x0A0A0C, transparent: true, opacity: 0.95 });
+  globeGroup.add(new THREE.Mesh(coreGeo, coreMat));
+
+  // Continent geometry — real land shapes generated from Natural Earth 110m
+  // land polygons (static/js/world-land.js): a dot fill for the land masses
+  // plus traced coastline rings, so the globe reads as an actual world map.
+  function latLngToVec3Continent(lat, lng, r) {
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lng + 180) * (Math.PI / 180);
+    return new THREE.Vector3(
+      -r * Math.sin(phi) * Math.cos(theta),
+      r * Math.cos(phi),
+      r * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+  const landDots = window.LAND_DOTS || [];
+  const continentGeo = new THREE.BufferGeometry();
+  const continentPositions = new Float32Array((landDots.length / 2) * 3);
+  for (let i = 0; i < landDots.length; i += 2) {
+    const p = latLngToVec3Continent(landDots[i], landDots[i + 1], 1.605);
+    const o = (i / 2) * 3;
+    continentPositions[o] = p.x;
+    continentPositions[o + 1] = p.y;
+    continentPositions[o + 2] = p.z;
+  }
+  continentGeo.setAttribute('position', new THREE.BufferAttribute(continentPositions, 3));
+  const continentMat = new THREE.PointsMaterial({ color: 0xDCE3F0, size: 0.026, transparent: true, opacity: 1.0, sizeAttenuation: true });
+  globeGroup.add(new THREE.Points(continentGeo, continentMat));
+
+  const coastMat = new THREE.LineBasicMaterial({ color: 0xF2F4FA, transparent: true, opacity: 0.7 });
+  (window.LAND_OUTLINES || []).forEach((ring) => {
+    const pts = [];
+    for (let i = 0; i < ring.length; i += 2) {
+      pts.push(latLngToVec3Continent(ring[i], ring[i + 1], 1.618));
+    }
+    if (pts.length < 2) return;
+    globeGroup.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), coastMat));
+  });
+
+
+  // Glowing marker dots at a handful of resource-origin-style coordinates (decorative)
+  const markerLatLng = [
+    [9.03, 38.74],   // Addis Ababa
+    [31.23, 121.47], // Shanghai
+    [-1.29, 36.82],  // Nairobi
+    [25.20, 55.27],  // Dubai
+    [10.82, 106.63], // Ho Chi Minh
+    [41.90, 12.49],  // Rome
+    [40.71, -74.0],  // New York
+    [-23.55, -46.63],// São Paulo
+  ];
+  function latLngToVec3(lat, lng, r) {
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lng + 180) * (Math.PI / 180);
+    return new THREE.Vector3(
+      -r * Math.sin(phi) * Math.cos(theta),
+      r * Math.cos(phi),
+      r * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+  const markerGeo = new THREE.SphereGeometry(0.028, 8, 8);
+  const markerMat = new THREE.MeshBasicMaterial({ color: 0xE4C766 });
+  const markerPositions = [];
+  markerLatLng.forEach(([lat, lng]) => {
+    const pos = latLngToVec3(lat, lng, 1.63);
+    markerPositions.push(pos);
+    const dot = new THREE.Mesh(markerGeo, markerMat);
+    dot.position.copy(pos);
+    globeGroup.add(dot);
+    // soft pulsing ring under each marker, staggered, to suggest live activity
+    const ringGeo = new THREE.RingGeometry(0.03, 0.045, 20);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xE4C766, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.position.copy(pos.clone().multiplyScalar(1.002));
+    ring.lookAt(pos.clone().multiplyScalar(2));
+    ring.userData.pulsePhase = Math.random() * Math.PI * 2;
+    globeGroup.add(ring);
+    pulseRings.push(ring);
+  });
+
+  // Network arcs: a handful of connections between trade points, each arcing
+  // outward off the sphere surface (like a flight path), with a small glowing
+  // dot continuously traveling along it — "a deal/connection forming" motif.
+  const connections = [
+    [0, 1], [0, 3], [1, 4], [2, 3], [3, 5], [4, 6], [5, 7], [6, 2], [7, 0],
+  ];
+  const arcTravelers = [];
+  connections.forEach(([aIdx, bIdx], i) => {
+    const a = markerPositions[aIdx], b = markerPositions[bIdx];
+    const mid = a.clone().add(b).multiplyScalar(0.5);
+    const liftFactor = 1 + a.distanceTo(b) * 0.35; // bigger hops arc higher
+    mid.normalize().multiplyScalar(1.63 * liftFactor);
+    const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+    const points = curve.getPoints(48);
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMat = new THREE.LineBasicMaterial({ color: 0xC9C9D4, transparent: true, opacity: 0.22 });
+    globeGroup.add(new THREE.Line(lineGeo, lineMat));
+
+    const travelerGeo = new THREE.SphereGeometry(0.02, 6, 6);
+    const travelerMat = new THREE.MeshBasicMaterial({ color: 0xF5EFD8, transparent: true });
+    const traveler = new THREE.Mesh(travelerGeo, travelerMat);
+    globeGroup.add(traveler);
+    arcTravelers.push({ curve, mesh: traveler, offset: i * 0.37, speed: 0.15 });
+  });
+
+  // Ships — small markers that hug the surface and slowly trace shipping-lane-
+  // style routes between coastal points, distinct from the trade connection arcs.
+  const shipRoutes = [
+    [[9.03, 38.74], [12.8, 45.0], [15.6, 39.5], [29.9, 32.5], [36.1, 5.4], [51.5, -0.1]], // Red Sea → Suez → Europe
+    [[31.23, 121.47], [1.29, 103.85], [6.9, 79.9], [12.6, 43.1], [30.0, 32.3]],           // Shanghai → Suez corridor
+    [[40.71, -74.0], [25.7, -80.2], [9.4, -79.9], [-12.0, -77.0], [-23.5, -46.6]],        // NY → Panama → South America
+  ];
+  const shipTravelers = [];
+  shipRoutes.forEach((route, i) => {
+    const vecs = route.map(([lat, lng]) => latLngToVec3Continent(lat, lng, 1.62));
+    const curve = new THREE.CatmullRomCurve3(vecs);
+    const shipGeo = new THREE.BoxGeometry(0.028, 0.014, 0.014);
+    const shipMat = new THREE.MeshBasicMaterial({ color: 0x8FD3E8 });
+    const ship = new THREE.Mesh(shipGeo, shipMat);
+    globeGroup.add(ship);
+    shipTravelers.push({ curve, mesh: ship, offset: i * 0.29, speed: 0.045 });
+  });
+
+  // Jets — faster markers on higher arcs above the surface, distinct color
+  // and altitude from both the trade-connection arcs and the ships.
+  const jetRoutes = [
+    [0, 4], [2, 6], [5, 1],
+  ];
+  const jetTravelers = [];
+  jetRoutes.forEach(([aIdx, bIdx], i) => {
+    const a = markerPositions[aIdx], b = markerPositions[bIdx];
+    const mid = a.clone().add(b).multiplyScalar(0.5);
+    mid.normalize().multiplyScalar(1.95); // flies higher above the surface than trade arcs
+    const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+    const points = curve.getPoints(48);
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+    const lineMat = new THREE.LineBasicMaterial({ color: 0xF5EFD8, transparent: true, opacity: 0.1 });
+    globeGroup.add(new THREE.Line(lineGeo, lineMat));
+
+    const jetGeo = new THREE.ConeGeometry(0.014, 0.05, 6);
+    const jetMat = new THREE.MeshBasicMaterial({ color: 0xF5EFD8 });
+    const jet = new THREE.Mesh(jetGeo, jetMat);
+    globeGroup.add(jet);
+    jetTravelers.push({ curve, mesh: jet, offset: i * 0.4, speed: 0.22 });
+  });
+
+  // Drag to rotate, gentle auto-rotate otherwise
+  let isDragging = false, prevX = 0, prevY = 0, velX = 0.0018;
+  canvas.addEventListener('pointerdown', (e) => { isDragging = true; prevX = e.clientX; prevY = e.clientY; canvas.style.cursor = 'grabbing'; });
+  window.addEventListener('pointerup', () => { isDragging = false; canvas.style.cursor = 'grab'; });
+  window.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - prevX, dy = e.clientY - prevY;
+    globeGroup.rotation.y += dx * 0.005;
+    globeGroup.rotation.x += dy * 0.005;
+    velX = dx * 0.0004;
+    prevX = e.clientX; prevY = e.clientY;
+  });
+
+  // Scroll-driven motion: the further you scroll past the hero, the more the
+  // globe tilts, speeds up, and zooms — so it visibly reacts as you browse,
+  // not just sits there spinning at a constant rate.
+  let scrollProgress = 0;
+  function onScroll() {
+    const max = window.innerHeight * 1.2;
+    scrollProgress = Math.min(1, Math.max(0, window.scrollY / max));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (!isDragging) {
+      const scrollBoost = 1 + scrollProgress * 5; // spins up to 6x faster as you scroll
+      globeGroup.rotation.y += velX * scrollBoost;
+      velX *= 0.98;
+      if (Math.abs(velX) < 0.0016) velX = 0.0016; // keep a gentle idle drift
+    }
+    globeGroup.rotation.x = THREE.MathUtils.lerp(globeGroup.rotation.x, scrollProgress * 0.5, 0.06);
+    const targetZ = 4.4 + scrollProgress * 2.2; // zooms out as you scroll
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.08);
+    canvas.style.opacity = String(1 - scrollProgress * 0.85);
+
+    const t = clock.getElapsedTime();
+    // Send a glowing dot traveling along each network arc, looping — this is
+    // the "connections forming" motion between trade points.
+    arcTravelers.forEach(({ curve, mesh, offset, speed }) => {
+      const progress = ((t * speed + offset) % 1);
+      const pos = curve.getPoint(progress);
+      mesh.position.copy(pos);
+      mesh.material.opacity = Math.sin(progress * Math.PI); // fades in/out at each end
+    });
+    // Ships slowly tracing shipping-lane-style routes, oriented to face
+    // their direction of travel along the curve.
+    shipTravelers.forEach(({ curve, mesh, offset, speed }) => {
+      const progress = (t * speed + offset) % 1;
+      const pos = curve.getPoint(progress);
+      const ahead = curve.getPoint((progress + 0.01) % 1);
+      mesh.position.copy(pos);
+      mesh.lookAt(ahead);
+    });
+    // Jets flying faster, higher arcs between trade points.
+    jetTravelers.forEach(({ curve, mesh, offset, speed }) => {
+      const progress = (t * speed + offset) % 1;
+      const pos = curve.getPoint(progress);
+      const ahead = curve.getPoint(Math.min(progress + 0.02, 1));
+      mesh.position.copy(pos);
+      mesh.lookAt(ahead);
+      mesh.rotateX(Math.PI / 2);
+    });
+    // Soft breathing pulse under each marker
+    pulseRings.forEach((ring) => {
+      const s = 1 + Math.sin(t * 1.4 + ring.userData.pulsePhase) * 0.35;
+      ring.scale.set(s, s, s);
+      ring.material.opacity = 0.25 + Math.sin(t * 1.4 + ring.userData.pulsePhase) * 0.2;
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
+{% endblock %}

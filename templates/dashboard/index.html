@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-tarmac.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+
+<div class="card-row" style="margin-bottom:28px;">
+  <div>
+    <h1>{{ current_user.display_name }}</h1>
+    <p class="muted">{{ current_user.account_type|capitalize }} account · {{ current_user.country or "Not provided" }}</p>
+  </div>
+  <div style="text-align:right;">
+    {% if current_user.verification_status == 'approved' %}
+      <span class="pill pill-approved">Verified</span>
+    {% elif current_user.verification_status == 'pending' %}
+      <span class="pill pill-pending">Pending review</span>
+    {% else %}
+      <span class="pill pill-disapproved">Disapproved</span>
+    {% endif %}
+    <div class="muted" style="margin-top:8px;">
+      Tier standing: <span class="badge-grade">{{ current_user.tier_grade }}</span>
+      &nbsp;·&nbsp; Plan: {{ current_user.subscription_tier|capitalize }}
+    </div>
+  </div>
+</div>
+
+{% if current_user.verification_status != 'approved' %}
+<div class="card">
+  <h2>Get verified</h2>
+  {% if current_user.verification_status == 'disapproved' and current_user.verification_reviewer_note %}
+  <div class="flash flash-error" style="margin-top:12px;">Verification not approved: {{ current_user.verification_reviewer_note }}</div>
+  {% endif %}
+  <p class="muted" style="margin:8px 0 16px;">Your account is being reviewed. You can browse the marketplace now, but listings and requests stay blurred until verification and payment are complete.</p>
+  <a href="{{ url_for('verification_upload') }}" class="btn btn-solid btn-sm">Submit documents</a>
+</div>
+{% elif not current_user.is_active_member() %}
+<div class="card">
+  <h2>{% if current_user.subscription_renews_at %}Your plan has expired{% else %}You're verified. Activate your plan{% endif %}</h2>
+  <p class="muted" style="margin:8px 0 16px;">
+    {% if current_user.subscription_renews_at %}
+      Crypto payments don't automatically renew. Your plan lapsed. Renew to get back full access to listings, browsing, and connections.
+    {% else %}
+      You're approved to trade on Lotwise. Choose a plan to unlock listings, browsing, and connections.
+    {% endif %}
+  </p>
+  <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">{% if current_user.subscription_renews_at %}Renew now{% else %}Choose a plan{% endif %}</a>
+</div>
+{% elif current_user.is_expiring_soon() %}
+<div class="card" style="border: 1px solid rgba(192,57,43,0.35);">
+  <h2>Your plan renews in {{ current_user.days_until_expiry() }} day{{ 's' if current_user.days_until_expiry() != 1 else '' }}</h2>
+  <p class="muted" style="margin:8px 0 16px;">Crypto payments don't automatically renew. Pay again before it lapses to keep uninterrupted access.</p>
+  <a href="{{ url_for('billing_upgrade') }}" class="btn btn-solid btn-sm">Renew now</a>
+</div>
+{% endif %}
+
+<div class="{% if current_user.verification_status != 'approved' %}verification-wait-blur{% endif %}">
+{% if current_user.verification_status == 'approved' and current_user.is_active_member() and not current_user.is_expiring_soon() %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <h2>Plan &amp; billing</h2>
+      <p class="muted" style="margin-top:6px;">
+        {{ current_user.subscription_tier|capitalize }} plan
+        {% if current_user.subscription_renews_at %} · renews by {{ current_user.subscription_renews_at.strftime('%b %-d, %Y') }}{% endif %}
+      </p>
+    </div>
+    <a href="{{ url_for('billing_upgrade') }}" class="btn btn-sm">Manage plan</a>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>{{ 'Your listings & requests' if current_user.has_dual_access() else 'Your listings' if current_user.account_type == 'supplier' else 'Your sourcing requests' }}</h2>
+  <p class="muted" style="margin:6px 0 16px;">
+    {% if current_user.has_dual_access() %}
+      {{ items|length }} posted{% if current_user.subscription_tier != 'premium' %} (up to {{ current_user.listing_limit() }} listings and {{ current_user.listing_limit() }} requests on your {{ current_user.subscription_tier|capitalize }} plan){% endif %}.
+    {% elif current_user.account_type == 'supplier' %}
+      {{ items|length }} of {{ current_user.listing_limit() }} used on your {{ current_user.subscription_tier|capitalize }} plan.
+    {% else %}
+      {{ items|length }} active requests.
+    {% endif %}
+  </p>
+  {% if items %}
+  <table>
+    <tr><th></th><th>Title</th><th>Category</th><th>Qty (FCL)</th><th>Status</th><th></th></tr>
+    {% for item in items %}
+    <tr>
+      <td>
+        {% if item.photos %}
+        <img src="{{ url_for('static', filename='uploads/' + item.photos[0].file_path) }}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;" alt="">
+        {% endif %}
+      </td>
+      <td>{{ item.title }}</td>
+      <td>{{ item.category }}</td>
+      <td>{{ item.quantity_fcl }}</td>
+      <td>
+        {% if item.is_sold is defined and item.is_sold %}Sold
+        {% else %}{{ 'Active' if item.is_active else 'Inactive' }}{% if item.is_urgent %} · Urgent{% endif %}
+        {% endif %}
+      </td>
+      <td>
+        {% if item.is_sold is defined %}
+        <form method="POST" action="{{ url_for('toggle_sold', listing_id=item.id) }}">
+          <button type="submit" class="btn btn-sm">{{ 'Mark available' if item.is_sold else 'Mark sold' }}</button>
+        </form>
+        <form method="POST" action="{{ url_for('delete_own_listing', listing_id=item.id) }}" onsubmit="return confirm('Delete this listing permanently?');" style="margin-top:6px;">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('delete_own_request', request_id=item.id) }}" onsubmit="return confirm('Delete this sourcing request permanently?');">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">Nothing posted yet.</p>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h2>Connections</h2>
+  <p class="muted" style="margin:6px 0 16px;">Once you request contact, the related opportunity and the other party's details appear here.</p>
+  {% if connections %}
+  <table>
+    <tr><th>Connection</th><th>Status</th><th></th></tr>
+    {% for c in connections %}
+    <tr>
+      <td>#{{ c.id }} · {{ c.status.replace('_',' ')|capitalize }}</td>
+      <td>{{ c.created_at.strftime('%b %d, %Y') }}</td>
+      <td><a href="{{ url_for('connection_thread', connection_id=c.id) }}" class="btn btn-sm">Open</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">No connections yet.</p>
+  {% endif %}
+</div>
+</div>
+
+{% endblock %}

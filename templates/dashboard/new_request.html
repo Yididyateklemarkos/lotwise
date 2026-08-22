@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}New sourcing request | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-yacht-aerial.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<div style="max-width:520px;">
+  <h1>New sourcing request</h1>
+  <p class="muted" style="margin-bottom:24px;">Let verified suppliers know what you're looking for.</p>
+  <form class="stacked" method="POST" enctype="multipart/form-data">
+    <label>Category</label>
+    <select name="category" required>
+      <option>Minerals</option>
+      <option>Agriculture</option>
+      <option>Chemicals</option>
+      <option>Construction materials</option>
+      <option>Other bulk goods</option>
+    </select>
+    <label>Title</label>
+    <input type="text" name="title" placeholder="e.g. Seeking washed arabica coffee" required>
+    <label>Description</label>
+    <textarea name="description" placeholder="Spec, delivery terms, timeline..."></textarea>
+    <label>Quantity (FCL)</label>
+    <input type="number" name="quantity_fcl" min="1" required>
+    <label>Target price note (optional)</label>
+    <input type="text" name="target_price_note" placeholder="e.g. Budget range, per-unit target">
+    <label>Reference photos (optional)</label>
+    <input type="file" name="photos" accept=".png,.jpg,.jpeg" multiple>
+    <div class="hint">Up to 6 photos: a sample or reference of exactly what you're after.</div>
+    <div class="checkbox-row">
+      <input type="checkbox" name="is_urgent" id="urgent" {% if current_user.subscription_tier == 'standard' %}disabled{% endif %}>
+      <label for="urgent">Flag as urgent {% if current_user.subscription_tier == 'standard' %}(Plus/Premium only){% endif %}</label>
+    </div>
+    <button type="submit" class="btn btn-solid" style="width:100%; margin-top:24px; padding:13px;">Post request</button>
+  </form>
+</div>
+{% endblock %}
