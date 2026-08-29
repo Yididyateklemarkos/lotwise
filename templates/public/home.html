@@ -3,26 +3,17 @@
 
 {% block content %}
 
-<div id="parallax-field" style="position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:-1;">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <svg class="ring-accent ring-1" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="98" fill="none" stroke="url(#ringGrad1)" stroke-width="0.6"/><defs><linearGradient id="ringGrad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.5"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></linearGradient></defs></svg>
-  <svg class="ring-accent ring-2" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="98" fill="none" stroke="url(#ringGrad2)" stroke-width="0.6"/><defs><linearGradient id="ringGrad2" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#22C55E" stop-opacity="0.4"/><stop offset="100%" stop-color="#22C55E" stop-opacity="0"/></linearGradient></defs></svg>
-</div>
-
 <div class="hero-grid" style="padding: 30px 0 20px;">
   <div>
     <div class="pill" style="margin-bottom:20px; background: var(--purple-soft); color: #C7B8FF;">Independent sourcing & trade advisory</div>
-    <h1 style="font-size:52px; line-height:1.06;">Container-Scale Trade Sourcing & Advisory.</h1>
-    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Sourcing, vetting, and due diligence — managed directly, deal by deal. No marketplace, no checkout.</p>
+    <h1 style="font-size:52px; line-height:1.06;">High-Volume Trade Sourcing & Advisory.</h1>
+    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Sourcing, vetting, and due diligence, managed directly. No marketplace, no checkout.</p>
     <div style="display:flex; gap:14px; flex-wrap:wrap;">
       <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Submit a sourcing request</a>
-      <a href="{{ url_for('book_a_meeting') }}" class="btn" style="padding:14px 28px; font-size:15px;">Book a meeting</a>
     </div>
   </div>
   <div id="globe-wrap" style="position:sticky; top:110px; align-self:start; aspect-ratio:1/1; max-height:460px;">
-    <canvas id="lotwise-globe" style="width:100%; height:100%; display:block; cursor:grab; transition: opacity 0.2s linear;"></canvas>
+    <canvas id="lotwise-globe" style="width:100%; height:100%; display:block; cursor:grab;"></canvas>
   </div>
 </div>
 
@@ -51,16 +42,14 @@
   <div class="card" style="animation-delay:0.08s;">
     <h2 style="margin-bottom:10px;">Sourcing something specific?</h2>
     <p class="muted" style="font-size:14px; line-height:1.6;">Tell me the product, grade, and volume. I'll bring back options that check out.</p>
-    <a href="{{ url_for('sourcing_request') }}" class="btn btn-sm" style="margin-top:14px;">Start a sourcing request</a>
   </div>
 </div>
 
 <div class="card" style="text-align:center; padding:44px 32px;">
   <h2 style="font-size:26px; margin-bottom:10px;">Every engagement starts with a real conversation.</h2>
-  <p class="muted" style="max-width:480px; margin:0 auto 24px;">No subscriptions, no listings, no payment on this site — every deal is handled directly.</p>
+  <p class="muted" style="max-width:480px; margin:0 auto 24px;">No subscriptions, no listings, no payment on this site. Every deal is handled directly.</p>
   <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
     <a href="{{ url_for('how_it_works') }}" class="btn btn-solid" style="padding:13px 26px;">See how it works</a>
-    <a href="{{ url_for('contact') }}" class="btn" style="padding:13px 26px;">Contact me</a>
   </div>
 </div>
 
@@ -70,57 +59,8 @@
 <style>
   @media (max-width: 640px) {
     #globe-wrap { position:static; max-height:280px; margin:20px auto 0; }
-    #parallax-field { display:none; }
   }
-  .orb { position:absolute; border-radius:50%; filter: blur(60px); opacity:0.35; will-change: transform; }
-  .orb-1 { width:420px; height:420px; top:-10%; right:5%; background: radial-gradient(circle, rgba(22,33,62,0.55), transparent 70%); }
-  .orb-2 { width:340px; height:340px; bottom:0%; left:0%; background: radial-gradient(circle, rgba(34,197,94,0.3), transparent 70%); }
-  .orb-3 { width:260px; height:260px; top:40%; left:60%; background: radial-gradient(circle, rgba(139,92,246,0.4), transparent 70%); }
-  .ring-accent { position:absolute; width:280px; height:280px; will-change: transform; }
-  .ring-1 { top:8%; right:8%; }
-  .ring-2 { bottom:5%; left:2%; width:220px; height:220px; }
 </style>
-<script>
-(function() {
-  const field = document.getElementById('parallax-field');
-  if (!field) return;
-  const layers = [
-    { el: field.querySelector('.orb-1'), depth: 22 },
-    { el: field.querySelector('.orb-2'), depth: 14 },
-    { el: field.querySelector('.orb-3'), depth: 30 },
-    { el: field.querySelector('.ring-1'), depth: 10 },
-    { el: field.querySelector('.ring-2'), depth: 16 },
-  ];
-  let targetX = 0, targetY = 0, curX = 0, curY = 0;
-  window.addEventListener('mousemove', (e) => {
-    targetX = (e.clientX / window.innerWidth - 0.5) * 2;
-    targetY = (e.clientY / window.innerHeight - 0.5) * 2;
-  });
-  function tick() {
-    curX += (targetX - curX) * 0.04;
-    curY += (targetY - curY) * 0.04;
-    layers.forEach(({ el, depth }) => {
-      if (el) el.style.transform = `translate(${curX * depth}px, ${curY * depth}px)`;
-    });
-    requestAnimationFrame(tick);
-  }
-  tick();
-
-  document.querySelectorAll('.lux-tilt').forEach((panel) => {
-    panel.style.transition = 'transform 0.4s var(--ease, ease)';
-    panel.style.transformStyle = 'preserve-3d';
-    panel.addEventListener('mousemove', (e) => {
-      const rect = panel.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width - 0.5;
-      const py = (e.clientY - rect.top) / rect.height - 0.5;
-      panel.style.transform = `perspective(800px) rotateY(${px * 6}deg) rotateX(${-py * 6}deg) scale(1.015)`;
-    });
-    panel.addEventListener('mouseleave', () => {
-      panel.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg) scale(1)';
-    });
-  });
-})();
-</script>
 <script src="{{ url_for('static', filename='js/three.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/world-land.js') }}"></script>
 <script>

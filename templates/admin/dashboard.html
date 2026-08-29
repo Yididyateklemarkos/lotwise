@@ -31,7 +31,7 @@
       <tr style="cursor:pointer;" onclick="window.location='{{ url_for('admin_lead_detail', lead_id=lead.id) }}'">
         <td>{{ lead.type_label }}</td>
         <td>{{ lead.name }}</td>
-        <td>{{ lead.company_name or "—" }}</td>
+        <td>{{ lead.company_name or "N/A" }}</td>
         <td><span class="pill {{ 'pill-approved' if lead.status == 'closed' else 'pill-pending' if lead.status == 'new' else 'pill-neutral' }}">{{ lead.status }}</span></td>
         <td class="muted">{{ lead.created_at.strftime('%b %d, %Y') }}</td>
       </tr>

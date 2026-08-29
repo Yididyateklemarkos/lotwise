@@ -2,7 +2,7 @@
 {% block title %}{{ label }} | Lotwise Admin{% endblock %}
 {% block content %}
 <a href="{{ url_for('admin_leads') }}" class="muted" style="font-size:13px;">&larr; All leads</a>
-<h1 style="font-size:26px; margin:10px 0 20px;">{{ label }} — {{ lead.name }}</h1>
+<h1 style="font-size:26px; margin:10px 0 20px;">{{ label }}: {{ lead.name }}</h1>
 
 <div class="grid-2">
   <div>
@@ -10,10 +10,10 @@
       <h2 style="margin-bottom:14px;">Submitted details</h2>
       <table>
         <tr><th>Name</th><td>{{ lead.name }}</td></tr>
-        <tr><th>Company</th><td>{{ lead.company_name or "—" }}</td></tr>
+        <tr><th>Company</th><td>{{ lead.company_name or "N/A" }}</td></tr>
         <tr><th>Email</th><td>{{ lead.email }}</td></tr>
-        <tr><th>Phone</th><td>{{ lead.phone or "—" }}</td></tr>
-        <tr><th>Country</th><td>{{ lead.country or "—" }} {{ lead.country|flag }}</td></tr>
+        <tr><th>Phone</th><td>{{ lead.phone or "N/A" }}</td></tr>
+        <tr><th>Country</th><td>{{ lead.country or "N/A" }} {{ lead.country|flag }}</td></tr>
         {% if lead.title %}<tr><th>Subject</th><td>{{ lead.title }}</td></tr>{% endif %}
         {% if lead.category %}<tr><th>Category</th><td>{{ lead.category }}</td></tr>{% endif %}
         {% if lead.quantity_note %}<tr><th>Quantity</th><td>{{ lead.quantity_note }}</td></tr>{% endif %}
