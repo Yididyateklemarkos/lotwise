@@ -6,32 +6,23 @@
   <p class="muted" style="font-size:16px; line-height:1.7; margin:16px 0 36px;">No accounts, no subscriptions, no checkout. Every step ends with me following up personally.</p>
 </div>
 
-<div class="grid-2" style="margin-bottom:20px;">
+<div class="grid-3" style="margin-bottom:20px;">
   <div class="card">
-    <div class="badge-grade" style="margin-bottom:14px;">1</div>
-    <h2 style="margin-bottom:8px;">Request my credentials (optional)</h2>
-    <p class="muted" style="font-size:14px;">Ask for my registration, references, and track record first — no obligation after.</p>
-    <a href="{{ url_for('request_credentials') }}" class="btn btn-sm" style="margin-top:14px;">Request credentials</a>
-  </div>
-  <div class="card" style="animation-delay:0.05s;">
-    <div class="badge-grade" style="margin-bottom:14px;">2</div>
     <h2 style="margin-bottom:8px;">Tell me what you need</h2>
-    <p class="muted" style="font-size:14px;">Submit a sourcing request, or book a consultation to talk it through first.</p>
+    <p style="font-size:14px; font-weight:700;">Sourcing request, or book a consultation first.</p>
     <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
       <a href="{{ url_for('sourcing_request') }}" class="btn btn-sm">Sourcing request</a>
       <a href="{{ url_for('consultation') }}" class="btn btn-sm">Consultation</a>
     </div>
   </div>
-  <div class="card" style="animation-delay:0.1s;">
-    <div class="badge-grade" style="margin-bottom:14px;">3</div>
+  <div class="card" style="animation-delay:0.05s;">
     <h2 style="margin-bottom:8px;">We talk</h2>
-    <p class="muted" style="font-size:14px;">I'll reach out to book time — or propose one yourself and I'll confirm it.</p>
+    <p style="font-size:14px; font-weight:700;">I'll book time, or propose one yourself.</p>
     <a href="{{ url_for('book_a_meeting') }}" class="btn btn-sm" style="margin-top:14px;">Book a meeting</a>
   </div>
-  <div class="card" style="animation-delay:0.15s;">
-    <div class="badge-grade" style="margin-bottom:14px;">4</div>
+  <div class="card" style="animation-delay:0.1s;">
     <h2 style="margin-bottom:8px;">I source, vet, and see it through</h2>
-    <p class="muted" style="font-size:14px;">I source, vet the counterparty, and stay hands-on through negotiation. Payment is handled directly between the parties, never on this site.</p>
+    <p style="font-size:14px; font-weight:700;">Payment is always handled directly — never on this site.</p>
   </div>
 </div>
 
