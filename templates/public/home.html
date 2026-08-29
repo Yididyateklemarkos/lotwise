@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Lotwise | Sourcing & Trade Advisory{% endblock %}
+{% block title %}Lotwise | Global Trade Sourcing Hub{% endblock %}
 
 {% block content %}
 
 <div class="hero-grid" style="padding: 30px 0 20px;">
   <div>
-    <div class="pill" style="margin-bottom:20px; background: var(--purple-soft); color: #C7B8FF;">Independent sourcing & trade advisory</div>
-    <h1 style="font-size:52px; line-height:1.06;">High-Volume Trade Sourcing & Advisory.</h1>
-    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Sourcing, vetting, and due diligence, managed directly. No marketplace, no checkout.</p>
+    <div class="pill" style="margin-bottom:20px; background: var(--purple-soft); color: #C7B8FF;">Global sourcing & trade hub</div>
+    <h1 style="font-size:52px; line-height:1.06;">The Global Hub for High-Volume Trade Sourcing.</h1>
+    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Connecting buyers and suppliers worldwide. Sourcing, due diligence, and trade support, managed directly. No marketplace, no checkout.</p>
     <div style="display:flex; gap:14px; flex-wrap:wrap;">
       <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Submit a sourcing request</a>
     </div>
@@ -34,8 +34,21 @@
 
 
 <div class="card" style="margin-bottom:60px;">
-  <h2 style="margin-bottom:10px;">What we do</h2>
-  <p class="muted" style="font-size:14px; line-height:1.6;"><strong style="color:#fff;">Sourcing:</strong> tell us what you need, we find and vet it. <strong style="color:#fff;">Consultation:</strong> not sure yet, we'll talk it through. <strong style="color:#fff;">Supply:</strong> have inventory to sell, submit it for review, nothing goes public.</p>
+  <h2 style="margin-bottom:16px;">What we do</h2>
+  <ul style="list-style:none; padding:0; margin:0;">
+    <li style="display:flex; gap:10px; align-items:flex-start; margin-bottom:14px;">
+      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
+      <span class="muted" style="font-size:14px; line-height:1.6;"><strong style="color:#fff;">Sourcing.</strong> Submit your requirements and we identify and verify supply on your behalf.</span>
+    </li>
+    <li style="display:flex; gap:10px; align-items:flex-start; margin-bottom:14px;">
+      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
+      <span class="muted" style="font-size:14px; line-height:1.6;"><strong style="color:#fff;">Consultation.</strong> Discuss your trade requirements directly with our team before committing to anything.</span>
+    </li>
+    <li style="display:flex; gap:10px; align-items:flex-start;">
+      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
+      <span class="muted" style="font-size:14px; line-height:1.6;"><strong style="color:#fff;">Supply submissions.</strong> Submit your inventory for review. Nothing is published until due diligence is complete.</span>
+    </li>
+  </ul>
 </div>
 
 <div class="card" style="text-align:center; padding:44px 32px;">
