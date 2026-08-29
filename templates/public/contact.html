@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Contact | Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:520px;">
+  <h1>Contact me</h1>
+  <p class="muted" style="margin:12px 0 24px;">General questions that don't fit one of the specific requests — credentials, sourcing, a consultation, or booking a meeting. Drop your details below and I'll get back to you directly.</p>
+
+  <div class="card">
+    <form class="stacked" method="POST">
+      <label>Your name</label>
+      <input type="text" name="name" required>
+      <label>Email</label>
+      <input type="email" name="email" required>
+      <label>Phone (optional)</label>
+      <input type="tel" name="phone">
+      <label>Message</label>
+      <textarea name="message" rows="5" required></textarea>
+      <button type="submit" class="btn btn-solid btn-block" style="margin-top:20px; padding:13px;">Send message</button>
+    </form>
+  </div>
+
+  <div class="card" style="text-align:center; background: linear-gradient(135deg, rgba(28,28,30,0.03), rgba(184,134,11,0.06));">
+    <h2 style="margin-bottom:8px;">Join the Telegram channel</h2>
+    <p class="muted" style="margin-bottom:20px;">Updates on live sourcing needs, supply, and general trade activity.</p>
+    <a href="{{ telegram_url }}" target="_blank" rel="noopener" class="btn btn-solid" style="display:inline-block; padding:12px 28px;">Join the channel</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Leads | Lotwise Admin{% endblock %}
+{% block content %}
+<h1 style="font-size:26px; margin-bottom:20px;">All leads</h1>
+
+<div class="dash-nav">
+  <a href="{{ url_for('admin_dashboard') }}">Overview</a>
+  <a href="{{ url_for('admin_leads') }}" class="{{ 'active' if not active_type and not active_status }}">All leads</a>
+</div>
+
+<div style="display:flex; gap:20px; margin-bottom:20px; flex-wrap:wrap;">
+  <div>
+    <div class="muted" style="font-size:12px; margin-bottom:6px;">Type</div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <a href="{{ url_for('admin_leads', status=active_status) }}" class="btn btn-sm {{ 'btn-solid' if not active_type }}">All</a>
+      {% for lead_type, label in labels.items() %}
+      <a href="{{ url_for('admin_leads', type=lead_type, status=active_status) }}" class="btn btn-sm {{ 'btn-solid' if active_type == lead_type }}">{{ label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <div>
+    <div class="muted" style="font-size:12px; margin-bottom:6px;">Status</div>
+    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+      <a href="{{ url_for('admin_leads', type=active_type) }}" class="btn btn-sm {{ 'btn-solid' if not active_status }}">All</a>
+      {% for s in ['new', 'contacted', 'in_progress', 'closed'] %}
+      <a href="{{ url_for('admin_leads', type=active_type, status=s) }}" class="btn btn-sm {{ 'btn-solid' if active_status == s }}">{{ s }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="padding:0;">
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Name</th><th>Company</th><th>Contact</th><th>Status</th><th>Received</th></tr>
+    </thead>
+    <tbody>
+      {% for lead in leads %}
+      <tr style="cursor:pointer;" onclick="window.location='{{ url_for('admin_lead_detail', lead_id=lead.id) }}'">
+        <td>{{ lead.type_label }}</td>
+        <td>{{ lead.name }}</td>
+        <td>{{ lead.company_name or "—" }}</td>
+        <td class="muted">{{ lead.email }}</td>
+        <td><span class="pill {{ 'pill-approved' if lead.status == 'closed' else 'pill-pending' if lead.status == 'new' else 'pill-neutral' }}">{{ lead.status }}</span></td>
+        <td class="muted">{{ lead.created_at.strftime('%b %d, %Y') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted" style="text-align:center; padding:24px;">No leads match this filter.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

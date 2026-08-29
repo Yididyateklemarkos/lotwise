@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Sourcing request | Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:600px;">
+  <h1>Submit a sourcing request</h1>
+  <p class="muted" style="margin:12px 0 24px; font-size:15px; line-height:1.6;">Tell me what you need and I'll go source it. I only bring back options that have actually been checked out.</p>
+
+  <div class="card">
+    <form class="stacked" method="POST" enctype="multipart/form-data">
+      <div class="two-col">
+        <div>
+          <label>Your name</label>
+          <input type="text" name="name" required>
+        </div>
+        <div>
+          <label>Company (optional)</label>
+          <input type="text" name="company_name">
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div>
+          <label>Phone (optional)</label>
+          <input type="tel" name="phone">
+        </div>
+      </div>
+      <label>Country</label>
+      <div class="cdd">
+        <input type="hidden" name="country" value="">
+        <div class="cdd-trigger"><span class="cdd-label">Select country</span><span class="cdd-arrow"></span></div>
+        <div class="cdd-menu">
+          {% for name, code in countries %}
+          <div class="cdd-option" data-value="{{ name }}">{{ name }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <label>What are you sourcing?</label>
+      <input type="text" name="title" placeholder="e.g. Robusta green coffee, grade 2" required>
+      <div class="two-col">
+        <div>
+          <label>Category</label>
+          <input type="text" name="category" placeholder="e.g. Agriculture, Minerals, Construction">
+        </div>
+        <div>
+          <label>Quantity</label>
+          <input type="text" name="quantity_note" placeholder="e.g. 18 FCL">
+        </div>
+      </div>
+      <label>Needed by (optional)</label>
+      <input type="date" name="needed_by">
+      <label>Details — grade, spec, destination, target price</label>
+      <textarea name="description" rows="5"></textarea>
+      <label>Reference photos (optional)</label>
+      <input type="file" name="photos" accept=".png,.jpg,.jpeg" multiple>
+      <div class="hint">Up to 5 images.</div>
+      <button type="submit" class="btn btn-solid btn-block" style="margin-top:20px; padding:13px;">Submit sourcing request</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

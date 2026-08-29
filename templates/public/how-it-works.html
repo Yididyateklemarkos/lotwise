@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}How it works | Lotwise{% endblock %}
+{% block page_bg %}
+<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-jetcabin2.jpg') }}');"></div></div>
+{% endblock %}
+{% block content %}
+<div style="max-width:680px;">
+  <h1>How working with me actually works.</h1>
+  <p class="muted" style="font-size:16px; line-height:1.7; margin:16px 0 36px;">No accounts, no subscriptions, no self-serve checkout. Every step below runs through a short form and ends with me, personally, following up.</p>
+</div>
+
+<div class="grid-2" style="margin-bottom:20px;">
+  <div class="card">
+    <div class="badge-grade" style="margin-bottom:14px;">1</div>
+    <h2 style="margin-bottom:8px;">Request my credentials (optional)</h2>
+    <p class="muted" style="font-size:14px;">If we haven't worked together, ask for my business registration, references, and track record first. There's no obligation to move forward after.</p>
+    <a href="{{ url_for('request_credentials') }}" class="btn btn-sm" style="margin-top:14px;">Request credentials</a>
+  </div>
+  <div class="card" style="animation-delay:0.05s;">
+    <div class="badge-grade" style="margin-bottom:14px;">2</div>
+    <h2 style="margin-bottom:8px;">Tell me what you need</h2>
+    <p class="muted" style="font-size:14px;">Submit a sourcing request with the product, spec, quantity, and destination — or book a consultation if you want to talk it through first.</p>
+    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+      <a href="{{ url_for('sourcing_request') }}" class="btn btn-sm">Sourcing request</a>
+      <a href="{{ url_for('consultation') }}" class="btn btn-sm">Consultation</a>
+    </div>
+  </div>
+  <div class="card" style="animation-delay:0.1s;">
+    <div class="badge-grade" style="margin-bottom:14px;">3</div>
+    <h2 style="margin-bottom:8px;">We talk</h2>
+    <p class="muted" style="font-size:14px;">I review what you've submitted and reach out to book time — or you can propose a time yourself and I'll confirm it directly.</p>
+    <a href="{{ url_for('book_a_meeting') }}" class="btn btn-sm" style="margin-top:14px;">Book a meeting</a>
+  </div>
+  <div class="card" style="animation-delay:0.15s;">
+    <div class="badge-grade" style="margin-bottom:14px;">4</div>
+    <h2 style="margin-bottom:8px;">I source, vet, and see it through</h2>
+    <p class="muted" style="font-size:14px;">I go find the supply or the buyer, run due diligence on the counterparty, and stay hands-on through negotiation. Payment and shipment terms are agreed directly between the parties — never processed on this site.</p>
+  </div>
+</div>
+
+<div class="card" style="margin-top:24px;">
+  <h2 style="margin-bottom:10px;">Have supply instead of a need?</h2>
+  <p class="muted" style="font-size:14px; line-height:1.6; margin-bottom:14px;">If you're a supplier with real inventory to move, the process runs in reverse: submit the details, I run due diligence on your side of the deal, and only once that's cleared do I start presenting it to buyers. Nothing you submit is published or listed publicly — it goes straight to me for review.</p>
+  <a href="{{ url_for('sell_your_supply') }}" class="btn btn-sm">Submit your supply</a>
+</div>
+{% endblock %}

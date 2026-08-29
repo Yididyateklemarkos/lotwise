@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Sell your supply | Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:600px;">
+  <h1>Submit your supply</h1>
+  <p class="muted" style="margin:12px 0 24px; font-size:15px; line-height:1.6;">If you've got real inventory to move, tell me about it. This isn't a public listing — nothing you submit here goes live anywhere. I review it, run due diligence on my side, and only then start presenting it to qualified buyers. No payment is ever processed on this site.</p>
+
+  <div class="card">
+    <form class="stacked" method="POST" enctype="multipart/form-data">
+      <div class="two-col">
+        <div>
+          <label>Your name</label>
+          <input type="text" name="name" required>
+        </div>
+        <div>
+          <label>Company</label>
+          <input type="text" name="company_name" required>
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div>
+          <label>Phone (optional)</label>
+          <input type="tel" name="phone">
+        </div>
+      </div>
+      <label>Country (yours)</label>
+      <div class="cdd">
+        <input type="hidden" name="country" value="">
+        <div class="cdd-trigger"><span class="cdd-label">Select country</span><span class="cdd-arrow"></span></div>
+        <div class="cdd-menu">
+          {% for name, code in countries %}
+          <div class="cdd-option" data-value="{{ name }}">{{ name }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <label>What are you offering?</label>
+      <input type="text" name="title" placeholder="e.g. Portland cement, bulk" required>
+      <div class="two-col">
+        <div>
+          <label>Category</label>
+          <input type="text" name="category" placeholder="e.g. Construction, Agriculture, Minerals">
+        </div>
+        <div>
+          <label>Quantity available</label>
+          <input type="text" name="quantity_note" placeholder="e.g. 40 FCL">
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <label>Origin of the goods</label>
+          <input type="text" name="origin_country" placeholder="e.g. Ethiopia">
+        </div>
+        <div>
+          <label>Grade / spec</label>
+          <input type="text" name="grade_spec" placeholder="e.g. Type I/II">
+        </div>
+      </div>
+      <label>Details — condition, pricing expectations, timeline, anything else I should know</label>
+      <textarea name="description" rows="5"></textarea>
+      <label>Photos (optional)</label>
+      <input type="file" name="photos" accept=".png,.jpg,.jpeg" multiple>
+      <div class="hint">Up to 6 images. These are for my review only and are never published.</div>
+      <button type="submit" class="btn btn-solid btn-block" style="margin-top:20px; padding:13px;">Submit for review</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

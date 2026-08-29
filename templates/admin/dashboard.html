@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Admin | Lotwise{% endblock %}
+{% block content %}
+<h1 style="font-size:26px; margin-bottom:20px;">Admin</h1>
+
+<div class="dash-nav">
+  <a href="{{ url_for('admin_dashboard') }}" class="active">Overview</a>
+  <a href="{{ url_for('admin_leads') }}">All leads</a>
+</div>
+
+<div class="grid-3" style="margin-bottom:36px;">
+  {% for lead_type, label in labels.items() %}
+  <a href="{{ url_for('admin_leads', type=lead_type, status='new') }}" style="text-decoration:none;">
+    <div class="card">
+      <div class="muted">{{ label }}</div>
+      <div style="font-size:32px; font-weight:800; margin-top:6px;">{{ counts[lead_type] }}</div>
+      <div class="muted" style="font-size:12px;">new / unreviewed</div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<h2 style="margin-bottom:14px;">Recent submissions</h2>
+<div class="card" style="padding:0;">
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Name</th><th>Company</th><th>Status</th><th>Received</th></tr>
+    </thead>
+    <tbody>
+      {% for lead in recent %}
+      <tr style="cursor:pointer;" onclick="window.location='{{ url_for('admin_lead_detail', lead_id=lead.id) }}'">
+        <td>{{ lead.type_label }}</td>
+        <td>{{ lead.name }}</td>
+        <td>{{ lead.company_name or "—" }}</td>
+        <td><span class="pill {{ 'pill-approved' if lead.status == 'closed' else 'pill-pending' if lead.status == 'new' else 'pill-neutral' }}">{{ lead.status }}</span></td>
+        <td class="muted">{{ lead.created_at.strftime('%b %d, %Y') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted" style="text-align:center; padding:24px;">No submissions yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

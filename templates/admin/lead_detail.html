@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ label }} | Lotwise Admin{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin_leads') }}" class="muted" style="font-size:13px;">&larr; All leads</a>
+<h1 style="font-size:26px; margin:10px 0 20px;">{{ label }} — {{ lead.name }}</h1>
+
+<div class="grid-2">
+  <div>
+    <div class="card">
+      <h2 style="margin-bottom:14px;">Submitted details</h2>
+      <table>
+        <tr><th>Name</th><td>{{ lead.name }}</td></tr>
+        <tr><th>Company</th><td>{{ lead.company_name or "—" }}</td></tr>
+        <tr><th>Email</th><td>{{ lead.email }}</td></tr>
+        <tr><th>Phone</th><td>{{ lead.phone or "—" }}</td></tr>
+        <tr><th>Country</th><td>{{ lead.country or "—" }} {{ lead.country|flag }}</td></tr>
+        {% if lead.title %}<tr><th>Subject</th><td>{{ lead.title }}</td></tr>{% endif %}
+        {% if lead.category %}<tr><th>Category</th><td>{{ lead.category }}</td></tr>{% endif %}
+        {% if lead.quantity_note %}<tr><th>Quantity</th><td>{{ lead.quantity_note }}</td></tr>{% endif %}
+        {% if lead.origin_country %}<tr><th>Origin</th><td>{{ lead.origin_country }}</td></tr>{% endif %}
+        {% if lead.grade_spec %}<tr><th>Grade / spec</th><td>{{ lead.grade_spec }}</td></tr>{% endif %}
+        {% if lead.needed_by %}<tr><th>Needed by</th><td>{{ lead.needed_by.strftime('%b %d, %Y') }}</td></tr>{% endif %}
+        {% if lead.preferred_time_note %}<tr><th>Preferred time</th><td>{{ lead.preferred_time_note }}</td></tr>{% endif %}
+        <tr><th>Received</th><td>{{ lead.created_at.strftime('%b %d, %Y %H:%M') }}</td></tr>
+      </table>
+      {% if lead.description %}
+      <div style="margin-top:18px;">
+        <div class="muted" style="font-size:12px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">Message / details</div>
+        <p style="white-space:pre-wrap;">{{ lead.description }}</p>
+      </div>
+      {% endif %}
+      {% if lead.photos %}
+      <div style="margin-top:18px;">
+        <div class="muted" style="font-size:12px; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;">Photos</div>
+        <div class="grid-3">
+          {% for photo in lead.photos %}
+          <img src="{{ url_for('static', filename='uploads/' + photo.file_path) }}" style="width:100%; border-radius:12px; border:1px solid var(--glass-border);">
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <h2 style="margin-bottom:14px;">Follow-up</h2>
+      <form class="stacked" method="POST">
+        <label>Status</label>
+        <select name="status">
+          {% for s in ['new', 'contacted', 'in_progress', 'closed'] %}
+          <option value="{{ s }}" {{ 'selected' if lead.status == s }}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <label>Internal notes</label>
+        <textarea name="admin_note" rows="6">{{ lead.admin_note or '' }}</textarea>
+        <button type="submit" class="btn btn-solid btn-block" style="margin-top:20px; padding:13px;">Save</button>
+      </form>
+    </div>
+    <form method="POST" action="{{ url_for('admin_lead_delete', lead_id=lead.id) }}" onsubmit="return confirm('Delete this lead permanently?');">
+      <button type="submit" class="btn btn-danger btn-block" style="padding:11px;">Delete lead</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Book a consultation | Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:560px;">
+  <h1>Book a consultation</h1>
+  <p class="muted" style="margin:12px 0 24px; font-size:15px; line-height:1.6;">Not sure yet exactly what you need? Walk me through the situation and I'll tell you honestly how — or whether — I can help.</p>
+
+  <div class="card">
+    <form class="stacked" method="POST">
+      <div class="two-col">
+        <div>
+          <label>Your name</label>
+          <input type="text" name="name" required>
+        </div>
+        <div>
+          <label>Company (optional)</label>
+          <input type="text" name="company_name">
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div>
+          <label>Phone (optional)</label>
+          <input type="tel" name="phone">
+        </div>
+      </div>
+      <label>Country</label>
+      <div class="cdd">
+        <input type="hidden" name="country" value="">
+        <div class="cdd-trigger"><span class="cdd-label">Select country</span><span class="cdd-arrow"></span></div>
+        <div class="cdd-menu">
+          {% for name, code in countries %}
+          <div class="cdd-option" data-value="{{ name }}">{{ name }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <label>What's this about? (optional)</label>
+      <input type="text" name="category" placeholder="e.g. entering a new export market">
+      <label>Tell me a bit about your situation</label>
+      <textarea name="description" rows="5" required></textarea>
+      <button type="submit" class="btn btn-solid btn-block" style="margin-top:20px; padding:13px;">Request consultation</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

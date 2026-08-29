@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Privacy policy | Lotwise{% endblock %}
+{% block content %}
+<h1>Privacy policy</h1>
+<p class="muted" style="margin-bottom:32px;">Last updated: August 29, 2026</p>
+
+<div style="max-width:720px;">
+<h2 style="margin-top:0;">1. What I collect</h2>
+<p style="margin:10px 0 20px;">When you submit a form on this Site — requesting credentials, a sourcing request, a consultation, a meeting, a supply submission, or a general contact message — I collect the information you enter: your name, company, email, phone, country, and whatever details or photos you include.</p>
+
+<h2>2. How I use it</h2>
+<ul style="margin:10px 0 20px 20px;">
+  <li style="margin-bottom:6px;">To follow up with you directly by email or phone</li>
+  <li style="margin-bottom:6px;">To review and run due diligence on sourcing requests and supply submissions</li>
+  <li style="margin-bottom:6px;">To keep an internal record of who I've spoken with and what was discussed</li>
+</ul>
+
+<h2>3. What I don't do</h2>
+<p style="margin:10px 0 20px;">I do not sell your personal data. Supply submissions are never published or shown to other visitors of the Site — they're reviewed by me alone. There is no public marketplace or listings board.</p>
+
+<h2>4. Who sees it</h2>
+<p style="margin:10px 0 20px;">Submissions go to me directly. I may share relevant details with a specific counterparty only where doing so is necessary to advance a deal you've asked me to help with, and only after discussing it with you.</p>
+
+<h2>5. Data retention</h2>
+<p style="margin:10px 0 20px;">I retain submitted information for as long as it's useful to our working relationship, and for a reasonable period after to keep records of past engagements.</p>
+
+<h2>6. Your rights</h2>
+<p style="margin:10px 0 20px;">You can ask me to access, correct, or delete information you've submitted at any time via the <a href="{{ url_for('contact') }}">contact form</a>.</p>
+
+<h2>7. Security</h2>
+<p style="margin:10px 0 20px;">I use reasonable technical measures, including encrypted storage of any login credentials, to protect data submitted through the Site.</p>
+
+<h2>8. Cookies</h2>
+<p style="margin:10px 0 20px;">The Site uses only the minimal session cookie required for my own admin login — no third-party advertising or tracking cookies.</p>
+
+<h2>9. Changes to this policy</h2>
+<p style="margin:10px 0 20px;">I may update this Privacy Policy from time to time; the "last updated" date above will change accordingly.</p>
+
+<h2>10. Contact</h2>
+<p style="margin:10px 0 20px;">Questions about this policy: use the <a href="{{ url_for('contact') }}">contact form</a>.</p>
+</div>
+{% endblock %}

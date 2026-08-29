@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Book a meeting | Lotwise{% endblock %}
+{% block content %}
+<div style="max-width:560px;">
+  <h1>Book a meeting</h1>
+  <p class="muted" style="margin:12px 0 24px; font-size:15px; line-height:1.6;">Propose a few times that work for you and I'll confirm directly by email or phone — this isn't an automatic calendar booking, so leave enough detail for me to reach you.</p>
+
+  <div class="card">
+    <form class="stacked" method="POST">
+      <div class="two-col">
+        <div>
+          <label>Your name</label>
+          <input type="text" name="name" required>
+        </div>
+        <div>
+          <label>Company (optional)</label>
+          <input type="text" name="company_name">
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div>
+          <label>Phone (optional)</label>
+          <input type="tel" name="phone">
+        </div>
+      </div>
+      <label>Country / timezone</label>
+      <div class="cdd">
+        <input type="hidden" name="country" value="">
+        <div class="cdd-trigger"><span class="cdd-label">Select country</span><span class="cdd-arrow"></span></div>
+        <div class="cdd-menu">
+          {% for name, code in countries %}
+          <div class="cdd-option" data-value="{{ name }}">{{ name }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      <label>Preferred time(s)</label>
+      <textarea name="preferred_time_note" rows="3" placeholder="e.g. Tuesday or Wednesday afternoon, East Africa Time" required></textarea>
+      <label>What would you like to cover? (optional)</label>
+      <textarea name="description" rows="4"></textarea>
+      <button type="submit" class="btn btn-solid btn-block" style="margin-top:20px; padding:13px;">Request meeting</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
