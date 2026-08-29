@@ -142,21 +142,6 @@ def contact():
     return render_template("public/contact.html")
 
 
-@app.route("/request-credentials", methods=["GET", "POST"])
-def request_credentials():
-    if request.method == "POST":
-        common = _lead_common_fields(request.form)
-        message = request.form.get("message", "").strip()
-        if not _require(common, "name", "email", "company_name"):
-            flash("Please fill in your name, company, and email.", "error")
-            return redirect(url_for("request_credentials"))
-        lead = Lead(lead_type="credentials", description=message, **common)
-        db.session.add(lead)
-        db.session.commit()
-        return redirect(url_for("thank_you", type="credentials"))
-    return render_template("public/request-credentials.html", countries=COUNTRIES)
-
-
 @app.route("/sourcing-request", methods=["GET", "POST"])
 def sourcing_request():
     if request.method == "POST":

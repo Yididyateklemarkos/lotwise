@@ -2,8 +2,8 @@
 Lotwise — Database Models
 
 Lotwise is now a sourcing/trade advisory front door, not a self-serve
-marketplace: every visitor action (requesting credentials, sourcing
-something, booking a consultation, or submitting supply) becomes a
+marketplace: every visitor action (sourcing something, booking a
+consultation or meeting, or submitting supply) becomes a
 Lead that gets followed up on by hand. No payments are ever processed
 on the site.
 """
@@ -17,11 +17,10 @@ db = SQLAlchemy()
 # ---------------------------------------------------------------------------
 # Enums (stored as plain strings for SQLite/Postgres simplicity)
 # ---------------------------------------------------------------------------
-LEAD_TYPES = ("credentials", "sourcing", "consultation", "meeting", "supply", "contact")
+LEAD_TYPES = ("sourcing", "consultation", "meeting", "supply", "contact")
 LEAD_STATUSES = ("new", "contacted", "in_progress", "closed")
 
 LEAD_TYPE_LABELS = {
-    "credentials": "Credentials request",
     "sourcing": "Sourcing request",
     "consultation": "Consultation request",
     "meeting": "Meeting request",
@@ -49,7 +48,7 @@ class AdminUser(UserMixin, db.Model):
 
 
 class Lead(db.Model):
-    """Every public intake form (credentials, sourcing, consultation,
+    """Every public intake form (sourcing, consultation,
     meeting, supply, contact) writes one row here. Fields not relevant to
     a given lead_type are simply left blank — one flexible table instead
     of five near-identical ones, since the admin needs to triage all of

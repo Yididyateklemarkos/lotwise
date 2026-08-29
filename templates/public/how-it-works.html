@@ -3,37 +3,75 @@
 {% block content %}
 <div style="max-width:680px;">
   <h1>How working with us actually works.</h1>
-  <p class="muted" style="font-size:16px; line-height:1.7; margin:16px 0 36px;">No accounts, no subscriptions, no checkout. Here's each service and how we handle it.</p>
+  <p class="muted" style="font-size:16px; line-height:1.7; margin:16px 0 36px;">No accounts, no subscriptions, no checkout. Here's each service and the exact steps behind it.</p>
 </div>
 
-<div class="grid-3" style="margin-bottom:16px;">
-  <div class="card">
-    <h2 style="margin-bottom:8px;">Sourcing</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">Submit the product, spec, quantity, and timeline. We identify suppliers, verify them, and bring back vetted options for you to review.</p>
-    <a href="{{ url_for('sourcing_request') }}" class="btn btn-sm" style="margin-top:14px;">Submit a sourcing request</a>
-  </div>
-  <div class="card" style="animation-delay:0.05s;">
-    <h2 style="margin-bottom:8px;">Consultation</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">Talk directly with our team before committing to anything. We review your situation and advise on the right approach.</p>
-    <a href="{{ url_for('consultation') }}" class="btn btn-sm" style="margin-top:14px;">Book a consultation</a>
-  </div>
-  <div class="card" style="animation-delay:0.1s;">
-    <h2 style="margin-bottom:8px;">Meetings</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">Propose a time that works for you. We confirm directly and meet to go over the details.</p>
-    <a href="{{ url_for('book_a_meeting') }}" class="btn btn-sm" style="margin-top:14px;">Book a meeting</a>
+<div class="card" style="margin-bottom:20px;">
+  <div style="display:grid; grid-template-columns:80px 1fr; gap:24px; align-items:start;">
+    <div style="width:64px; height:64px; border-radius:14px; background:var(--purple-soft); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="10.5" cy="10.5" r="6.5" stroke="#C7B8FF" stroke-width="1.8"/>
+        <path d="M19 19L15 15" stroke="#C7B8FF" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <h2 style="font-size:22px; margin-bottom:6px;">Sourcing</h2>
+      <p class="muted" style="font-size:14px; margin-bottom:16px;">Tell us what you need. We find it, verify it, and bring back real options.</p>
+      <ol style="margin:0 0 18px 18px; padding:0; font-size:14px; color:var(--ink-soft); line-height:1.9;">
+        <li>Submit your product, spec, quantity, and timeline.</li>
+        <li>We identify and contact potential suppliers.</li>
+        <li>We verify registration, certifications, and samples.</li>
+        <li>You review vetted options and decide how to proceed.</li>
+      </ol>
+      <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid btn-sm">Submit a sourcing request</a>
+    </div>
   </div>
 </div>
 
-<div class="grid-2">
-  <div class="card">
-    <h2 style="margin-bottom:8px;">Supply submissions</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">Submit your inventory for review. We run due diligence on our side, and only once that's cleared do we present it to buyers. Nothing is published publicly.</p>
-    <a href="{{ url_for('sell_your_supply') }}" class="btn btn-sm" style="margin-top:14px;">Submit your supply</a>
+<div class="card" style="margin-bottom:20px;">
+  <div style="display:grid; grid-template-columns:80px 1fr; gap:24px; align-items:start;">
+    <div style="width:64px; height:64px; border-radius:14px; background:var(--green-soft); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 5H20V15H8L4 19V5Z" stroke="var(--green)" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div>
+      <h2 style="font-size:22px; margin-bottom:6px;">Consultation & meetings</h2>
+      <p class="muted" style="font-size:14px; margin-bottom:16px;">Not ready to submit a full request? Talk to us directly first.</p>
+      <ol style="margin:0 0 18px 18px; padding:0; font-size:14px; color:var(--ink-soft); line-height:1.9;">
+        <li>Tell us about your business and what you're trying to do.</li>
+        <li>Propose a time, or we'll reach out to schedule one.</li>
+        <li>We meet, review your situation, and advise on the right approach.</li>
+        <li>You decide whether to move forward with a request.</li>
+      </ol>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="{{ url_for('consultation') }}" class="btn btn-solid btn-sm">Book a consultation</a>
+        <a href="{{ url_for('book_a_meeting') }}" class="btn btn-sm">Propose a meeting time</a>
+      </div>
+    </div>
   </div>
-  <div class="card" style="animation-delay:0.05s;">
-    <h2 style="margin-bottom:8px;">Credentials</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">Request our registration, references, and track record before you commit to anything. Sent directly to your email, no obligation.</p>
-    <a href="{{ url_for('request_credentials') }}" class="btn btn-sm" style="margin-top:14px;">Request our credentials</a>
+</div>
+
+<div class="card">
+  <div style="display:grid; grid-template-columns:80px 1fr; gap:24px; align-items:start;">
+    <div style="width:64px; height:64px; border-radius:14px; background:var(--navy); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 8L12 4L21 8L12 12L3 8Z" stroke="#C7C3DA" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M3 8V16L12 20L21 16V8" stroke="#C7C3DA" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M12 12V20" stroke="#C7C3DA" stroke-width="1.8"/>
+      </svg>
+    </div>
+    <div>
+      <h2 style="font-size:22px; margin-bottom:6px;">Supply submissions</h2>
+      <p class="muted" style="font-size:14px; margin-bottom:16px;">Have inventory to move? Submit it for review, not a public listing.</p>
+      <ol style="margin:0 0 18px 18px; padding:0; font-size:14px; color:var(--ink-soft); line-height:1.9;">
+        <li>Submit product, quantity, origin, and certifications.</li>
+        <li>We verify your registration, license, and samples.</li>
+        <li>We check pricing against current market rates.</li>
+        <li>Once cleared, we present it directly to buyers. Nothing is published publicly.</li>
+      </ol>
+      <a href="{{ url_for('sell_your_supply') }}" class="btn btn-solid btn-sm">Submit your supply</a>
+    </div>
   </div>
 </div>
 {% endblock %}

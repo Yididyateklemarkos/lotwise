@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS lead_photos (
 ALTER TABLE leads
     DROP CONSTRAINT IF EXISTS chk_leads_lead_type,
     ADD CONSTRAINT chk_leads_lead_type
-        CHECK (lead_type IN ('credentials', 'sourcing', 'consultation', 'meeting', 'supply', 'contact'));
+        CHECK (lead_type IN ('sourcing', 'consultation', 'meeting', 'supply', 'contact'));
 
 ALTER TABLE leads
     DROP CONSTRAINT IF EXISTS chk_leads_status,
