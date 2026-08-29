@@ -1,19 +1,16 @@
 {% extends "base.html" %}
 {% block title %}About | Lotwise{% endblock %}
-{% block page_bg %}
-<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-about.jpg') }}');"></div></div>
-{% endblock %}
 {% block content %}
 <div style="max-width:640px;">
   <h1>I manage container-scale trade sourcing, personally.</h1>
   <p class="muted" style="font-size:16px; line-height:1.7; margin:24px 0;">
-    Lotwise is my own sourcing and trade advisory practice, not a self-serve marketplace. When you work with me, you're working with one person end to end: I source the supply, vet the counterparty, and run the due diligence before anything moves forward.
+    Lotwise is my own sourcing and trade advisory practice — not a marketplace. You work with one person end to end: sourcing, vetting, and due diligence, all before anything moves.
   </p>
   <p class="muted" style="font-size:16px; line-height:1.7; margin-bottom:24px;">
-    That's why there's no open listings board and no checkout on this site. Every engagement starts with a request — for my credentials, for something you need sourced, for a consultation, or for a meeting — and I follow up directly from there.
+    That's why there's no listings board or checkout here. Every engagement starts with a request — credentials, sourcing, a consultation, or a meeting — and I follow up directly.
   </p>
   <p class="muted" style="font-size:16px; line-height:1.7;">
-    If you have supply and want to sell it, I'll take the details, do the diligence on my side, and only then start presenting it to buyers. Nothing is published or sold through the site itself.
+    If you have supply to sell, I'll review it, run due diligence, and then present it to buyers. Nothing is published here.
   </p>
   <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:40px;">
     <a href="{{ url_for('how_it_works') }}" class="btn btn-solid" style="padding:13px 26px;">See how it works</a>

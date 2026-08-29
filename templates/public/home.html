@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Lotwise | Sourcing & Trade Advisory{% endblock %}
 
-{% block page_bg %}
-<div class="page-photo-bg"><div class="photo-layer" style="background-image:url('{{ url_for('static', filename='img/bg-home.jpg') }}');"></div></div>
-{% endblock %}
-
 {% block content %}
 
 <div id="parallax-field" style="position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:-1;">
@@ -19,7 +15,7 @@
   <div>
     <div class="pill" style="margin-bottom:20px; background: var(--purple-soft); color: #C7B8FF;">Independent sourcing & trade advisory</div>
     <h1 style="font-size:52px; line-height:1.06;">I manage container-scale trade sourcing so you don't have to chase it yourself.</h1>
-    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Lotwise is how I work with buyers and suppliers directly: I source what you need, vet who you're dealing with, and run the due diligence before anything moves. No marketplace to browse, no self-serve checkout — every engagement starts with a conversation and I stay hands-on from there.</p>
+    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">I work directly with buyers and suppliers — sourcing, vetting, and running due diligence before anything moves. No marketplace, no checkout. Every engagement starts with a conversation.</p>
     <div style="display:flex; gap:14px; flex-wrap:wrap;">
       <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Submit a sourcing request</a>
       <a href="{{ url_for('book_a_meeting') }}" class="btn" style="padding:14px 28px; font-size:15px;">Book a meeting</a>
@@ -31,30 +27,30 @@
 </div>
 
 <h2 style="margin-bottom:6px;">How to work with me</h2>
-<p class="muted" style="margin-bottom:18px;">Four ways in, depending on where you're starting from. Pick the one that fits and I'll follow up personally.</p>
+<p class="muted" style="margin-bottom:18px;">Four ways in — pick what fits and I'll follow up personally.</p>
 <div class="grid-4" style="margin-bottom:60px;">
   <div class="card">
     <div class="badge-grade" style="margin-bottom:14px;">1</div>
     <strong style="font-size:14px;">Request my credentials</strong>
-    <p class="muted" style="font-size:13px; margin-top:6px;">New to Lotwise? Ask for my business registration, references, and track record before we go further.</p>
+    <p class="muted" style="font-size:13px; margin-top:6px;">New here? Ask for my registration, references, and track record first.</p>
     <a href="{{ url_for('request_credentials') }}" class="btn btn-sm" style="margin-top:14px;">Request credentials</a>
   </div>
   <div class="card" style="animation-delay:0.05s;">
     <div class="badge-grade" style="margin-bottom:14px;">2</div>
     <strong style="font-size:14px;">Tell me what you need sourced</strong>
-    <p class="muted" style="font-size:13px; margin-top:6px;">Product, spec, quantity, destination. I go find it and come back with real options.</p>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Give me the product, spec, and quantity — I'll bring back real options.</p>
     <a href="{{ url_for('sourcing_request') }}" class="btn btn-sm" style="margin-top:14px;">Submit sourcing request</a>
   </div>
   <div class="card" style="animation-delay:0.1s;">
     <div class="badge-grade" style="margin-bottom:14px;">3</div>
     <strong style="font-size:14px;">Book a consultation</strong>
-    <p class="muted" style="font-size:13px; margin-top:6px;">Not sure yet what you need? Walk me through the situation and I'll tell you how I can help.</p>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Not sure what you need yet? Tell me the situation and I'll advise.</p>
     <a href="{{ url_for('consultation') }}" class="btn btn-sm" style="margin-top:14px;">Book consultation</a>
   </div>
   <div class="card" style="animation-delay:0.15s;">
     <div class="badge-grade" style="margin-bottom:14px;">4</div>
     <strong style="font-size:14px;">Book a meeting</strong>
-    <p class="muted" style="font-size:13px; margin-top:6px;">Ready to talk specifics? Propose a time and I'll confirm directly with you.</p>
+    <p class="muted" style="font-size:13px; margin-top:6px;">Propose a time and I'll confirm directly.</p>
     <a href="{{ url_for('book_a_meeting') }}" class="btn btn-sm" style="margin-top:14px;">Book a meeting</a>
   </div>
 </div>
@@ -62,19 +58,19 @@
 <div class="grid-2" style="margin-bottom:60px;">
   <div class="card">
     <h2 style="margin-bottom:10px;">Have supply and want to sell it?</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">If you're a supplier sitting on real inventory, submit the details and I'll run due diligence on the deal before it goes anywhere. Nothing moves forward — and no payment ever touches this site — until that's done.</p>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Submit the details and I'll run due diligence before anything moves. No payment is ever processed here.</p>
     <a href="{{ url_for('sell_your_supply') }}" class="btn btn-sm" style="margin-top:14px;">Submit your supply</a>
   </div>
   <div class="card" style="animation-delay:0.08s;">
     <h2 style="margin-bottom:10px;">Sourcing something specific?</h2>
-    <p class="muted" style="font-size:14px; line-height:1.6;">Tell me the product, grade, and volume you're after. I work the supplier side myself and only bring back options that actually check out.</p>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Tell me the product, grade, and volume. I'll bring back options that check out.</p>
     <a href="{{ url_for('sourcing_request') }}" class="btn btn-sm" style="margin-top:14px;">Start a sourcing request</a>
   </div>
 </div>
 
 <div class="card" style="text-align:center; padding:44px 32px;">
   <h2 style="font-size:26px; margin-bottom:10px;">Every engagement starts with a real conversation.</h2>
-  <p class="muted" style="max-width:480px; margin:0 auto 24px;">No subscriptions, no self-serve listings, no payment processed on this site. I work each deal directly, start to finish.</p>
+  <p class="muted" style="max-width:480px; margin:0 auto 24px;">No subscriptions, no listings, no payment on this site — every deal is handled directly.</p>
   <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
     <a href="{{ url_for('how_it_works') }}" class="btn btn-solid" style="padding:13px 26px;">See how it works</a>
     <a href="{{ url_for('contact') }}" class="btn" style="padding:13px 26px;">Contact me</a>
