@@ -3,32 +3,32 @@
 {% block content %}
 <div style="max-width:680px;">
   <h1>How working with us actually works.</h1>
-  <p class="muted" style="font-size:16px; line-height:1.7; margin:16px 0 36px;">No accounts, no subscriptions, no checkout. Every step ends with us following up directly.</p>
+  <p class="muted" style="font-size:16px; line-height:1.7; margin:16px 0 36px;">No accounts, no subscriptions, no checkout. Here's the process, start to finish.</p>
 </div>
 
-<div class="grid-3" style="margin-bottom:20px;">
-  <div class="card">
-    <h2 style="margin-bottom:8px;">Tell us what you need</h2>
-    <p style="font-size:14px; font-weight:700;">Sourcing request, or book a consultation first.</p>
-    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
-      <a href="{{ url_for('sourcing_request') }}" class="btn btn-sm">Sourcing request</a>
-      <a href="{{ url_for('consultation') }}" class="btn btn-sm">Consultation</a>
-    </div>
-  </div>
-  <div class="card" style="animation-delay:0.05s;">
-    <h2 style="margin-bottom:8px;">We talk</h2>
-    <p style="font-size:14px; font-weight:700;">We'll book time, or propose one yourself.</p>
-    <a href="{{ url_for('book_a_meeting') }}" class="btn btn-sm" style="margin-top:14px;">Book a meeting</a>
-  </div>
-  <div class="card" style="animation-delay:0.1s;">
-    <h2 style="margin-bottom:8px;">End-to-end trade management</h2>
-    <p style="font-size:14px; font-weight:700;">Sourcing, due diligence, and negotiation, handled directly. Payment is always handled directly, never on this site.</p>
-  </div>
+<div class="card" style="margin-bottom:24px;">
+  <ul style="list-style:none; padding:0; margin:0;">
+    <li style="display:flex; gap:12px; align-items:flex-start; margin-bottom:18px;">
+      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
+      <span><strong style="color:#fff;">Tell us what you need.</strong> <span class="muted">Submit a sourcing request, or book a consultation first.</span></span>
+    </li>
+    <li style="display:flex; gap:12px; align-items:flex-start; margin-bottom:18px;">
+      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
+      <span><strong style="color:#fff;">We talk.</strong> <span class="muted">We book time directly, or you can propose a time yourself.</span></span>
+    </li>
+    <li style="display:flex; gap:12px; align-items:flex-start; margin-bottom:18px;">
+      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
+      <span><strong style="color:#fff;">We manage the deal.</strong> <span class="muted">Sourcing, due diligence, and negotiation, handled directly. Payment is always handled directly, never on this site.</span></span>
+    </li>
+    <li style="display:flex; gap:12px; align-items:flex-start;">
+      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
+      <span><strong style="color:#fff;">Have supply instead?</strong> <span class="muted">Submit your inventory for review. Once due diligence clears, we present it to buyers. Nothing is published publicly.</span></span>
+    </li>
+  </ul>
 </div>
 
-<div class="card" style="margin-top:24px;">
-  <h2 style="margin-bottom:10px;">Have supply instead of a need?</h2>
-  <p class="muted" style="font-size:14px; line-height:1.6; margin-bottom:14px;">If you have inventory to move, submit the details. Once due diligence clears, we present it to buyers. Nothing is published publicly.</p>
-  <a href="{{ url_for('sell_your_supply') }}" class="btn btn-sm">Submit your supply</a>
+<div style="display:flex; gap:14px; flex-wrap:wrap;">
+  <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid">Submit a sourcing request</a>
+  <a href="{{ url_for('sell_your_supply') }}" class="btn">Submit your supply</a>
 </div>
 {% endblock %}
