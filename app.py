@@ -139,7 +139,7 @@ def contact():
         db.session.add(lead)
         db.session.commit()
         return redirect(url_for("thank_you", type="contact"))
-    return render_template("public/contact.html", telegram_url="https://t.me/+csEU8zHsMyk4MTU0")
+    return render_template("public/contact.html")
 
 
 @app.route("/request-credentials", methods=["GET", "POST"])
