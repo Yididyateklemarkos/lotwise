@@ -3,32 +3,37 @@
 {% block content %}
 <div style="max-width:680px;">
   <h1>How working with us actually works.</h1>
-  <p class="muted" style="font-size:16px; line-height:1.7; margin:16px 0 36px;">No accounts, no subscriptions, no checkout. Here's the process, start to finish.</p>
+  <p class="muted" style="font-size:16px; line-height:1.7; margin:16px 0 36px;">No accounts, no subscriptions, no checkout. Here's each service and how we handle it.</p>
 </div>
 
-<div class="card" style="margin-bottom:24px;">
-  <ul style="list-style:none; padding:0; margin:0;">
-    <li style="display:flex; gap:12px; align-items:flex-start; margin-bottom:18px;">
-      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
-      <span><strong style="color:#fff;">Tell us what you need.</strong> <span class="muted">Submit a sourcing request, or book a consultation first.</span></span>
-    </li>
-    <li style="display:flex; gap:12px; align-items:flex-start; margin-bottom:18px;">
-      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
-      <span><strong style="color:#fff;">We talk.</strong> <span class="muted">We book time directly, or you can propose a time yourself.</span></span>
-    </li>
-    <li style="display:flex; gap:12px; align-items:flex-start; margin-bottom:18px;">
-      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
-      <span><strong style="color:#fff;">We manage the deal.</strong> <span class="muted">Sourcing, due diligence, and negotiation, handled directly. Payment is always handled directly, never on this site.</span></span>
-    </li>
-    <li style="display:flex; gap:12px; align-items:flex-start;">
-      <span style="color:var(--green); font-weight:800; flex-shrink:0;">&check;</span>
-      <span><strong style="color:#fff;">Have supply instead?</strong> <span class="muted">Submit your inventory for review. Once due diligence clears, we present it to buyers. Nothing is published publicly.</span></span>
-    </li>
-  </ul>
+<div class="grid-3" style="margin-bottom:16px;">
+  <div class="card">
+    <h2 style="margin-bottom:8px;">Sourcing</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Submit the product, spec, quantity, and timeline. We identify suppliers, verify them, and bring back vetted options for you to review.</p>
+    <a href="{{ url_for('sourcing_request') }}" class="btn btn-sm" style="margin-top:14px;">Submit a sourcing request</a>
+  </div>
+  <div class="card" style="animation-delay:0.05s;">
+    <h2 style="margin-bottom:8px;">Consultation</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Talk directly with our team before committing to anything. We review your situation and advise on the right approach.</p>
+    <a href="{{ url_for('consultation') }}" class="btn btn-sm" style="margin-top:14px;">Book a consultation</a>
+  </div>
+  <div class="card" style="animation-delay:0.1s;">
+    <h2 style="margin-bottom:8px;">Meetings</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Propose a time that works for you. We confirm directly and meet to go over the details.</p>
+    <a href="{{ url_for('book_a_meeting') }}" class="btn btn-sm" style="margin-top:14px;">Book a meeting</a>
+  </div>
 </div>
 
-<div style="display:flex; gap:14px; flex-wrap:wrap;">
-  <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid">Submit a sourcing request</a>
-  <a href="{{ url_for('sell_your_supply') }}" class="btn">Submit your supply</a>
+<div class="grid-2">
+  <div class="card">
+    <h2 style="margin-bottom:8px;">Supply submissions</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Submit your inventory for review. We run due diligence on our side, and only once that's cleared do we present it to buyers. Nothing is published publicly.</p>
+    <a href="{{ url_for('sell_your_supply') }}" class="btn btn-sm" style="margin-top:14px;">Submit your supply</a>
+  </div>
+  <div class="card" style="animation-delay:0.05s;">
+    <h2 style="margin-bottom:8px;">Credentials</h2>
+    <p class="muted" style="font-size:14px; line-height:1.6;">Request our registration, references, and track record before you commit to anything. Sent directly to your email, no obligation.</p>
+    <a href="{{ url_for('request_credentials') }}" class="btn btn-sm" style="margin-top:14px;">Request our credentials</a>
+  </div>
 </div>
 {% endblock %}
