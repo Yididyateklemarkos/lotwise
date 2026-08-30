@@ -25,18 +25,22 @@
   </div>
 </div>
 
-<div class="grid-3" style="margin:36px 0 60px;">
-  <div class="card" style="text-align:center;">
-    <div style="font-size:28px; font-weight:800;">$150M+</div>
-    <div class="muted" style="font-size:13px; margin-top:4px;">in transactions</div>
-  </div>
-  <div class="card" style="text-align:center; animation-delay:0.05s;">
-    <div style="font-size:28px; font-weight:800;">800+</div>
-    <div class="muted" style="font-size:13px; margin-top:4px;">suppliers</div>
-  </div>
-  <div class="card" style="text-align:center; animation-delay:0.1s;">
-    <div style="font-size:28px; font-weight:800;">1,000+</div>
-    <div class="muted" style="font-size:13px; margin-top:4px;">buyers</div>
+<div class="full-bleed" style="background: var(--purple); padding:80px 20px; margin:50px 0 60px;">
+  <div class="wrap" style="text-align:center;">
+    <div class="grid-3" style="gap:40px;">
+      <div>
+        <div class="stat-number" data-target="150" data-prefix="$" data-suffix="M+" style="font-size:68px; font-weight:800; color:#fff; line-height:1;">$0M+</div>
+        <div style="color:rgba(255,255,255,0.85); margin-top:10px; font-size:16px; font-weight:600;">in transactions</div>
+      </div>
+      <div>
+        <div class="stat-number" data-target="800" data-suffix="+" style="font-size:68px; font-weight:800; color:#fff; line-height:1;">0+</div>
+        <div style="color:rgba(255,255,255,0.85); margin-top:10px; font-size:16px; font-weight:600;">suppliers</div>
+      </div>
+      <div>
+        <div class="stat-number" data-target="1000" data-suffix="+" style="font-size:68px; font-weight:800; color:#fff; line-height:1;">0+</div>
+        <div style="color:rgba(255,255,255,0.85); margin-top:10px; font-size:16px; font-weight:600;">buyers</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -174,6 +178,36 @@
     #globe-wrap { position:static; max-height:280px; margin:20px auto 0; }
   }
 </style>
+<script>
+(function() {
+  const counters = document.querySelectorAll('.stat-number');
+  if (!counters.length) return;
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target, 10) || 0;
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const duration = 1400;
+    const start = performance.now();
+    function frame(now) {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(target * eased);
+      el.textContent = prefix + value.toLocaleString('en-US') + suffix;
+      if (progress < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  counters.forEach((el) => observer.observe(el));
+})();
+</script>
 <script src="{{ url_for('static', filename='js/three.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/world-land.js') }}"></script>
 <script>
@@ -202,14 +236,6 @@
   scene.add(globeGroup);
   const pulseRings = [];
 
-  const wireGeo = new THREE.SphereGeometry(1.6, 28, 20);
-  const wireMat = new THREE.MeshBasicMaterial({ color: 0x9CA3AF, wireframe: true, transparent: true, opacity: 0.22 });
-  globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
-
-  const coreGeo = new THREE.SphereGeometry(1.56, 32, 24);
-  const coreMat = new THREE.MeshBasicMaterial({ color: 0xF5F6FA, transparent: true, opacity: 0.55 });
-  globeGroup.add(new THREE.Mesh(coreGeo, coreMat));
-
   function latLngToVec3Continent(lat, lng, r) {
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lng + 180) * (Math.PI / 180);
@@ -219,39 +245,68 @@
       r * Math.sin(phi) * Math.sin(theta)
     );
   }
-  const landDots = window.LAND_DOTS || [];
-  const continentGeo = new THREE.BufferGeometry();
-  const continentPositions = new Float32Array((landDots.length / 2) * 3);
-  const continentColors = new Float32Array((landDots.length / 2) * 3);
 
-  function regionColor(lat, lng) {
-    // Rough bounding-box classification per continent/region, purely for a colorful decorative globe.
-    if (lat < -60) return [0.75, 0.80, 0.86];                 // Antarctica: pale gray-blue
-    if (lat > 12 && lng >= -170 && lng < -30) return [0.55, 0.36, 0.96];   // North America: purple
-    if (lat <= 12 && lng >= -90 && lng < -32) return [0.09, 0.64, 0.29];   // South America: green
-    if (lat > 35 && lng >= -32 && lng < 45) return [0.29, 0.56, 0.89];     // Europe: blue
-    if (lat <= 35 && lat > -37 && lng >= -20 && lng < 52) return [0.95, 0.61, 0.13]; // Africa: amber
-    if (lng >= 45 && lng < 155 && lat > -12) return [0.13, 0.75, 0.65];    // Asia: teal
-    if (lng >= 90 && lat <= -12) return [0.95, 0.38, 0.60];    // Oceania: pink
-    return [0.55, 0.55, 0.62];                                 // fallback: neutral gray
+  // Build a real filled world-map texture (solid continents, not dots) by
+  // rasterizing the coastline polygons onto a 2D canvas in equirectangular
+  // projection, then mapping that canvas onto the sphere as its texture.
+  // This aligns exactly with THREE.SphereGeometry's default UV layout:
+  // u = (lng+180)/360, v(top-to-bottom) = (90-lat)/180.
+  const texW = 1600, texH = 800;
+  const mapCanvas = document.createElement('canvas');
+  mapCanvas.width = texW;
+  mapCanvas.height = texH;
+  const mctx = mapCanvas.getContext('2d');
+  mctx.fillStyle = '#EAECF2';
+  mctx.fillRect(0, 0, texW, texH);
+
+  function lngToX(lng) { return texW * (lng + 180) / 360; }
+  function latToY(lat) { return texH * (90 - lat) / 180; }
+
+  function regionColorHex(lat, lng) {
+    if (lat < -60) return '#BFCADA';
+    if (lat > 12 && lng >= -170 && lng < -30) return '#8B5CF6';
+    if (lat <= 12 && lng >= -90 && lng < -32) return '#16A34A';
+    if (lat > 35 && lng >= -32 && lng < 45) return '#3B82F6';
+    if (lat <= 35 && lat > -37 && lng >= -20 && lng < 52) return '#F59E0B';
+    if (lng >= 45 && lng < 155 && lat > -12) return '#14B8A6';
+    if (lng >= 90 && lat <= -12) return '#EC4899';
+    return '#9CA3AF';
   }
 
-  for (let i = 0; i < landDots.length; i += 2) {
-    const lat = landDots[i], lng = landDots[i + 1];
-    const p = latLngToVec3Continent(lat, lng, 1.605);
-    const o = (i / 2) * 3;
-    continentPositions[o] = p.x;
-    continentPositions[o + 1] = p.y;
-    continentPositions[o + 2] = p.z;
-    const [r, g, b] = regionColor(lat, lng);
-    continentColors[o] = r;
-    continentColors[o + 1] = g;
-    continentColors[o + 2] = b;
-  }
-  continentGeo.setAttribute('position', new THREE.BufferAttribute(continentPositions, 3));
-  continentGeo.setAttribute('color', new THREE.BufferAttribute(continentColors, 3));
-  const continentMat = new THREE.PointsMaterial({ vertexColors: true, size: 0.028, transparent: true, opacity: 1.0, sizeAttenuation: true });
-  globeGroup.add(new THREE.Points(continentGeo, continentMat));
+  (window.LAND_OUTLINES || []).forEach((ring) => {
+    if (ring.length < 6) return;
+    let sumLat = 0, sumLng = 0, count = 0, minLng = Infinity, maxLng = -Infinity;
+    for (let i = 0; i < ring.length; i += 2) {
+      sumLat += ring[i]; sumLng += ring[i + 1]; count++;
+      minLng = Math.min(minLng, ring[i + 1]);
+      maxLng = Math.max(maxLng, ring[i + 1]);
+    }
+    const color = regionColorHex(sumLat / count, sumLng / count);
+    const wraps = (maxLng - minLng) > 180;
+    const offsets = wraps ? [-360, 0, 360] : [0];
+    offsets.forEach((offset) => {
+      mctx.beginPath();
+      for (let i = 0; i < ring.length; i += 2) {
+        const x = lngToX(ring[i + 1] + offset);
+        const y = latToY(ring[i]);
+        if (i === 0) mctx.moveTo(x, y); else mctx.lineTo(x, y);
+      }
+      mctx.closePath();
+      mctx.fillStyle = color;
+      mctx.fill();
+    });
+  });
+
+  const mapTexture = new THREE.CanvasTexture(mapCanvas);
+  mapTexture.needsUpdate = true;
+
+  const wireGeo = new THREE.SphereGeometry(1.6, 28, 20);
+  const wireMat = new THREE.MeshBasicMaterial({ color: 0x9CA3AF, wireframe: true, transparent: true, opacity: 0.18 });
+  globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
+
+  const coreGeo = new THREE.SphereGeometry(1.56, 32, 24);
+  const coreMat = new THREE.MeshBasicMaterial({ map: mapTexture });
+  globeGroup.add(new THREE.Mesh(coreGeo, coreMat));
 
   const coastMat = new THREE.LineBasicMaterial({ color: 0x6B7280, transparent: true, opacity: 0.55 });
   (window.LAND_OUTLINES || []).forEach((ring) => {
