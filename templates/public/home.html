@@ -250,7 +250,7 @@
   // projection, then mapping that canvas onto the sphere as its texture.
   // This aligns exactly with THREE.SphereGeometry's default UV layout:
   // u = (lng+180)/360, v(top-to-bottom) = (90-lat)/180.
-  const texW = 1600, texH = 800;
+  const texW = 2048, texH = 1024;
   const mapCanvas = document.createElement('canvas');
   mapCanvas.width = texW;
   mapCanvas.height = texH;
@@ -288,6 +288,9 @@
   });
 
   const mapTexture = new THREE.CanvasTexture(mapCanvas);
+  mapTexture.minFilter = THREE.LinearFilter;
+  mapTexture.magFilter = THREE.LinearFilter;
+  mapTexture.generateMipmaps = false;
   mapTexture.needsUpdate = true;
 
   const wireGeo = new THREE.SphereGeometry(1.6, 28, 20);
