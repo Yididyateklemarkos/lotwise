@@ -13,7 +13,15 @@
     </div>
   </div>
   <div id="globe-wrap" style="position:sticky; top:110px; align-self:start; aspect-ratio:1/1; max-height:460px;">
-    <canvas id="lotwise-globe" style="width:100%; height:100%; display:block; cursor:grab;"></canvas>
+    <div style="position:absolute; inset:-15%; z-index:0; filter:blur(50px); opacity:0.55; pointer-events:none;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(139,92,246,0.55), transparent 55%),
+        radial-gradient(circle at 80% 20%, rgba(34,197,94,0.5), transparent 55%),
+        radial-gradient(circle at 25% 80%, rgba(59,130,246,0.5), transparent 55%),
+        radial-gradient(circle at 80% 80%, rgba(244,114,182,0.5), transparent 55%),
+        radial-gradient(circle at 50% 50%, rgba(245,158,11,0.35), transparent 60%);
+    "></div>
+    <canvas id="lotwise-globe" style="position:relative; z-index:1; width:100%; height:100%; display:block; cursor:grab;"></canvas>
   </div>
 </div>
 
@@ -195,11 +203,11 @@
   const pulseRings = [];
 
   const wireGeo = new THREE.SphereGeometry(1.6, 28, 20);
-  const wireMat = new THREE.MeshBasicMaterial({ color: 0xC9C9D4, wireframe: true, transparent: true, opacity: 0.09 });
+  const wireMat = new THREE.MeshBasicMaterial({ color: 0x9CA3AF, wireframe: true, transparent: true, opacity: 0.22 });
   globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
 
   const coreGeo = new THREE.SphereGeometry(1.56, 32, 24);
-  const coreMat = new THREE.MeshBasicMaterial({ color: 0x0A0A0C, transparent: true, opacity: 0.95 });
+  const coreMat = new THREE.MeshBasicMaterial({ color: 0xF5F6FA, transparent: true, opacity: 0.55 });
   globeGroup.add(new THREE.Mesh(coreGeo, coreMat));
 
   function latLngToVec3Continent(lat, lng, r) {
@@ -245,7 +253,7 @@
   const continentMat = new THREE.PointsMaterial({ vertexColors: true, size: 0.028, transparent: true, opacity: 1.0, sizeAttenuation: true });
   globeGroup.add(new THREE.Points(continentGeo, continentMat));
 
-  const coastMat = new THREE.LineBasicMaterial({ color: 0xF2F4FA, transparent: true, opacity: 0.7 });
+  const coastMat = new THREE.LineBasicMaterial({ color: 0x6B7280, transparent: true, opacity: 0.55 });
   (window.LAND_OUTLINES || []).forEach((ring) => {
     const pts = [];
     for (let i = 0; i < ring.length; i += 2) {
