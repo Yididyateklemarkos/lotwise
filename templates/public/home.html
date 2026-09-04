@@ -1,29 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Lotwise | Global Trade Sourcing Hub{% endblock %}
-{% block meta_description %}Lotwise connects buyers and suppliers worldwide with sourcing, due diligence, and trade support managed directly. No marketplace, no checkout.{% endblock %}
+{% block title %}Lotwise | Trade Sourcing & Transaction Management{% endblock %}
+{% block meta_description %}Lotwise manages trade sourcing, verification, and transaction coordination for buyers and suppliers worldwide.{% endblock %}
 
 {% block content %}
 
-<div class="hero-grid" style="padding: 30px 0 20px;">
-  <div>
-    <div class="pill" style="margin-bottom:20px; background: var(--purple-soft); color: var(--purple-deep);">Global sourcing & trade hub</div>
-    <h1 style="font-size:52px; line-height:1.06;">The Global Hub for High-Volume Trade Sourcing.</h1>
-    <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Connecting buyers and suppliers worldwide. Sourcing, due diligence, and trade support, managed directly. No marketplace, no checkout.</p>
-    <div style="display:flex; gap:14px; flex-wrap:wrap;">
-      <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Submit a sourcing request</a>
-      <a href="{{ url_for('book_a_meeting') }}" class="btn" style="padding:14px 28px; font-size:15px;">Book a meeting</a>
-    </div>
-  </div>
-  <div id="globe-wrap" style="position:sticky; top:110px; align-self:start; aspect-ratio:1/1; max-height:460px;">
-    <div style="position:absolute; inset:-15%; z-index:0; filter:blur(50px); opacity:0.55; pointer-events:none;
-      background:
-        radial-gradient(circle at 20% 25%, rgba(139,92,246,0.55), transparent 55%),
-        radial-gradient(circle at 80% 20%, rgba(34,197,94,0.5), transparent 55%),
-        radial-gradient(circle at 25% 80%, rgba(59,130,246,0.5), transparent 55%),
-        radial-gradient(circle at 80% 80%, rgba(244,114,182,0.5), transparent 55%),
-        radial-gradient(circle at 50% 50%, rgba(245,158,11,0.35), transparent 60%);
-    "></div>
-    <canvas id="lotwise-globe" style="position:relative; z-index:1; width:100%; height:100%; display:block; cursor:grab;"></canvas>
+<div style="max-width:640px; padding: 30px 0 20px;">
+  <h1 style="font-size:48px; line-height:1.1;">Trade sourcing and transaction management for buyers and suppliers.</h1>
+  <p class="muted" style="margin:20px 0 32px; font-size:17px; line-height:1.6;">Lotwise identifies supply, verifies counterparties, and manages each stage of a transaction directly on behalf of both sides. We operate no public marketplace and process no payments on this site.</p>
+  <div style="display:flex; gap:14px; flex-wrap:wrap;">
+    <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Submit a sourcing request</a>
+    <a href="{{ url_for('book_a_meeting') }}" class="btn" style="padding:14px 28px; font-size:15px;">Book a meeting</a>
   </div>
 </div>
 
@@ -49,8 +35,8 @@
 <p class="muted" style="margin-bottom:20px;">Six ways we manage trade for buyers and suppliers, start to finish.</p>
 <div class="grid-3" style="margin-bottom:20px;">
   <div class="card">
-    <div class="icon-chip" style="background:var(--purple-soft); margin-bottom:14px;">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="var(--purple-deep)" stroke-width="1.8"/><path d="M19 19L15 15" stroke="var(--purple-deep)" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <div class="icon-chip" style="background:var(--orange-soft); margin-bottom:14px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="var(--orange-deep)" stroke-width="1.8"/><path d="M19 19L15 15" stroke="var(--orange-deep)" stroke-width="1.8" stroke-linecap="round"/></svg>
     </div>
     <h2 style="margin-bottom:8px;">Sourcing & Origination</h2>
     <p class="muted" style="font-size:14px; margin-bottom:12px;">We identify and qualify supply from verified producers worldwide, bringing forward opportunities buyers can't access on their own.</p>
@@ -85,8 +71,8 @@
     </ul>
   </div>
   <div class="card">
-    <div class="icon-chip" style="background:var(--purple-soft); margin-bottom:14px;">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5H20V15H8L4 19V5Z" stroke="var(--purple-deep)" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    <div class="icon-chip" style="background:var(--orange-soft); margin-bottom:14px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5H20V15H8L4 19V5Z" stroke="var(--orange-deep)" stroke-width="1.8" stroke-linejoin="round"/></svg>
     </div>
     <h2 style="margin-bottom:8px;">Deal Structuring & Negotiation</h2>
     <p class="muted" style="font-size:14px; margin-bottom:12px;">We structure terms, negotiate on your behalf, and coordinate through to closing.</p>
@@ -126,8 +112,8 @@
 <p class="muted" style="margin-bottom:20px;">Every deal we manage is governed by the same due diligence standard, protecting both sides at every stage.</p>
 <div class="grid-3" style="margin-bottom:16px;">
   <div class="card">
-    <div class="icon-chip" style="background:var(--purple-soft); margin-bottom:12px;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="var(--purple-deep)" stroke-width="1.8"/><path d="M3 20C3 16.5 5.5 14 9 14C12.5 14 15 16.5 15 20" stroke="var(--purple-deep)" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="9" r="2.4" stroke="var(--purple-deep)" stroke-width="1.6"/><path d="M15.5 20C15.5 17.2 16.8 15.3 19 14.6" stroke="var(--purple-deep)" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <div class="icon-chip" style="background:var(--orange-soft); margin-bottom:12px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="var(--orange-deep)" stroke-width="1.8"/><path d="M3 20C3 16.5 5.5 14 9 14C12.5 14 15 16.5 15 20" stroke="var(--orange-deep)" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="9" r="2.4" stroke="var(--orange-deep)" stroke-width="1.6"/><path d="M15.5 20C15.5 17.2 16.8 15.3 19 14.6" stroke="var(--orange-deep)" stroke-width="1.6" stroke-linecap="round"/></svg>
     </div>
     <h2 style="font-size:16px; margin-bottom:6px;">Counterparty Verification</h2>
     <p class="muted" style="font-size:13px;">Every buyer and supplier is verified, legal registration, licensing, and track record, before any deal moves forward.</p>
@@ -147,8 +133,8 @@
     <p class="muted" style="font-size:13px;">We coordinate export documentation, certificates of origin, and compliance requirements for every transaction.</p>
   </div>
   <div class="card">
-    <div class="icon-chip" style="background:var(--purple-soft); margin-bottom:12px;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 12L10 18L20 6" stroke="var(--purple-deep)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="icon-chip" style="background:var(--orange-soft); margin-bottom:12px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 12L10 18L20 6" stroke="var(--orange-deep)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
     <h2 style="font-size:16px; margin-bottom:6px;">Deal Transparency</h2>
     <p class="muted" style="font-size:13px;">Both parties receive clear terms, verified specifications, and full visibility into the deal structure.</p>
@@ -173,11 +159,6 @@
 {% endblock %}
 
 {% block scripts %}
-<style>
-  @media (max-width: 640px) {
-    #globe-wrap { position:static; max-height:280px; margin:20px auto 0; }
-  }
-</style>
 <script>
 (function() {
   const counters = document.querySelectorAll('.stat-number');
@@ -206,276 +187,6 @@
     });
   }, { threshold: 0.4 });
   counters.forEach((el) => observer.observe(el));
-})();
-</script>
-<script src="{{ url_for('static', filename='js/three.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/world-land.js') }}"></script>
-<script src="{{ url_for('static', filename='js/world-countries.js') }}"></script>
-<script>
-(function() {
-  const canvas = document.getElementById('lotwise-globe');
-  if (!canvas || typeof THREE === 'undefined') return;
-
-  const wrap = document.getElementById('globe-wrap');
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.z = 4.4;
-
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-  function resize() {
-    const size = wrap.clientWidth;
-    renderer.setSize(size, size, false);
-    camera.aspect = 1;
-    camera.updateProjectionMatrix();
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  const globeGroup = new THREE.Group();
-  scene.add(globeGroup);
-  const pulseRings = [];
-
-  function latLngToVec3Continent(lat, lng, r) {
-    const phi = (90 - lat) * (Math.PI / 180);
-    const theta = (lng + 180) * (Math.PI / 180);
-    return new THREE.Vector3(
-      -r * Math.sin(phi) * Math.cos(theta),
-      r * Math.cos(phi),
-      r * Math.sin(phi) * Math.sin(theta)
-    );
-  }
-
-  // Build a real filled world-map texture (solid continents, not dots) by
-  // rasterizing the coastline polygons onto a 2D canvas in equirectangular
-  // projection, then mapping that canvas onto the sphere as its texture.
-  // This aligns exactly with THREE.SphereGeometry's default UV layout:
-  // u = (lng+180)/360, v(top-to-bottom) = (90-lat)/180.
-  const texW = 2048, texH = 1024;
-  const mapCanvas = document.createElement('canvas');
-  mapCanvas.width = texW;
-  mapCanvas.height = texH;
-  const mctx = mapCanvas.getContext('2d');
-  mctx.fillStyle = '#EAECF2';
-  mctx.fillRect(0, 0, texW, texH);
-
-  function lngToX(lng) { return texW * (lng + 180) / 360; }
-  function latToY(lat) { return texH * (90 - lat) / 180; }
-
-  function drawRing(ring, color, offset) {
-    mctx.beginPath();
-    for (let i = 0; i < ring.length; i += 2) {
-      const x = lngToX(ring[i + 1] + offset);
-      const y = latToY(ring[i]);
-      if (i === 0) mctx.moveTo(x, y); else mctx.lineTo(x, y);
-    }
-    mctx.closePath();
-    mctx.fillStyle = color;
-    mctx.fill();
-  }
-
-  (window.COUNTRY_POLYGONS || []).forEach((country) => {
-    country.rings.forEach((ring) => {
-      if (ring.length < 6) return;
-      let minLng = Infinity, maxLng = -Infinity;
-      for (let i = 1; i < ring.length; i += 2) {
-        minLng = Math.min(minLng, ring[i]);
-        maxLng = Math.max(maxLng, ring[i]);
-      }
-      const wraps = (maxLng - minLng) > 180;
-      const offsets = wraps ? [-360, 0, 360] : [0];
-      offsets.forEach((offset) => drawRing(ring, country.color, offset));
-    });
-  });
-
-  const mapTexture = new THREE.CanvasTexture(mapCanvas);
-  mapTexture.minFilter = THREE.LinearFilter;
-  mapTexture.magFilter = THREE.LinearFilter;
-  mapTexture.generateMipmaps = false;
-  mapTexture.needsUpdate = true;
-
-  const wireGeo = new THREE.SphereGeometry(1.6, 28, 20);
-  const wireMat = new THREE.MeshBasicMaterial({ color: 0x9CA3AF, wireframe: true, transparent: true, opacity: 0.18 });
-  globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
-
-  const coreGeo = new THREE.SphereGeometry(1.56, 32, 24);
-  const coreMat = new THREE.MeshBasicMaterial({ map: mapTexture });
-  globeGroup.add(new THREE.Mesh(coreGeo, coreMat));
-
-  const coastMat = new THREE.LineBasicMaterial({ color: 0x6B7280, transparent: true, opacity: 0.55 });
-  (window.LAND_OUTLINES || []).forEach((ring) => {
-    const pts = [];
-    for (let i = 0; i < ring.length; i += 2) {
-      pts.push(latLngToVec3Continent(ring[i], ring[i + 1], 1.618));
-    }
-    if (pts.length < 2) return;
-    globeGroup.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), coastMat));
-  });
-
-  const markerLatLng = [
-    [9.03, 38.74],   // Addis Ababa
-    [31.23, 121.47], // Shanghai
-    [-1.29, 36.82],  // Nairobi
-    [25.20, 55.27],  // Dubai
-    [10.82, 106.63], // Ho Chi Minh
-    [41.90, 12.49],  // Rome
-    [40.71, -74.0],  // New York
-    [-23.55, -46.63],// São Paulo
-  ];
-  function latLngToVec3(lat, lng, r) {
-    const phi = (90 - lat) * (Math.PI / 180);
-    const theta = (lng + 180) * (Math.PI / 180);
-    return new THREE.Vector3(
-      -r * Math.sin(phi) * Math.cos(theta),
-      r * Math.cos(phi),
-      r * Math.sin(phi) * Math.sin(theta)
-    );
-  }
-  const markerGeo = new THREE.SphereGeometry(0.028, 8, 8);
-  const markerMat = new THREE.MeshBasicMaterial({ color: 0xA78BFA });
-  const markerPositions = [];
-  markerLatLng.forEach(([lat, lng]) => {
-    const pos = latLngToVec3(lat, lng, 1.63);
-    markerPositions.push(pos);
-    const dot = new THREE.Mesh(markerGeo, markerMat);
-    dot.position.copy(pos);
-    globeGroup.add(dot);
-    const ringGeo = new THREE.RingGeometry(0.03, 0.045, 20);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xA78BFA, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    ring.position.copy(pos.clone().multiplyScalar(1.002));
-    ring.lookAt(pos.clone().multiplyScalar(2));
-    ring.userData.pulsePhase = Math.random() * Math.PI * 2;
-    globeGroup.add(ring);
-    pulseRings.push(ring);
-  });
-
-  const connections = [
-    [0, 1], [0, 3], [1, 4], [2, 3], [3, 5], [4, 6], [5, 7], [6, 2], [7, 0],
-  ];
-  const arcTravelers = [];
-  connections.forEach(([aIdx, bIdx], i) => {
-    const a = markerPositions[aIdx], b = markerPositions[bIdx];
-    const mid = a.clone().add(b).multiplyScalar(0.5);
-    const liftFactor = 1 + a.distanceTo(b) * 0.35;
-    mid.normalize().multiplyScalar(1.63 * liftFactor);
-    const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
-    const points = curve.getPoints(48);
-    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-    const lineMat = new THREE.LineBasicMaterial({ color: 0xC9C9D4, transparent: true, opacity: 0.22 });
-    globeGroup.add(new THREE.Line(lineGeo, lineMat));
-
-    const travelerGeo = new THREE.SphereGeometry(0.02, 6, 6);
-    const travelerMat = new THREE.MeshBasicMaterial({ color: 0xE9D8FD, transparent: true });
-    const traveler = new THREE.Mesh(travelerGeo, travelerMat);
-    globeGroup.add(traveler);
-    arcTravelers.push({ curve, mesh: traveler, offset: i * 0.37, speed: 0.15 });
-  });
-
-  const shipRoutes = [
-    [[9.03, 38.74], [12.8, 45.0], [15.6, 39.5], [29.9, 32.5], [36.1, 5.4], [51.5, -0.1]],
-    [[31.23, 121.47], [1.29, 103.85], [6.9, 79.9], [12.6, 43.1], [30.0, 32.3]],
-    [[40.71, -74.0], [25.7, -80.2], [9.4, -79.9], [-12.0, -77.0], [-23.5, -46.6]],
-  ];
-  const shipTravelers = [];
-  shipRoutes.forEach((route, i) => {
-    const vecs = route.map(([lat, lng]) => latLngToVec3Continent(lat, lng, 1.62));
-    const curve = new THREE.CatmullRomCurve3(vecs);
-    const shipGeo = new THREE.BoxGeometry(0.028, 0.014, 0.014);
-    const shipMat = new THREE.MeshBasicMaterial({ color: 0x34D399 });
-    const ship = new THREE.Mesh(shipGeo, shipMat);
-    globeGroup.add(ship);
-    shipTravelers.push({ curve, mesh: ship, offset: i * 0.29, speed: 0.045 });
-  });
-
-  const jetRoutes = [
-    [0, 4], [2, 6], [5, 1],
-  ];
-  const jetTravelers = [];
-  jetRoutes.forEach(([aIdx, bIdx], i) => {
-    const a = markerPositions[aIdx], b = markerPositions[bIdx];
-    const mid = a.clone().add(b).multiplyScalar(0.5);
-    mid.normalize().multiplyScalar(1.95);
-    const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
-    const points = curve.getPoints(48);
-    const lineMat = new THREE.LineBasicMaterial({ color: 0xA7F3D0, transparent: true, opacity: 0.1 });
-    const lineGeo2 = new THREE.BufferGeometry().setFromPoints(points);
-    globeGroup.add(new THREE.Line(lineGeo2, lineMat));
-
-    const jetGeo = new THREE.ConeGeometry(0.014, 0.05, 6);
-    const jetMat = new THREE.MeshBasicMaterial({ color: 0xA7F3D0 });
-    const jet = new THREE.Mesh(jetGeo, jetMat);
-    globeGroup.add(jet);
-    jetTravelers.push({ curve, mesh: jet, offset: i * 0.4, speed: 0.22 });
-  });
-
-  let isDragging = false, prevX = 0, prevY = 0, velX = 0.0018;
-  canvas.addEventListener('pointerdown', (e) => { isDragging = true; prevX = e.clientX; prevY = e.clientY; canvas.style.cursor = 'grabbing'; });
-  window.addEventListener('pointerup', () => { isDragging = false; canvas.style.cursor = 'grab'; });
-  window.addEventListener('pointermove', (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - prevX, dy = e.clientY - prevY;
-    globeGroup.rotation.y += dx * 0.005;
-    globeGroup.rotation.x += dy * 0.005;
-    velX = dx * 0.0004;
-    prevX = e.clientX; prevY = e.clientY;
-  });
-
-  let scrollProgress = 0;
-  function onScroll() {
-    const max = window.innerHeight * 1.2;
-    scrollProgress = Math.min(1, Math.max(0, window.scrollY / max));
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  const clock = new THREE.Clock();
-
-  function animate() {
-    requestAnimationFrame(animate);
-    if (!isDragging) {
-      const scrollBoost = 1 + scrollProgress * 5;
-      globeGroup.rotation.y += velX * scrollBoost;
-      velX *= 0.98;
-      if (Math.abs(velX) < 0.0016) velX = 0.0016;
-    }
-    globeGroup.rotation.x = THREE.MathUtils.lerp(globeGroup.rotation.x, scrollProgress * 0.5, 0.06);
-    const targetZ = 4.4 + scrollProgress * 2.2;
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.08);
-    canvas.style.opacity = String(1 - scrollProgress * 0.85);
-
-    const t = clock.getElapsedTime();
-    arcTravelers.forEach(({ curve, mesh, offset, speed }) => {
-      const progress = ((t * speed + offset) % 1);
-      const pos = curve.getPoint(progress);
-      mesh.position.copy(pos);
-      mesh.material.opacity = Math.sin(progress * Math.PI);
-    });
-    shipTravelers.forEach(({ curve, mesh, offset, speed }) => {
-      const progress = (t * speed + offset) % 1;
-      const pos = curve.getPoint(progress);
-      const ahead = curve.getPoint((progress + 0.01) % 1);
-      mesh.position.copy(pos);
-      mesh.lookAt(ahead);
-    });
-    jetTravelers.forEach(({ curve, mesh, offset, speed }) => {
-      const progress = (t * speed + offset) % 1;
-      const pos = curve.getPoint(progress);
-      const ahead = curve.getPoint(Math.min(progress + 0.02, 1));
-      mesh.position.copy(pos);
-      mesh.lookAt(ahead);
-      mesh.rotateX(Math.PI / 2);
-    });
-    pulseRings.forEach((ring) => {
-      const s = 1 + Math.sin(t * 1.4 + ring.userData.pulsePhase) * 0.35;
-      ring.scale.set(s, s, s);
-      ring.material.opacity = 0.25 + Math.sin(t * 1.4 + ring.userData.pulsePhase) * 0.2;
-    });
-
-    renderer.render(scene, camera);
-  }
-  animate();
 })();
 </script>
 {% endblock %}
