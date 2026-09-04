@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}Terms of service | Lotwise{% endblock %}
+{% block meta_description %}The terms of service that govern use of the Lotwise website and its sourcing and advisory services.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("Terms of service", None)]) }}{% endblock %}
 {% block content %}
 <h1>Terms of service</h1>
 <p class="muted" style="margin-bottom:32px;">Last updated: August 29, 2026</p>

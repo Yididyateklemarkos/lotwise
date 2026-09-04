@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Lotwise | Global Trade Sourcing Hub{% endblock %}
+{% block meta_description %}Lotwise connects buyers and suppliers worldwide with sourcing, due diligence, and trade support managed directly. No marketplace, no checkout.{% endblock %}
 
 {% block content %}
 
@@ -10,6 +11,7 @@
     <p class="muted" style="max-width:540px; margin:20px 0 32px; font-size:17px; line-height:1.6;">Connecting buyers and suppliers worldwide. Sourcing, due diligence, and trade support, managed directly. No marketplace, no checkout.</p>
     <div style="display:flex; gap:14px; flex-wrap:wrap;">
       <a href="{{ url_for('sourcing_request') }}" class="btn btn-solid" style="padding:14px 28px; font-size:15px;">Submit a sourcing request</a>
+      <a href="{{ url_for('book_a_meeting') }}" class="btn" style="padding:14px 28px; font-size:15px;">Book a meeting</a>
     </div>
   </div>
   <div id="globe-wrap" style="position:sticky; top:110px; align-self:start; aspect-ratio:1/1; max-height:460px;">

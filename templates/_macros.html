@@ -1,0 +1,25 @@
+{% macro breadcrumb(items) %}
+<nav aria-label="Breadcrumb" class="breadcrumbs">
+  {% for label, href in items %}
+    {%- if href and not loop.last %}<a href="{{ href }}">{{ label }}</a><span class="crumb-sep">/</span>
+    {%- else %}<span aria-current="page">{{ label }}</span>
+    {%- endif %}
+  {% endfor %}
+</nav>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {% for label, href in items %}
+    {
+      "@type": "ListItem",
+      "position": {{ loop.index }},
+      "name": {{ label|tojson }}{% if href %},
+      "item": "{{ request.url_root.rstrip('/') }}{{ href }}"{% endif %}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endmacro %}

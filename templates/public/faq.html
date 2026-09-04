@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}FAQ | Lotwise{% endblock %}
+{% block meta_description %}Answers to common questions about sourcing, consultations, meetings, and submitting supply through Lotwise.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("FAQ", None)]) }}{% endblock %}
 {% block content %}
 <div style="max-width:640px;">
   <h1 style="margin-bottom:28px;">Frequently asked questions</h1>

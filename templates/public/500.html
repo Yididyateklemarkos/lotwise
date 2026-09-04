@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong | Lotwise{% endblock %}
+{% block meta_description %}An unexpected error occurred on Lotwise. Please try again shortly.{% endblock %}
+{% block content %}
+<div style="max-width:520px; text-align:center; margin:60px auto 0;">
+  <div class="pill pill-disapproved" style="margin-bottom:20px;">500</div>
+  <h1 style="font-size:30px;">Something went wrong on our end.</h1>
+  <p class="muted" style="margin:16px 0 32px; font-size:15px; line-height:1.6;">Please try again in a moment. If your request was a form submission, check whether it went through before resubmitting.</p>
+  <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+    <a href="{{ url_for('home') }}" class="btn btn-solid" style="padding:12px 26px;">Back to home</a>
+    <a href="{{ url_for('contact') }}" class="btn" style="padding:12px 26px;">Contact us</a>
+  </div>
+</div>
+{% endblock %}

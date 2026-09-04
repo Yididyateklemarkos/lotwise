@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}Sell your supply | Lotwise{% endblock %}
+{% block meta_description %}Submit your available supply for review. Lotwise runs due diligence and presents it to qualified buyers.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("Sell your supply", None)]) }}{% endblock %}
 {% block content %}
 <div style="max-width:600px;">
   <h1>Submit your supply</h1>
@@ -7,6 +10,7 @@
 
   <div class="card">
     <form class="stacked" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="two-col">
         <div>
           <label>Your name</label>

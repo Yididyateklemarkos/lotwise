@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}Book a consultation | Lotwise{% endblock %}
+{% block meta_description %}Book a consultation with Lotwise to get advice on the right sourcing or trade approach for your needs.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("Book a consultation", None)]) }}{% endblock %}
 {% block content %}
 <div style="max-width:560px;">
   <h1>Book a consultation</h1>
@@ -7,6 +10,7 @@
 
   <div class="card">
     <form class="stacked" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="two-col">
         <div>
           <label>Your name</label>

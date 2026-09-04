@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}About | Lotwise{% endblock %}
+{% block meta_description %}Lotwise's background, track record, and how the firm operates as a sourcing and trade advisory desk.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("About", None)]) }}{% endblock %}
 {% block content %}
 <div style="max-width:640px;">
   <h1>A global hub for high-volume trade.</h1>

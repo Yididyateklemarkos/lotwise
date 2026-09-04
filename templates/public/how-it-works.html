@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}How it works | Lotwise{% endblock %}
+{% block meta_description %}A step-by-step look at how sourcing, consultation, meetings, and supply submissions work at Lotwise.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("How it works", None)]) }}{% endblock %}
 {% block content %}
 <div style="max-width:680px;">
   <h1>How working with us actually works.</h1>

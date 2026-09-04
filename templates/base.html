@@ -4,10 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% block title %}Lotwise{% endblock %}</title>
+{% block robots_meta %}{% endblock %}
+<meta name="description" content="{% block meta_description %}Lotwise is a global sourcing and trade advisory desk connecting buyers and suppliers, with sourcing, due diligence, and trade support handled directly.{% endblock %}">
+<link rel="canonical" href="{{ request.url_root.rstrip('/') + request.path }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Lotwise">
+<meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{{ self.meta_description() }}{% endblock %}">
+<meta property="og:url" content="{{ request.url_root.rstrip('/') + request.path }}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ self.og_title() }}">
+<meta name="twitter:description" content="{{ self.og_description() }}">
 <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/favicon-reverse.svg') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Lotwise",
+  "description": "Global sourcing and trade advisory desk connecting buyers and suppliers, with sourcing, due diligence, and trade support handled directly.",
+  "url": "{{ request.url_root.rstrip('/') }}/",
+  "areaServed": "Worldwide",
+  "address": { "@type": "PostalAddress", "addressCountry": "ET" },
+  "sameAs": []
+}
+</script>
+{% endblock %}
 <style>
+  html, body { overflow-x: hidden; max-width: 100%; }
+  img, svg, canvas, video { max-width: 100%; }
   :root {
     --bg:#FFFFFF; --bg-soft:#F7F6F3; --panel:#FFFFFF; --panel-border: rgba(0,0,0,0.09);
     --ink:#16161B; --ink-soft:#52525F; --gray:#87878F; --line: rgba(0,0,0,0.08);
@@ -98,6 +125,12 @@
   .dash-nav a.active { background: var(--purple); color:#fff; }
   .dash-nav a:not(.active):hover { color: var(--ink); background: rgba(0,0,0,0.04); }
 
+  .breadcrumbs { font-size:13px; color:var(--gray); margin-bottom:20px; display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .breadcrumbs a { color:var(--gray); text-decoration:none; }
+  .breadcrumbs a:hover { color:var(--ink); text-decoration:underline; }
+  .breadcrumbs span[aria-current] { color:var(--ink-soft); font-weight:600; }
+  .breadcrumbs .crumb-sep { color:var(--line); }
+
   footer { border-top:1px solid var(--line); padding:36px 0 28px; }
   .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
   .footer-text { font-size:13px; color:var(--gray); text-decoration:none; }
@@ -110,7 +143,10 @@
   .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
   .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
   .hero-grid { display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center; }
-  .full-bleed { width:100vw; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; }
+  /* max-width:100vw (not width:100vw) so this never exceeds the viewport
+     when a vertical scrollbar is present — width:100vw ignored scrollbar
+     width and could trigger a horizontal scrollbar of its own. */
+  .full-bleed { width:100%; max-width:100vw; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; overflow-x:hidden; }
   @media (max-width: 860px) {
     .grid-3, .grid-4 { grid-template-columns:repeat(2,1fr); }
   }
@@ -191,6 +227,7 @@
 
 <main>
   <div class="wrap">
+    {% block breadcrumbs %}{% endblock %}
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}

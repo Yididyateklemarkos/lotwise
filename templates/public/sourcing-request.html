@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}Sourcing request | Lotwise{% endblock %}
+{% block meta_description %}Submit a sourcing request and Lotwise will find and qualify supply that meets your requirements.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("Sourcing request", None)]) }}{% endblock %}
 {% block content %}
 <div style="max-width:600px;">
   <h1>Submit a sourcing request</h1>
@@ -7,6 +10,7 @@
 
   <div class="card">
     <form class="stacked" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="two-col">
         <div>
           <label>Your name</label>

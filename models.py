@@ -40,11 +40,23 @@ class AdminUser(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # A hash of an unguessable, never-used password. When a login attempt
+    # uses an email that doesn't exist, we still run a check against this
+    # so the response takes the same time either way — otherwise a faster
+    # reply on unknown emails would let someone enumerate valid admin
+    # accounts by timing alone.
+    _DUMMY_HASH = generate_password_hash("not-a-real-password-" + "x" * 32)
+
     def set_password(self, raw_password):
         self.password_hash = generate_password_hash(raw_password)
 
     def check_password(self, raw_password):
         return check_password_hash(self.password_hash, raw_password)
+
+    @staticmethod
+    def dummy_check(raw_password):
+        check_password_hash(AdminUser._DUMMY_HASH, raw_password)
+        return False
 
 
 class Lead(db.Model):

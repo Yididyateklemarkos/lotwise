@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}Privacy policy | Lotwise{% endblock %}
+{% block meta_description %}How Lotwise collects, uses, and protects the information submitted through its sourcing and advisory forms.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("Privacy policy", None)]) }}{% endblock %}
 {% block content %}
 <h1>Privacy policy</h1>
 <p class="muted" style="margin-bottom:32px;">Last updated: August 29, 2026</p>

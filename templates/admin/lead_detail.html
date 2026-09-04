@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ label }} | Lotwise Admin{% endblock %}
+{% block robots_meta %}<meta name="robots" content="noindex, nofollow">{% endblock %}
 {% block content %}
 <a href="{{ url_for('admin_leads') }}" class="muted" style="font-size:13px;">&larr; All leads</a>
 <h1 style="font-size:26px; margin:10px 0 20px;">{{ label }}: {{ lead.name }}</h1>
@@ -46,6 +47,7 @@
     <div class="card">
       <h2 style="margin-bottom:14px;">Follow-up</h2>
       <form class="stacked" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label>Status</label>
         <select name="status">
           {% for s in ['new', 'contacted', 'in_progress', 'closed'] %}
@@ -58,6 +60,7 @@
       </form>
     </div>
     <form method="POST" action="{{ url_for('admin_lead_delete', lead_id=lead.id) }}" onsubmit="return confirm('Delete this lead permanently?');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <button type="submit" class="btn btn-danger btn-block" style="padding:11px;">Delete lead</button>
     </form>
   </div>

@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Admin login | Lotwise{% endblock %}
+{% block robots_meta %}<meta name="robots" content="noindex, nofollow">{% endblock %}
 {% block content %}
 <div style="max-width:400px; margin:40px auto 0;">
   <h1 style="font-size:26px;">Admin login</h1>
   <p class="muted" style="margin:10px 0 24px;">For reviewing incoming leads only.</p>
   <div class="card">
     <form class="stacked" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label>Email</label>
       <input type="email" name="email" required autofocus>
       <label>Password</label>

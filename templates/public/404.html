@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Page not found | Lotwise{% endblock %}
+{% block meta_description %}This page doesn't exist. Find your way back to Lotwise's sourcing, consultation, and meeting request pages.{% endblock %}
+{% block content %}
+<div style="max-width:520px; text-align:center; margin:60px auto 0;">
+  <div class="pill pill-neutral" style="margin-bottom:20px;">404</div>
+  <h1 style="font-size:30px;">This page doesn't exist.</h1>
+  <p class="muted" style="margin:16px 0 32px; font-size:15px; line-height:1.6;">The link may be out of date, or the address may have been typed incorrectly. Here are some places to go instead.</p>
+  <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:28px;">
+    <a href="{{ url_for('home') }}" class="btn btn-solid" style="padding:12px 26px;">Back to home</a>
+    <a href="{{ url_for('sourcing_request') }}" class="btn" style="padding:12px 26px;">Submit a sourcing request</a>
+  </div>
+  <div class="muted" style="font-size:13px;">
+    <a href="{{ url_for('how_it_works') }}" style="margin:0 10px;">How it works</a>
+    <a href="{{ url_for('faq') }}" style="margin:0 10px;">FAQ</a>
+    <a href="{{ url_for('contact') }}" style="margin:0 10px;">Contact</a>
+  </div>
+</div>
+{% endblock %}

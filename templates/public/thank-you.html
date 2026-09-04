@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "_macros.html" import breadcrumb %}
 {% block title %}Thank you | Lotwise{% endblock %}
+{% block meta_description %}Your request has been received by Lotwise and will be followed up on directly.{% endblock %}
+{% block breadcrumbs %}{{ breadcrumb([("Home", url_for('home')), ("Thank you", None)]) }}{% endblock %}
 {% block content %}
 <div style="max-width:520px; text-align:center; margin:40px auto 0;">
   <div class="pill pill-approved" style="margin-bottom:20px;">Received</div>
